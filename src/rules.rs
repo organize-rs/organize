@@ -8,6 +8,18 @@ use std::path::PathBuf;
 
 use crate::rules::{actions::OrganizeAction, filters::OrganizeFilter};
 
+#[derive(Debug, Clone)]
+pub enum ApplyOrNegateFilter {
+    Apply(OrganizeFilter),
+    Negate(OrganizeFilter),
+}
+
+#[derive(Debug, Clone)]
+pub enum Recurse {
+    Flat,
+    Recursive,
+}
+
 /// Tags that can be applied to rules
 #[derive(Debug, Clone)]
 pub enum OrganizeTag {
@@ -40,11 +52,11 @@ pub struct OrganizeRule {
     /// list of locations
     locations: Vec<PathBuf>,
     /// whether to recurse into subfolders of all locations
-    subfolders: bool,
+    subfolders: Recurse,
     /// whether "all", "any" or "none" of the filters must apply
     filter_mode: OrganizeFilterMode,
     /// supported filters
-    filters: Vec<OrganizeFilter>,
+    filters: Vec<ApplyOrNegateFilter>,
     /// supported actions
     actions: Vec<OrganizeAction>,
     /// tag for a rule, so you can run a set of rules by passing `--tags` or `--skip-tags`
