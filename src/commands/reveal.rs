@@ -4,8 +4,10 @@
 /// accessors along with logging macros. Customize as you see fit.
 use crate::prelude::*;
 
+use crate::commands::CONFIG_FILE;
 use crate::config::OrganizeConfig;
 use abscissa_core::{config, Command, FrameworkError, Runnable};
+use duct::cmd;
 
 /// Reveals the default config file.
 #[derive(clap::Parser, Command, Debug)]
@@ -16,9 +18,38 @@ pub struct RevealCmd {
 }
 
 impl Runnable for RevealCmd {
-    /// Start the application.
     fn run(&self) {
-        let config = ORGANIZE_APP.config();
+        if self.path {
+            println!("{}", CONFIG_FILE.display());
+        } else {
+            let path = CONFIG_FILE
+                .parent()
+                .expect("can't get parent for config file path!");
+            #[cfg(windows)]
+            match cmd!("explorer", path).run() {
+                Ok(_) => {}
+                Err(_) => {
+                    // TODO: handle exit(1) on Windows
+                    // println!("{err}")
+                }
+            };
+            #[cfg(osx)]
+            match cmd!("open", path).run() {
+                Ok(_) => {}
+                Err(_) => {
+                    // TODO: osx support
+                    // println!("{err}")
+                }
+            };
+            #[cfg(unix)]
+            match cmd!("xdg-open", path).run() {
+                Ok(_) => {}
+                Err(_) => {
+                    // TODO: unix support
+                    // println!("{err}")
+                }
+            };
+        }
     }
 }
 

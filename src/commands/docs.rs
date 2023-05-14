@@ -10,6 +10,6 @@ pub struct DocsCmd {}
 impl Runnable for DocsCmd {
     /// Start the application.
     fn run(&self) {
-        // Your code goes here
+        todo!("open documentation.")
     }
 }

@@ -16,6 +16,6 @@ pub struct EditCmd {
 impl Runnable for EditCmd {
     /// Start the application.
     fn run(&self) {
-        // Your code goes here
+        todo!("opening config file in editor.")
     }
 }

@@ -14,6 +14,6 @@ pub struct RunCmd {
 impl Runnable for RunCmd {
     /// Start the application.
     fn run(&self) {
-        // Your code goes here
+        todo!("run organization.")
     }
 }

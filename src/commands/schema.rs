@@ -10,6 +10,6 @@ pub struct SchemaCmd {}
 impl Runnable for SchemaCmd {
     /// Start the application.
     fn run(&self) {
-        // Your code goes here
+        todo!("print schema.")
     }
 }

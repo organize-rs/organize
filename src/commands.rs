@@ -29,10 +29,27 @@ use crate::{
 };
 use abscissa_core::{config::Override, Command, Configurable, FrameworkError, Runnable};
 use clap;
-use std::path::PathBuf;
+use directories::{BaseDirs, ProjectDirs};
+use once_cell::sync::Lazy;
+use std::{
+    fs::create_dir_all,
+    path::{Path, PathBuf},
+};
 
 /// Organize Configuration Filename
-pub const CONFIG_FILE: &str = "organize.toml";
+
+pub static CONFIG_FILE: Lazy<PathBuf> = Lazy::new(|| {
+    let dir = if let Some(base_dir) = BaseDirs::new() {
+        let organize_config_dir = base_dir.config_local_dir().join("organize");
+        create_dir_all(&organize_config_dir);
+        let config_path = organize_config_dir.join("organize.toml");
+        config_path
+    } else {
+        // TODO: get rid of deprecated function
+        std::env::home_dir().expect("should return HOME directory")
+    };
+    dir
+});
 
 /// Organize Subcommands
 /// Subcommands need to be listed in an enum.
@@ -104,7 +121,7 @@ impl Configurable<OrganizeConfig> for EntryPoint {
         let filename = self
             .config
             .as_ref()
-            .map_or_else(|| CONFIG_FILE.into(), PathBuf::from);
+            .map_or_else(|| CONFIG_FILE.to_path_buf(), PathBuf::from);
 
         if filename.exists() {
             Some(filename)

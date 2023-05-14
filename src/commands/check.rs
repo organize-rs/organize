@@ -12,6 +12,6 @@ pub struct CheckCmd {}
 impl Runnable for CheckCmd {
     /// Start the application.
     fn run(&self) {
-        // Your code goes here
+        todo!("check validity of config file.")
     }
 }

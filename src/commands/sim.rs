@@ -14,6 +14,6 @@ pub struct SimCmd {
 impl Runnable for SimCmd {
     /// Start the application.
     fn run(&self) {
-        // Your code goes here
+        todo!("simulate an organize run.")
     }
 }
