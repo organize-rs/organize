@@ -19,8 +19,10 @@
     unused_qualifications
 )]
 #[allow(clippy::module_name_repetitions)]
+// Modules of the app
 pub mod application;
 pub mod commands;
 pub mod config;
 pub mod error;
 pub mod prelude;
+pub mod rules;

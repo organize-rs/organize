@@ -1,0 +1,53 @@
+use std::path::PathBuf;
+
+#[derive(Debug, Clone)]
+pub enum OrganizeTag {
+    Always,
+    Never,
+    Custom(String),
+}
+
+#[derive(Debug, Clone)]
+pub enum OrganizeAction {
+    None,
+}
+
+#[derive(Debug, Clone)]
+pub enum OrganizeFilter {
+    None,
+}
+
+#[derive(Debug, Clone)]
+pub enum OrganizeFilterMode {
+    All,
+    Any,
+    None,
+}
+
+#[derive(Debug, Clone)]
+pub enum OrganizeTargets {
+    Dirs,
+    Files,
+}
+
+#[derive(Debug, Clone)]
+pub struct OrganizeRule {
+    /// rule name
+    name: String,
+    /// whether the rule is enabled / disabled
+    enabled: bool,
+    /// when targets is set to dirs, organize will work on the folders, not on files
+    targets: OrganizeTargets,
+    /// list of locations
+    locations: Vec<PathBuf>,
+    /// whether to recurse into subfolders of all locations
+    subfolders: bool,
+    /// whether "all", "any" or "none" of the filters must apply
+    filter_mode: OrganizeFilterMode,
+    /// supported filters
+    filters: Vec<OrganizeFilter>,
+    /// supported actions
+    actions: Vec<OrganizeAction>,
+    /// tag for a rule, so you can run a set of rules by passing `--tags` or `--skip-tags`
+    tags: Vec<OrganizeTag>,
+}

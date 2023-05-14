@@ -10,11 +10,25 @@
 //! See the `impl Configurable` below for how to specify the path to the
 //! application's configuration file.
 
-mod start;
+mod reveal;
 
-use self::start::StartCmd;
-use crate::config::OrganizeConfig;
+// TODO
+mod check;
+mod docs;
+mod edit;
+mod run;
+mod schema;
+mod sim;
+
+use self::reveal::RevealCmd;
+use crate::{
+    commands::{
+        check::CheckCmd, docs::DocsCmd, edit::EditCmd, run::RunCmd, schema::SchemaCmd, sim::SimCmd,
+    },
+    config::OrganizeConfig,
+};
 use abscissa_core::{config::Override, Command, Configurable, FrameworkError, Runnable};
+use clap;
 use std::path::PathBuf;
 
 /// Organize Configuration Filename
@@ -24,10 +38,16 @@ pub const CONFIG_FILE: &str = "organize.toml";
 /// Subcommands need to be listed in an enum.
 #[derive(clap::Parser, Command, Debug, Runnable)]
 pub enum OrganizeCmd {
-    /// The `start` subcommand
-    Start(StartCmd),
+    Reveal(RevealCmd),
+    Check(CheckCmd),
+    Docs(DocsCmd),
+    Edit(EditCmd),
+    Run(RunCmd),
+    Schema(SchemaCmd),
+    Sim(SimCmd),
 }
 
+#[allow(clippy::struct_excessive_bools)]
 /// Entry point for the application. It needs to be a struct to allow using subcommands!
 #[derive(clap::Parser, Command, Debug)]
 #[command(author, about, version)]
@@ -36,12 +56,36 @@ pub struct EntryPoint {
     cmd: OrganizeCmd,
 
     /// Enable verbose logging
-    #[arg(short, long)]
+    #[clap(short, long)]
     pub verbose: bool,
 
+    /// Enable debug mode
+    #[clap(short, long)]
+    pub debug: bool,
+
     /// Use the specified config file
-    #[arg(short, long)]
+    #[clap(short, long)]
     pub config: Option<String>,
+
+    /// Applicable tags
+    ///
+    /// Rules tagged with the special tag always will always run (except if --skip-tags=always is specified)
+    ///
+    /// Rules tagged with the special tag never will never run (except if ' --tags=never is specified)
+    #[clap(long)]
+    pub tags: Option<Vec<String>>,
+
+    /// Skip-Tags
+    #[clap(long)]
+    pub skip_tags: Option<Vec<String>>,
+
+    /// if this is set, the output is not colored
+    #[clap(long, env = "NO_COLOR")]
+    pub no_color: bool,
+
+    /// path to the organize-py config file
+    #[clap(long, env = "ORGANIZE_CONFIG")]
+    pub organize_py_config: bool,
 }
 
 impl Runnable for EntryPoint {
@@ -76,11 +120,11 @@ impl Configurable<OrganizeConfig> for EntryPoint {
     /// settings from command-line options.
     fn process_config(&self, config: OrganizeConfig) -> Result<OrganizeConfig, FrameworkError> {
         match &self.cmd {
-            OrganizeCmd::Start(cmd) => cmd.override_config(config),
+            // OrganizeCmd::Reveal(cmd) => cmd.override_config(config),
             //
             // If you don't need special overrides for some
             // subcommands, you can just use a catch all
-            // _ => Ok(config),
+            _ => Ok(config),
         }
     }
 }

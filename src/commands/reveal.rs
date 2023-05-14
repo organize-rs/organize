@@ -7,28 +7,22 @@ use crate::prelude::*;
 use crate::config::OrganizeConfig;
 use abscissa_core::{config, Command, FrameworkError, Runnable};
 
-/// `start` subcommand
-///
-/// The `Parser` proc macro generates an option parser based on the struct
-/// definition, and is defined in the `clap` crate. See their documentation
-/// for a more comprehensive example:
-///
-/// <https://docs.rs/clap/>
+/// Reveals the default config file.
 #[derive(clap::Parser, Command, Debug)]
-pub struct StartCmd {
-    /// To whom are we saying hello?
-    recipient: Vec<String>,
+pub struct RevealCmd {
+    /// show the full path to the default config
+    #[clap(long)]
+    pub path: bool,
 }
 
-impl Runnable for StartCmd {
+impl Runnable for RevealCmd {
     /// Start the application.
     fn run(&self) {
         let config = ORGANIZE_APP.config();
-        println!("Hello, {}!", &config.hello.recipient);
     }
 }
 
-impl config::Override<OrganizeConfig> for StartCmd {
+impl config::Override<OrganizeConfig> for RevealCmd {
     // Process the given command line options, overriding settings from
     // a configuration file using explicit flags taken from command-line
     // arguments.
@@ -36,10 +30,6 @@ impl config::Override<OrganizeConfig> for StartCmd {
         &self,
         mut config: OrganizeConfig,
     ) -> Result<OrganizeConfig, FrameworkError> {
-        if !self.recipient.is_empty() {
-            config.hello.recipient = self.recipient.join(" ");
-        }
-
         Ok(config)
     }
 }
