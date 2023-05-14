@@ -1,0 +1,5 @@
+[build]
+# TODO: Activate `deny warnings`
+# rustflags = "-C target-cpu=native -D warnings"
+rustflags = "-C target-cpu=native"
+incremental = true
