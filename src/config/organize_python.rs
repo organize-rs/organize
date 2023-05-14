@@ -4,6 +4,8 @@
 #![allow(clippy::clone_on_copy)]
 
 use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
+use std::convert::TryInto;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -11,12 +13,13 @@ pub struct OrganizeRuleConfiguration {
     #[doc = "All rules are defined here."]
     pub rules: Vec<OrganizeRuleConfigurationRulesItem>,
 }
-impl From<&OrganizeRuleConfiguration> for OrganizeRuleConfiguration {
-    fn from(value: &OrganizeRuleConfiguration) -> Self {
+impl From<&Self> for OrganizeRuleConfiguration {
+    fn from(value: &Self) -> Self {
         value.clone()
     }
 }
 impl OrganizeRuleConfiguration {
+    #[must_use]
     pub fn builder() -> builder::OrganizeRuleConfiguration {
         builder::OrganizeRuleConfiguration::default()
     }
@@ -834,14 +837,13 @@ pub struct OrganizeRuleConfigurationRulesItemFiltersItem {
     #[serde(flatten, default, skip_serializing_if = "Option::is_none")]
     pub subtype_13: Option<OrganizeRuleConfigurationRulesItemFiltersItemSubtype13>,
 }
-impl From<&OrganizeRuleConfigurationRulesItemFiltersItem>
-    for OrganizeRuleConfigurationRulesItemFiltersItem
-{
-    fn from(value: &OrganizeRuleConfigurationRulesItemFiltersItem) -> Self {
+impl From<&Self> for OrganizeRuleConfigurationRulesItemFiltersItem {
+    fn from(value: &Self) -> Self {
         value.clone()
     }
 }
 impl OrganizeRuleConfigurationRulesItemFiltersItem {
+    #[must_use]
     pub fn builder() -> builder::OrganizeRuleConfigurationRulesItemFiltersItem {
         builder::OrganizeRuleConfigurationRulesItemFiltersItem::default()
     }
@@ -3518,7 +3520,7 @@ pub mod builder {
     {
         type Error = String;
         fn try_from(
-            value: OrganizeRuleConfigurationRulesItemFiltersItemSubtype13,
+            _value: OrganizeRuleConfigurationRulesItemFiltersItemSubtype13,
         ) -> Result<Self, String> {
             Ok(Self {})
         }
@@ -3526,7 +3528,7 @@ pub mod builder {
     impl From<super::OrganizeRuleConfigurationRulesItemFiltersItemSubtype13>
         for OrganizeRuleConfigurationRulesItemFiltersItemSubtype13
     {
-        fn from(value: super::OrganizeRuleConfigurationRulesItemFiltersItemSubtype13) -> Self {
+        fn from(_value: super::OrganizeRuleConfigurationRulesItemFiltersItemSubtype13) -> Self {
             Self {}
         }
     }

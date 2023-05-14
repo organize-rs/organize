@@ -18,7 +18,7 @@
     unused_lifetimes,
     unused_qualifications
 )]
-
+#[allow(clippy::module_name_repetitions)]
 pub mod application;
 pub mod commands;
 pub mod config;
