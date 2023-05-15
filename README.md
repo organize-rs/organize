@@ -21,7 +21,7 @@ This is a Rust implementation of the same concept.
 ## Goals
 
 For now the first goal for this Rust version of `organize` is to have feature parity (commands) with its Python equivalent.
-Though, breaking changes may occur going forward.
+Though, breaking changes may occur going forward, for the beginning it should work as a drop-in replacement.
 
 A big factor for the Rust port for me is that I like Rust. I want to reimplement `organize` in language that has better error handling, and makes it easier to maintain software. It's fast and at the same time makes development less error prone.
 
