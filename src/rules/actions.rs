@@ -388,4 +388,8 @@ pub enum OrganizeAction {
         /// If this is not given, the local filesystem is used.
         filesystem: Option<String>,
     },
+    #[cfg(feature = "research_organize")]
+    Python,
+    #[cfg(feature = "research_organize")]
+    Shell,
 }
