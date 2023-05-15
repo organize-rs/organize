@@ -22,16 +22,15 @@ impl Runnable for EditCmd {
 
         let open_editor = self.editor.as_ref().map_or_else(
             || {
-                // TODO: OSX support
                 #[cfg(target_os = "osx")]
-                let editor = "".to_string();
+                // Could probably be also something like `open -a TextEdit`
+                let editor = "open".to_string();
 
                 #[cfg(target_os = "windows")]
                 let editor = "notepad".to_string();
 
-                // TODO: Unix support
                 #[cfg(target_os = "unix")]
-                let editor = "".to_string();
+                let editor = "xdg-open".to_string();
 
                 editor
             },
