@@ -1,3 +1,6 @@
+//! Actions that can be used in the config file and
+//! `organize` applieds to matching rules
+
 /// Colours for `MacOS` tags
 #[derive(Debug, Clone, Copy)]
 pub enum MacOsTagColours {

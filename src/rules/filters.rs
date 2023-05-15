@@ -1,6 +1,10 @@
+//! Filters that can be used in the config file(s)
+//! and `organize` operates with
+
 use chrono::{DateTime, Utc};
 use regex::Regex;
 
+/// Comparison conditions for dates
 #[derive(Debug, Clone)]
 pub enum OlderNewer {
     Older,
@@ -13,6 +17,7 @@ impl Default for OlderNewer {
     }
 }
 
+/// Duplication detection
 #[derive(Debug, Clone)]
 pub enum DetectDuplicateBy {
     FirstSeen,
@@ -21,8 +26,9 @@ pub enum DetectDuplicateBy {
     LastModified,
 }
 
+/// Comparison conditions for the size of files
 #[derive(Debug, Clone, Copy)]
-pub enum SizeBoundary {
+pub enum SizeConditions {
     GreaterThan(u64),
     GreaterOrEqual(u64),
     SmallerThan(u64),
@@ -30,9 +36,10 @@ pub enum SizeBoundary {
     EqualTo(u64),
 }
 
+/// [`OrganizeFilter`] contains filter variants that organize can
+/// use to apply to files/folders.
 #[derive(Debug, Clone)]
 pub enum OrganizeFilter {
-    None,
     /// Matches files / folders by created date
     ///
     /// # Result
@@ -164,7 +171,7 @@ pub enum OrganizeFilter {
     ///
     /// Recursively delete empty folders
     ///
-    /// ``yaml
+    /// ```yaml
     /// rules:
     ///   - targets: dirs
     ///     locations:
@@ -229,9 +236,7 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - echo: "Found JPG file: {path}"
     /// ```
-    Extension {
-        extensions: Vec<String>,
-    },
+    Extension { extensions: Vec<String> },
     /// Matches file content with the given regular expression
     ///
     /// Any named groups `((?P<groupname>.*))` in your regular
@@ -239,7 +244,7 @@ pub enum OrganizeFilter {
     ///
     /// # Result
     ///  
-    /// The text matched with the named group (?P<groupname>)
+    /// The text matched with the named group `(?P<groupname>)`
     ///
     /// # Example
     ///
@@ -254,9 +259,7 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - move: "~/Documents/Invoices/{filecontent.customer}/"
     /// ```
-    Filecontent {
-        expression: Regex,
-    },
+    Filecontent { expression: Regex },
     // TODO: Check for available hash algorithms from organize-py
     // TODO: shake_256, sha3_256, sha1, sha3_224, sha384, sha512, blake2b,
     // TODO: blake2s, sha256, sha224, shake_128, sha3_512, sha3_384 and md5
@@ -300,9 +303,7 @@ pub enum OrganizeFilter {
     ///       - echo: "Match found!"
     /// ```
     #[cfg(osx)]
-    MacOsTags {
-        tags: Vec<String>,
-    },
+    MacOsTags { tags: Vec<String> },
     /// Filter by MIME type associated with the file extension
     ///
     /// Supports a single string or list of MIME type strings as argument.
@@ -327,9 +328,7 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - echo: "This file is an image: {mimetype}"
     /// ```
-    Mimetype {
-        mimetype: Vec<String>,
-    },
+    Mimetype { mimetype: Vec<String> },
     /// Match files and folders by name
     ///
     /// # Example
@@ -378,7 +377,7 @@ pub enum OrganizeFilter {
     ///
     /// # Result
     ///  
-    /// The text matched with the named group (?P<groupname>)
+    /// The text matched with the named group `(?P<groupname>)`
     ///
     /// # Example
     ///
@@ -394,9 +393,7 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
     /// ```
-    Regex {
-        expression: Regex,
-    },
+    Regex { expression: Regex },
     /// Matches files and folders by size
     ///
     /// Accepts file size conditions, e.g: ">= 500 MB", "< 20k", ">0", "= 10 KiB".
@@ -450,7 +447,7 @@ pub enum OrganizeFilter {
     ///       - move: "~/Pictures/sorted/{relative_path}/"
     /// ```
     Size {
-        upper: Option<SizeBoundary>,
-        lower: Option<SizeBoundary>,
+        upper: Option<SizeConditions>,
+        lower: Option<SizeConditions>,
     },
 }

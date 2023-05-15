@@ -8,12 +8,14 @@ use std::path::PathBuf;
 
 use crate::rules::{actions::OrganizeAction, filters::OrganizeFilter};
 
+/// Should filters be negated
 #[derive(Debug, Clone)]
 pub enum ApplyOrNegateFilter {
     Apply(OrganizeFilter),
     Negate(OrganizeFilter),
 }
 
+/// Should we go recursive into folders
 #[derive(Debug, Clone)]
 pub enum Recurse {
     Flat,
@@ -28,6 +30,8 @@ pub enum OrganizeTag {
     Custom(String),
 }
 
+/// Application of filters, so whether "all", "any" or "none"
+/// of the filters must apply
 #[derive(Debug, Clone)]
 pub enum OrganizeFilterMode {
     All,
@@ -35,19 +39,25 @@ pub enum OrganizeFilterMode {
     None,
 }
 
+/// Targets `organize` operates on.
+///
+/// When targets is set to dirs, organize will work on
+/// the folders, not on files.
 #[derive(Debug, Clone)]
 pub enum OrganizeTargets {
     Dirs,
     Files,
 }
-
+/// [`OrganizeRule`] contains a list of objects with the required keys
+/// "locations" and "actions". One config can have many [`OrganizeRule`]s.
 #[derive(Debug, Clone)]
 pub struct OrganizeRule {
     /// rule name
     name: String,
     /// whether the rule is enabled / disabled
     enabled: bool,
-    /// when targets is set to dirs, organize will work on the folders, not on files
+    /// when targets is set to dirs, organize will work on
+    /// the folders, not on files
     targets: OrganizeTargets,
     /// list of locations
     locations: Vec<PathBuf>,
