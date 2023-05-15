@@ -8,7 +8,7 @@ documentation = "https://docs.rs/organize-rs"
 repository = "https://github.com/organize-rs/organize"
 license = "AGPL-3.0-or-later"
 categories = ["command-line-utilities"]
-keywords = ["cli", "file management", "automation"]
+keywords = ["cli", "file-management", "automation"]
 
 [features]
 default = []
