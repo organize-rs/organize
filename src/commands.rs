@@ -10,12 +10,12 @@
 //! See the `impl Configurable` below for how to specify the path to the
 //! application's configuration file.
 
+mod docs;
+mod edit;
 mod reveal;
 
 // TODO
 mod check;
-mod docs;
-mod edit;
 mod run;
 mod schema;
 mod sim;

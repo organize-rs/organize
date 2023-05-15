@@ -278,5 +278,4 @@ impl OrganizeRule {
     pub fn name(&self) -> &str {
         self.name.as_ref()
     }
-
 }

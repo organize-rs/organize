@@ -599,6 +599,27 @@ dependencies = [
  "duct",
  "indicatif",
  "once_cell",
+ "organize-rs_core",
+ "regex",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "thiserror",
+ "toml 0.7.3",
+ "walkdir",
+]
+
+[[package]]
+name = "organize-rs_core"
+version = "0.1.0"
+dependencies = [
+ "abscissa_core",
+ "chrono",
+ "clap",
+ "directories",
+ "duct",
+ "indicatif",
+ "once_cell",
  "regex",
  "serde",
  "serde_json",

@@ -1,0 +1,22 @@
+[package]
+name = "organize-rs_core"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap.workspace = true
+directories.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+once_cell.workspace = true
+duct.workspace = true
+chrono.workspace = true
+regex.workspace = true
+indicatif.workspace = true
+walkdir.workspace = true
+serde_yaml.workspace = true
+toml.workspace = true
+abscissa_core.workspace = true
