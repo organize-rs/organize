@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 use regex::Regex;
 
 /// Comparison conditions for dates
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum OlderNewer {
     Older,
     Newer,
@@ -18,7 +18,7 @@ impl Default for OlderNewer {
 }
 
 /// Duplication detection
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum DetectDuplicateBy {
     FirstSeen,
     Name,

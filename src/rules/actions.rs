@@ -31,7 +31,7 @@ impl Default for OnConflict {
 }
 
 /// Support template strings
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum TemplateStrings {
     Filename,
     Counter,
