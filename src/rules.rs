@@ -2,7 +2,9 @@
 //! `organize` operates on
 
 pub mod actions;
+pub mod aliases;
 pub mod filters;
+pub mod py_organize;
 
 use std::path::PathBuf;
 

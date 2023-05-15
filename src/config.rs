@@ -4,8 +4,6 @@
 //! application's configuration file and/or command-line options
 //! for specifying it.
 
-pub mod organize_python;
-
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
