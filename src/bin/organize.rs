@@ -3,7 +3,7 @@
 #![deny(warnings, missing_docs, trivial_casts, unused_qualifications)]
 #![forbid(unsafe_code)]
 
-use organize::application::ORGANIZE_APP;
+use organize_rs::application::ORGANIZE_APP;
 
 /// Boot Organize
 fn main() {

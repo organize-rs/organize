@@ -1,11 +1,14 @@
 [package]
-name = "organize"
-description = "organize - a file management automation tool"
-authors = ["the organize-rs authors"]
-repository = "https://github.com/organize-rs/organize"
+name = "organize-rs"
 version = "0.1.0"
 edition = "2021"
+description = "organize - a file management automation tool"
+authors = ["the organize-rs authors"]
+documentation = "https://docs.rs/organize-rs"
+repository = "https://github.com/organize-rs/organize"
 license = "AGPL-3.0-or-later"
+categories = ["command-line-utilities"]
+keywords = ["cli", "file management", "automation"]
 
 [features]
 default = []

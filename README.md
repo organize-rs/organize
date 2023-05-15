@@ -1,14 +1,34 @@
-# organize
+# organize [![AGPLv3+](https://www.gnu.org/graphics/agplv3-88x31.png)](https://www.gnu.org/licenses/agpl.txt)
 
 A file management automation tool.
 
-## Getting Started
+## Current Status
 
-This application is authored using [Abscissa], a Rust application framework.
+This is in really early development. Please come back later!
 
-For more information, see:
+## Background
 
-[Documentation]
+The Python [organize](https://organize.readthedocs.io/) is a file management automation tool.
 
-[Abscissa]: https://github.com/iqlusioninc/abscissa
-[Documentation]: https://docs.rs/abscissa_core/
+From their docs:
+> Your desktop is a mess? You cannot find anything in your downloads and documents? Sorting and renaming all these files by hand is too tedious? Time to automate it once and benefit from it forever.
+> organize is a command line, open-source alternative to apps like Hazel (macOS) or File Juggler (Windows).
+
+This is a Rust implementation of the same concept.
+
+## Goals
+
+For now the first goal for this Rust version of `organize` is to have feature parity (commands) with its Python equivalent.
+Though, breaking changes may occur going forward.
+
+A big factor for the Rust port for me is that I like Rust. I want to reimplement `organize` in language that has better error handling, and makes it easier to maintain software. It's fast and at the same time makes development less error prone.
+
+I'm the first user of the Rust implementation, and will be going to use it with my private files. Thus an important goal for me is stability.
+
+## Non goals
+
+The Python implementation supports filters and actions that can be passed in via the config file and are written themselves in `Python`. For me it's not a reasonable effort to support `Python` features in that regards.
+
+## License
+
+**AGPL-3.0-or-later**; see [LICENSE](./LICENSE).
