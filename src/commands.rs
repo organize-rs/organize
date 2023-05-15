@@ -37,7 +37,6 @@ use std::{
 };
 
 /// Organize Configuration Filename
-
 pub static CONFIG_FILE: Lazy<PathBuf> = Lazy::new(|| {
     let dir = if let Some(base_dir) = BaseDirs::new() {
         let organize_config_dir = base_dir.config_local_dir().join("organize");

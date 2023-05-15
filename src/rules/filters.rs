@@ -11,6 +11,24 @@ pub enum OlderNewer {
     Newer,
 }
 
+impl OlderNewer {
+    /// Returns `true` if the older newer is [`Older`].
+    ///
+    /// [`Older`]: OlderNewer::Older
+    #[must_use]
+    pub fn is_older(&self) -> bool {
+        matches!(self, Self::Older)
+    }
+
+    /// Returns `true` if the older newer is [`Newer`].
+    ///
+    /// [`Newer`]: OlderNewer::Newer
+    #[must_use]
+    pub fn is_newer(&self) -> bool {
+        matches!(self, Self::Newer)
+    }
+}
+
 impl Default for OlderNewer {
     fn default() -> Self {
         Self::Older
@@ -20,10 +38,61 @@ impl Default for OlderNewer {
 /// Duplication detection
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum DetectDuplicateBy {
+    #[cfg(target_os = "osx")]
     FirstSeen,
     Name,
     Created,
     LastModified,
+    Hash,
+}
+
+impl Default for DetectDuplicateBy {
+    fn default() -> Self {
+        Self::Name
+    }
+}
+
+impl DetectDuplicateBy {
+    /// Returns `true` if the detect duplicate by is [`FirstSeen`].
+    ///
+    /// [`FirstSeen`]: DetectDuplicateBy::FirstSeen
+    #[must_use]
+    #[cfg(target_os = "osx")]
+    pub fn is_first_seen(&self) -> bool {
+        matches!(self, Self::FirstSeen)
+    }
+
+    /// Returns `true` if the detect duplicate by is [`Name`].
+    ///
+    /// [`Name`]: DetectDuplicateBy::Name
+    #[must_use]
+    pub fn is_name(&self) -> bool {
+        matches!(self, Self::Name)
+    }
+
+    /// Returns `true` if the detect duplicate by is [`Created`].
+    ///
+    /// [`Created`]: DetectDuplicateBy::Created
+    #[must_use]
+    pub fn is_created(&self) -> bool {
+        matches!(self, Self::Created)
+    }
+
+    /// Returns `true` if the detect duplicate by is [`LastModified`].
+    ///
+    /// [`LastModified`]: DetectDuplicateBy::LastModified
+    #[must_use]
+    pub fn is_last_modified(&self) -> bool {
+        matches!(self, Self::LastModified)
+    }
+
+    /// Returns `true` if the detect duplicate by is [`Hash`].
+    ///
+    /// [`Hash`]: DetectDuplicateBy::Hash
+    #[must_use]
+    pub fn is_hash(&self) -> bool {
+        matches!(self, Self::Hash)
+    }
 }
 
 /// Comparison conditions for the size of files
@@ -34,6 +103,128 @@ pub enum SizeConditions {
     SmallerThan(u64),
     SmallerOrEqual(u64),
     EqualTo(u64),
+}
+
+impl SizeConditions {
+    /// Returns `true` if the size conditions is [`GreaterThan`].
+    ///
+    /// [`GreaterThan`]: SizeConditions::GreaterThan
+    #[must_use]
+    pub fn is_greater_than(&self) -> bool {
+        matches!(self, Self::GreaterThan(..))
+    }
+
+    pub fn as_greater_than(&self) -> Option<&u64> {
+        if let Self::GreaterThan(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_greater_than(self) -> Result<u64, Self> {
+        if let Self::GreaterThan(v) = self {
+            Ok(v)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the size conditions is [`GreaterOrEqual`].
+    ///
+    /// [`GreaterOrEqual`]: SizeConditions::GreaterOrEqual
+    #[must_use]
+    pub fn is_greater_or_equal(&self) -> bool {
+        matches!(self, Self::GreaterOrEqual(..))
+    }
+
+    pub fn as_greater_or_equal(&self) -> Option<&u64> {
+        if let Self::GreaterOrEqual(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_greater_or_equal(self) -> Result<u64, Self> {
+        if let Self::GreaterOrEqual(v) = self {
+            Ok(v)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the size conditions is [`SmallerThan`].
+    ///
+    /// [`SmallerThan`]: SizeConditions::SmallerThan
+    #[must_use]
+    pub fn is_smaller_than(&self) -> bool {
+        matches!(self, Self::SmallerThan(..))
+    }
+
+    pub fn as_smaller_than(&self) -> Option<&u64> {
+        if let Self::SmallerThan(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_smaller_than(self) -> Result<u64, Self> {
+        if let Self::SmallerThan(v) = self {
+            Ok(v)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the size conditions is [`SmallerOrEqual`].
+    ///
+    /// [`SmallerOrEqual`]: SizeConditions::SmallerOrEqual
+    #[must_use]
+    pub fn is_smaller_or_equal(&self) -> bool {
+        matches!(self, Self::SmallerOrEqual(..))
+    }
+
+    pub fn as_smaller_or_equal(&self) -> Option<&u64> {
+        if let Self::SmallerOrEqual(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_smaller_or_equal(self) -> Result<u64, Self> {
+        if let Self::SmallerOrEqual(v) = self {
+            Ok(v)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the size conditions is [`EqualTo`].
+    ///
+    /// [`EqualTo`]: SizeConditions::EqualTo
+    #[must_use]
+    pub fn is_equal_to(&self) -> bool {
+        matches!(self, Self::EqualTo(..))
+    }
+
+    pub fn as_equal_to(&self) -> Option<&u64> {
+        if let Self::EqualTo(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_equal_to(self) -> Result<u64, Self> {
+        if let Self::EqualTo(v) = self {
+            Ok(v)
+        } else {
+            Err(self)
+        }
+    }
 }
 
 /// [`OrganizeFilter`] contains filter variants that organize can
@@ -83,7 +274,7 @@ pub enum OrganizeFilter {
     ///      actions:
     ///        - echo: "Date added: {date_added.strftime('%Y-%m-%d')}"
     /// ```
-    #[cfg(osx)]
+    #[cfg(target_os = "osx")]
     DateAdded {
         date: DateTime<Utc>,
         mode: OlderNewer,
@@ -107,7 +298,7 @@ pub enum OrganizeFilter {
     ///      actions:
     ///        - echo: "Date last used: {date_lastused.strftime('%Y-%m-%d')}"
     /// ```
-    #[cfg(osx)]
+    #[cfg(target_os = "osx")]
     DateLastUsed {
         date: DateTime<Utc>,
         mode: OlderNewer,
@@ -302,7 +493,7 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - echo: "Match found!"
     /// ```
-    #[cfg(osx)]
+    #[cfg(target_os = "osx")]
     MacOsTags { tags: Vec<String> },
     /// Filter by MIME type associated with the file extension
     ///
@@ -450,4 +641,228 @@ pub enum OrganizeFilter {
         upper: Option<SizeConditions>,
         lower: Option<SizeConditions>,
     },
+}
+
+impl OrganizeFilter {
+    /// Returns `true` if the organize filter is [`DateCreated`].
+    ///
+    /// [`DateCreated`]: OrganizeFilter::DateCreated
+    #[must_use]
+    pub fn is_date_created(&self) -> bool {
+        matches!(self, Self::DateCreated { .. })
+    }
+
+    /// Returns `true` if the organize filter is [`DateAdded`].
+    ///
+    /// [`DateAdded`]: OrganizeFilter::DateAdded
+    #[must_use]
+    #[cfg(target_os = "osx")]
+    pub fn is_date_added(&self) -> bool {
+        matches!(self, Self::DateAdded { .. })
+    }
+
+    /// Returns `true` if the organize filter is [`DateLastUsed`].
+    ///
+    /// [`DateLastUsed`]: OrganizeFilter::DateLastUsed
+    #[must_use]
+    #[cfg(target_os = "osx")]
+    pub fn is_date_last_used(&self) -> bool {
+        matches!(self, Self::DateLastUsed { .. })
+    }
+
+    /// Returns `true` if the organize filter is [`DateLastModified`].
+    ///
+    /// [`DateLastModified`]: OrganizeFilter::DateLastModified
+    #[must_use]
+    pub fn is_date_last_modified(&self) -> bool {
+        matches!(self, Self::DateLastModified { .. })
+    }
+
+    /// Returns `true` if the organize filter is [`Duplicate`].
+    ///
+    /// [`Duplicate`]: OrganizeFilter::Duplicate
+    #[must_use]
+    pub fn is_duplicate(&self) -> bool {
+        matches!(self, Self::Duplicate { .. })
+    }
+
+    pub fn as_duplicate(&self) -> Option<&DetectDuplicateBy> {
+        if let Self::Duplicate { detect_original_by } = self {
+            Some(detect_original_by)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_duplicate(self) -> Result<DetectDuplicateBy, Self> {
+        if let Self::Duplicate { detect_original_by } = self {
+            Ok(detect_original_by)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the organize filter is [`Empty`].
+    ///
+    /// [`Empty`]: OrganizeFilter::Empty
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        matches!(self, Self::Empty)
+    }
+
+    /// Returns `true` if the organize filter is [`Exif`].
+    ///
+    /// [`Exif`]: OrganizeFilter::Exif
+    #[must_use]
+    pub fn is_exif(&self) -> bool {
+        matches!(self, Self::Exif)
+    }
+
+    /// Returns `true` if the organize filter is [`Extension`].
+    ///
+    /// [`Extension`]: OrganizeFilter::Extension
+    #[must_use]
+    pub fn is_extension(&self) -> bool {
+        matches!(self, Self::Extension { .. })
+    }
+
+    pub fn as_extension(&self) -> Option<&Vec<String>> {
+        if let Self::Extension { extensions } = self {
+            Some(extensions)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_extension(self) -> Result<Vec<String>, Self> {
+        if let Self::Extension { extensions } = self {
+            Ok(extensions)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the organize filter is [`Filecontent`].
+    ///
+    /// [`Filecontent`]: OrganizeFilter::Filecontent
+    #[must_use]
+    pub fn is_filecontent(&self) -> bool {
+        matches!(self, Self::Filecontent { .. })
+    }
+
+    pub fn as_filecontent(&self) -> Option<&String> {
+        if let Self::Filecontent { expression } = self {
+            Some(expression)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_filecontent(self) -> Result<String, Self> {
+        if let Self::Filecontent { expression } = self {
+            Ok(expression)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the organize filter is [`Hash`].
+    ///
+    /// [`Hash`]: OrganizeFilter::Hash
+    #[must_use]
+    #[cfg(feature = "research_organize")]
+    pub fn is_hash(&self) -> bool {
+        matches!(self, Self::Hash)
+    }
+
+    /// Returns `true` if the organize filter is [`MacOsTags`].
+    ///
+    /// [`MacOsTags`]: OrganizeFilter::MacOsTags
+    #[must_use]
+    #[cfg(target_os = "osx")]
+    pub fn is_mac_os_tags(&self) -> bool {
+        matches!(self, Self::MacOsTags { .. })
+    }
+
+    #[cfg(target_os = "osx")]
+    pub fn as_mac_os_tags(&self) -> Option<&Vec<String>> {
+        if let Self::MacOsTags { tags } = self {
+            Some(tags)
+        } else {
+            None
+        }
+    }
+
+    #[cfg(target_os = "osx")]
+    pub fn try_into_mac_os_tags(self) -> Result<Vec<String>, Self> {
+        if let Self::MacOsTags { tags } = self {
+            Ok(tags)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the organize filter is [`Mimetype`].
+    ///
+    /// [`Mimetype`]: OrganizeFilter::Mimetype
+    #[must_use]
+    pub fn is_mimetype(&self) -> bool {
+        matches!(self, Self::Mimetype { .. })
+    }
+
+    pub fn as_mimetype(&self) -> Option<&Vec<String>> {
+        if let Self::Mimetype { mimetype } = self {
+            Some(mimetype)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_mimetype(self) -> Result<Vec<String>, Self> {
+        if let Self::Mimetype { mimetype } = self {
+            Ok(mimetype)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the organize filter is [`Name`].
+    ///
+    /// [`Name`]: OrganizeFilter::Name
+    #[must_use]
+    pub fn is_name(&self) -> bool {
+        matches!(self, Self::Name { .. })
+    }
+
+    /// Returns `true` if the organize filter is [`Regex`].
+    ///
+    /// [`Regex`]: OrganizeFilter::Regex
+    #[must_use]
+    pub fn is_regex(&self) -> bool {
+        matches!(self, Self::Regex { .. })
+    }
+
+    pub fn as_regex(&self) -> Option<&String> {
+        if let Self::Regex { expression } = self {
+            Some(expression)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_regex(self) -> Result<String, Self> {
+        if let Self::Regex { expression } = self {
+            Ok(expression)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the organize filter is [`Size`].
+    ///
+    /// [`Size`]: OrganizeFilter::Size
+    #[must_use]
+    pub fn is_size(&self) -> bool {
+        matches!(self, Self::Size { .. })
+    }
 }

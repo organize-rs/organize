@@ -4,6 +4,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Colours for `MacOS` tags
+#[cfg(target_os = "osx")]
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum MacOsTagColours {
     None,
@@ -16,6 +17,80 @@ pub enum MacOsTagColours {
     Orange,
 }
 
+#[cfg(target_os = "osx")]
+impl MacOsTagColours {
+    /// Returns `true` if the mac os tag colours is [`None`].
+    ///
+    /// [`None`]: MacOsTagColours::None
+    #[must_use]
+    pub fn is_none(&self) -> bool {
+        matches!(self, Self::None)
+    }
+
+    /// Returns `true` if the mac os tag colours is [`Gray`].
+    ///
+    /// [`Gray`]: MacOsTagColours::Gray
+    #[must_use]
+    pub fn is_gray(&self) -> bool {
+        matches!(self, Self::Gray)
+    }
+
+    /// Returns `true` if the mac os tag colours is [`Green`].
+    ///
+    /// [`Green`]: MacOsTagColours::Green
+    #[must_use]
+    pub fn is_green(&self) -> bool {
+        matches!(self, Self::Green)
+    }
+
+    /// Returns `true` if the mac os tag colours is [`Purple`].
+    ///
+    /// [`Purple`]: MacOsTagColours::Purple
+    #[must_use]
+    pub fn is_purple(&self) -> bool {
+        matches!(self, Self::Purple)
+    }
+
+    /// Returns `true` if the mac os tag colours is [`Blue`].
+    ///
+    /// [`Blue`]: MacOsTagColours::Blue
+    #[must_use]
+    pub fn is_blue(&self) -> bool {
+        matches!(self, Self::Blue)
+    }
+
+    /// Returns `true` if the mac os tag colours is [`Yellow`].
+    ///
+    /// [`Yellow`]: MacOsTagColours::Yellow
+    #[must_use]
+    pub fn is_yellow(&self) -> bool {
+        matches!(self, Self::Yellow)
+    }
+
+    /// Returns `true` if the mac os tag colours is [`Red`].
+    ///
+    /// [`Red`]: MacOsTagColours::Red
+    #[must_use]
+    pub fn is_red(&self) -> bool {
+        matches!(self, Self::Red)
+    }
+
+    /// Returns `true` if the mac os tag colours is [`Orange`].
+    ///
+    /// [`Orange`]: MacOsTagColours::Orange
+    #[must_use]
+    pub fn is_orange(&self) -> bool {
+        matches!(self, Self::Orange)
+    }
+}
+
+#[cfg(target_os = "osx")]
+impl Default for MacOsTagColours {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
 /// Actions for conflict resolution
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum OnConflict {
@@ -24,6 +99,48 @@ pub enum OnConflict {
     Trash,
     RenameNew,
     RenameExisting,
+}
+
+impl OnConflict {
+    /// Returns `true` if [`OnConflict`] is [`Skip`].
+    ///
+    /// [`Skip`]: OnConflict::Skip
+    #[must_use]
+    pub fn is_skip(&self) -> bool {
+        matches!(self, Self::Skip)
+    }
+
+    /// Returns `true` if [`OnConflict`] is [`Overwrite`].
+    ///
+    /// [`Overwrite`]: OnConflict::Overwrite
+    #[must_use]
+    pub fn is_overwrite(&self) -> bool {
+        matches!(self, Self::Overwrite)
+    }
+
+    /// Returns `true` if [`OnConflict`] is [`Trash`].
+    ///
+    /// [`Trash`]: OnConflict::Trash
+    #[must_use]
+    pub fn is_trash(&self) -> bool {
+        matches!(self, Self::Trash)
+    }
+
+    /// Returns `true` if [`OnConflict`] is [`RenameNew`].
+    ///
+    /// [`RenameNew`]: OnConflict::RenameNew
+    #[must_use]
+    pub fn is_rename_new(&self) -> bool {
+        matches!(self, Self::RenameNew)
+    }
+
+    /// Returns `true` if [`OnConflict`] is [`RenameExisting`].
+    ///
+    /// [`RenameExisting`]: OnConflict::RenameExisting
+    #[must_use]
+    pub fn is_rename_existing(&self) -> bool {
+        matches!(self, Self::RenameExisting)
+    }
 }
 
 impl Default for OnConflict {
@@ -38,6 +155,32 @@ pub enum TemplateStrings {
     Filename,
     Counter,
     Extension,
+}
+
+impl TemplateStrings {
+    /// Returns `true` if [`TemplateStrings`] is [`Filename`].
+    ///
+    /// [`Filename`]: TemplateStrings::Filename
+    #[must_use]
+    pub fn is_filename(&self) -> bool {
+        matches!(self, Self::Filename)
+    }
+
+    /// Returns `true` if [`TemplateStrings`] is [`Counter`].
+    ///
+    /// [`Counter`]: TemplateStrings::Counter
+    #[must_use]
+    pub fn is_counter(&self) -> bool {
+        matches!(self, Self::Counter)
+    }
+
+    /// Returns `true` if [`TemplateStrings`] is [`Extension`].
+    ///
+    /// [`Extension`]: TemplateStrings::Extension
+    #[must_use]
+    pub fn is_extension(&self) -> bool {
+        matches!(self, Self::Extension)
+    }
 }
 
 /// A template for renaming a file
@@ -65,6 +208,32 @@ pub enum WriteMode {
     Overwrite,
 }
 
+impl WriteMode {
+    /// Returns `true` if the write mode is [`Append`].
+    ///
+    /// [`Append`]: WriteMode::Append
+    #[must_use]
+    pub fn is_append(&self) -> bool {
+        matches!(self, Self::Append)
+    }
+
+    /// Returns `true` if the write mode is [`Prepend`].
+    ///
+    /// [`Prepend`]: WriteMode::Prepend
+    #[must_use]
+    pub fn is_prepend(&self) -> bool {
+        matches!(self, Self::Prepend)
+    }
+
+    /// Returns `true` if the write mode is [`Overwrite`].
+    ///
+    /// [`Overwrite`]: WriteMode::Overwrite
+    #[must_use]
+    pub fn is_overwrite(&self) -> bool {
+        matches!(self, Self::Overwrite)
+    }
+}
+
 impl Default for WriteMode {
     fn default() -> Self {
         Self::Append
@@ -81,7 +250,7 @@ impl Default for WriteFile {
     }
 }
 
-// TODO: python and shell? should that be supported?
+// TODO: Shell supported
 // adapted from: https://organize.readthedocs.io/en/latest/actions/
 //
 /// Actions that can be used within the config file
@@ -234,6 +403,7 @@ pub enum OrganizeAction {
     ///      - macos_tags:
     ///         - Year-{created.year} (red)
     /// ```
+    #[cfg(target_os = "osx")]
     MacOsTags { tags: Vec<String> },
     /// Move a file to a new location.
     ///
@@ -397,4 +567,151 @@ pub enum OrganizeAction {
     Python,
     #[cfg(feature = "research_organize")]
     Shell,
+}
+
+impl OrganizeAction {
+    /// Returns `true` if the organize action is [`None`].
+    ///
+    /// [`None`]: OrganizeAction::None
+    #[must_use]
+    pub fn is_none(&self) -> bool {
+        matches!(self, Self::None)
+    }
+
+    /// Returns `true` if the organize action is [`Confirm`].
+    ///
+    /// [`Confirm`]: OrganizeAction::Confirm
+    #[must_use]
+    pub fn is_confirm(&self) -> bool {
+        matches!(self, Self::Confirm { .. })
+    }
+
+    /// Returns `true` if the organize action is [`Copy`].
+    ///
+    /// [`Copy`]: OrganizeAction::Copy
+    #[must_use]
+    pub fn is_copy(&self) -> bool {
+        matches!(self, Self::Copy { .. })
+    }
+
+    /// Returns `true` if the organize action is [`Delete`].
+    ///
+    /// [`Delete`]: OrganizeAction::Delete
+    #[must_use]
+    pub fn is_delete(&self) -> bool {
+        matches!(self, Self::Delete)
+    }
+
+    /// Returns `true` if the organize action is [`Echo`].
+    ///
+    /// [`Echo`]: OrganizeAction::Echo
+    #[must_use]
+    pub fn is_echo(&self) -> bool {
+        matches!(self, Self::Echo { .. })
+    }
+
+    pub fn as_echo(&self) -> Option<&String> {
+        if let Self::Echo { message } = self {
+            Some(message)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_echo(self) -> Result<String, Self> {
+        if let Self::Echo { message } = self {
+            Ok(message)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the organize action is [`MacOsTags`].
+    ///
+    /// [`MacOsTags`]: OrganizeAction::MacOsTags
+    #[must_use]
+    #[cfg(target_os = "osx")]
+    pub fn is_mac_os_tags(&self) -> bool {
+        matches!(self, Self::MacOsTags { .. })
+    }
+
+    #[cfg(target_os = "osx")]
+    pub fn as_mac_os_tags(&self) -> Option<&Vec<String>> {
+        if let Self::MacOsTags { tags } = self {
+            Some(tags)
+        } else {
+            None
+        }
+    }
+
+    #[cfg(target_os = "osx")]
+    pub fn try_into_mac_os_tags(self) -> Result<Vec<String>, Self> {
+        if let Self::MacOsTags { tags } = self {
+            Ok(tags)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the organize action is [`Move`].
+    ///
+    /// [`Move`]: OrganizeAction::Move
+    #[must_use]
+    pub fn is_move(&self) -> bool {
+        matches!(self, Self::Move { .. })
+    }
+
+    /// Returns `true` if the organize action is [`Rename`].
+    ///
+    /// [`Rename`]: OrganizeAction::Rename
+    #[must_use]
+    pub fn is_rename(&self) -> bool {
+        matches!(self, Self::Rename { .. })
+    }
+
+    /// Returns `true` if the organize action is [`Symlink`].
+    ///
+    /// [`Symlink`]: OrganizeAction::Symlink
+    #[must_use]
+    pub fn is_symlink(&self) -> bool {
+        matches!(self, Self::Symlink { .. })
+    }
+
+    pub fn as_symlink(&self) -> Option<&String> {
+        if let Self::Symlink { destination } = self {
+            Some(destination)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_symlink(self) -> Result<String, Self> {
+        if let Self::Symlink { destination } = self {
+            Ok(destination)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the organize action is [`Trash`].
+    ///
+    /// [`Trash`]: OrganizeAction::Trash
+    #[must_use]
+    pub fn is_trash(&self) -> bool {
+        matches!(self, Self::Trash)
+    }
+
+    /// Returns `true` if the organize action is [`Write`].
+    ///
+    /// [`Write`]: OrganizeAction::Write
+    #[must_use]
+    pub fn is_write(&self) -> bool {
+        matches!(self, Self::Write { .. })
+    }
+}
+
+impl Default for OrganizeAction {
+    fn default() -> Self {
+        Self::None
+    }
 }

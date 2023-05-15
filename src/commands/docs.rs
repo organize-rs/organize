@@ -10,6 +10,6 @@ pub struct DocsCmd {}
 impl Runnable for DocsCmd {
     /// Start the application.
     fn run(&self) {
-        todo!("open documentation.")
+        println!("Please open https://docs.rs/organize-rs in your browser.");
     }
 }
