@@ -8,7 +8,6 @@ use clap::Parser;
 pub struct DocsCmd {}
 
 impl Runnable for DocsCmd {
-    /// Start the application.
     fn run(&self) {
         println!("Please open https://docs.rs/organize-rs in your browser.");
     }

@@ -1,7 +1,10 @@
 //! `edit` subcommand
 
-use abscissa_core::{Command, Runnable};
+use crate::application::ORGANIZE_APP;
+use crate::commands::CONFIG_FILE;
+use abscissa_core::{Application, Command, Runnable};
 use clap::Parser;
+use duct::cmd;
 
 /// Edit the rules.
 ///
@@ -14,8 +17,32 @@ pub struct EditCmd {
 }
 
 impl Runnable for EditCmd {
-    /// Start the application.
     fn run(&self) {
-        todo!("opening config file in editor.")
+        let path = CONFIG_FILE.as_path();
+
+        let open_editor = self.editor.as_ref().map_or_else(
+            || {
+                // TODO: OSX support
+                #[cfg(target_os = "osx")]
+                let editor = "".to_string();
+
+                #[cfg(target_os = "windows")]
+                let editor = "notepad".to_string();
+
+                // TODO: Unix support
+                #[cfg(target_os = "unix")]
+                let editor = "".to_string();
+
+                editor
+            },
+            std::clone::Clone::clone,
+        );
+
+        match cmd!(open_editor, path).run() {
+            Ok(_) => {}
+            Err(_) => {
+                // println!("{err}")
+            }
+        };
     }
 }
