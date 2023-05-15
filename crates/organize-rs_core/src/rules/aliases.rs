@@ -4,9 +4,42 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+pub enum ItemKind {
+    #[serde(rename = "folder")]
+    Folder,
+    #[serde(rename = "ext")]
+    Extension,
+}
+
+impl ItemKind {
+    /// Returns `true` if the item kind is [`Extension`].
+    ///
+    /// [`Extension`]: ItemKind::Extension
+    #[must_use]
+    pub fn is_extension(&self) -> bool {
+        matches!(self, Self::Extension)
+    }
+
+    /// Returns `true` if the item kind is [`Folder`].
+    ///
+    /// [`Folder`]: ItemKind::Folder
+    #[must_use]
+    pub fn is_folder(&self) -> bool {
+        matches!(self, Self::Folder)
+    }
+}
+
+impl Default for ItemKind {
+    fn default() -> Self {
+        Self::Folder
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Alias {
     name: String,
-    folders: Vec<String>,
+    kind: ItemKind,
+    items: Vec<String>,
 }
 
 impl Alias {
@@ -15,10 +48,15 @@ impl Alias {
     }
 
     pub fn folders(&self) -> &[String] {
-        self.folders.as_ref()
+        self.items.as_ref()
     }
 
     pub fn len(&self) -> usize {
-        self.folders.len()
+        self.items.len()
+    }
+
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.items.len() == 0
     }
 }

@@ -68,3 +68,9 @@ impl From<io::Error> for Error {
         ErrorKind::Io.context(err).into()
     }
 }
+
+impl From<serde_yaml::Error> for Error {
+    fn from(err: serde_yaml::Error) -> Self {
+        ErrorKind::Config.context(err).into()
+    }
+}

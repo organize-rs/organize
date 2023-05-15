@@ -1,4 +1,4 @@
-//! Filters that can be used in the config file(s)
+//! FilterSelf::Extension()in the config file(s)
 //! and `organize` operates with
 
 use chrono::{DateTime, Utc};
@@ -227,6 +227,24 @@ impl SizeConditions {
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub enum FilterDate {
+    /// specify number of years
+    Years(u16),
+    /// specify number of months
+    Months(u64),
+    /// specify number of weeks
+    Weeks(f64),
+    /// specify number of days
+    Days(f64),
+    /// specify number of hours
+    Hours(f64),
+    /// specify number of minutes
+    Minutes(f64),
+    /// specify number of seconds
+    Seconds(f64),
+}
+
 /// [`OrganizeFilter`] contains filter variants that organize can
 /// use to apply to files/folders.
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -427,7 +445,8 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - echo: "Found JPG file: {path}"
     /// ```
-    Extension { extensions: Vec<String> },
+    #[serde(rename = "extension")]
+    Extension(Vec<String>),
     /// Matches file content with the given regular expression
     ///
     /// Any named groups `((?P<groupname>.*))` in your regular
@@ -727,7 +746,7 @@ impl OrganizeFilter {
     }
 
     pub fn as_extension(&self) -> Option<&Vec<String>> {
-        if let Self::Extension { extensions } = self {
+        if let Self::Extension(extensions) = self {
             Some(extensions)
         } else {
             None
@@ -735,7 +754,7 @@ impl OrganizeFilter {
     }
 
     pub fn try_into_extension(self) -> Result<Vec<String>, Self> {
-        if let Self::Extension { extensions } = self {
+        if let Self::Extension(extensions) = self {
             Ok(extensions)
         } else {
             Err(self)

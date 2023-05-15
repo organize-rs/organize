@@ -25,6 +25,7 @@ impl Runnable for RevealCmd {
             let path = CONFIG_FILE
                 .parent()
                 .expect("can't get parent for config file path!");
+
             #[cfg(windows)]
             match cmd!("explorer", path).run() {
                 Ok(_) => {}
@@ -33,6 +34,7 @@ impl Runnable for RevealCmd {
                     // println!("{err}")
                 }
             };
+
             #[cfg(osx)]
             match cmd!("open", path).run() {
                 Ok(_) => {}
@@ -41,6 +43,7 @@ impl Runnable for RevealCmd {
                     // println!("{err}")
                 }
             };
+
             #[cfg(unix)]
             match cmd!("xdg-open", path).run() {
                 Ok(_) => {}

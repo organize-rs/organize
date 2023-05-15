@@ -29,23 +29,18 @@ use crate::{
 };
 use abscissa_core::{config::Override, Command, Configurable, FrameworkError, Runnable};
 use clap;
-use directories::{BaseDirs, ProjectDirs};
+use directories::BaseDirs;
 use once_cell::sync::Lazy;
-use std::{
-    fs::create_dir_all,
-    path::{Path, PathBuf},
-};
+use std::{fs::create_dir_all, path::PathBuf};
 
 /// Organize Configuration Filename
 pub static CONFIG_FILE: Lazy<PathBuf> = Lazy::new(|| {
     let dir = if let Some(base_dir) = BaseDirs::new() {
         let organize_config_dir = base_dir.config_local_dir().join("organize");
-        create_dir_all(&organize_config_dir);
-        let config_path = organize_config_dir.join("organize.toml");
-        config_path
+        _ = create_dir_all(&organize_config_dir);
+        organize_config_dir.join("organize.yaml")
     } else {
-        // TODO: get rid of deprecated function
-        std::env::home_dir().expect("should return HOME directory")
+        todo!("alternative default config file locations")
     };
     dir
 });
@@ -79,9 +74,13 @@ pub struct EntryPoint {
     #[clap(short, long)]
     pub debug: bool,
 
-    /// Use the specified config file
+    /// Use the specified organize-rs config file
     #[clap(short, long)]
     pub config: Option<String>,
+
+    /// path to the py-organize config file
+    #[clap(long, env = "ORGANIZE_CONFIG")]
+    pub py_organize_config: Option<String>,
 
     /// Applicable tags
     ///
@@ -98,10 +97,6 @@ pub struct EntryPoint {
     /// if this is set, the output is not colored
     #[clap(long, env = "NO_COLOR")]
     pub no_color: bool,
-
-    /// path to the organize-py config file
-    #[clap(long, env = "ORGANIZE_CONFIG")]
-    pub organize_py_config: bool,
 }
 
 impl Runnable for EntryPoint {
@@ -135,12 +130,13 @@ impl Configurable<OrganizeConfig> for EntryPoint {
     /// This can be safely deleted if you don't want to override config
     /// settings from command-line options.
     fn process_config(&self, config: OrganizeConfig) -> Result<OrganizeConfig, FrameworkError> {
-        match &self.cmd {
-            // OrganizeCmd::Reveal(cmd) => cmd.override_config(config),
-            //
-            // If you don't need special overrides for some
-            // subcommands, you can just use a catch all
-            _ => Ok(config),
-        }
+        // match &self.cmd {
+        // OrganizeCmd::Reveal(cmd) => cmd.override_config(config),
+        //
+        // If you don't need special overrides for some
+        // subcommands, you can just use a catch all
+        // _ => Ok(config),
+        // }
+        Ok(config)
     }
 }

@@ -4,7 +4,9 @@
 pub mod actions;
 pub mod aliases;
 pub mod filters;
-pub mod py_organize;
+
+// Generated from py-organize
+// pub mod py_organize;
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -71,7 +73,9 @@ impl ApplyOrNegateFilter {
 /// Should we go recursive into folders
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum Recurse {
+    #[serde(rename = "false")]
     Flat,
+    #[serde(rename = "true")]
     Recursive,
 }
 
@@ -229,9 +233,10 @@ pub struct OrganizeRule {
     /// the folders, not on files
     targets: OrganizeTargets,
     /// list of locations
-    locations: Vec<PathBuf>,
+    locations: Vec<String>,
     /// whether to recurse into subfolders of all locations
-    subfolders: Recurse,
+    #[serde(rename = "subfolders")]
+    recursive: Recurse,
     /// whether "all", "any" or "none" of the filters must apply
     filter_mode: OrganizeFilterMode,
     /// supported filters
@@ -264,11 +269,7 @@ impl OrganizeRule {
     }
 
     pub fn subfolders(&self) -> &Recurse {
-        &self.subfolders
-    }
-
-    pub fn locations(&self) -> &[PathBuf] {
-        self.locations.as_ref()
+        &self.recursive
     }
 
     pub fn targets(&self) -> &OrganizeTargets {
@@ -277,5 +278,9 @@ impl OrganizeRule {
 
     pub fn name(&self) -> &str {
         self.name.as_ref()
+    }
+
+    pub fn locations(&self) -> &[String] {
+        self.locations.as_ref()
     }
 }

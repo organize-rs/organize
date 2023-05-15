@@ -18,6 +18,67 @@ From their docs:
 
 This is a Rust implementation of the same concept.
 
+## Migration from `py-organize`
+
+- copy your `config.yaml` and rename it to `organize.yaml`
+- rework `anchors` in your new `organize.yaml` config file
+  from:
+
+  ```yaml
+  desktop_folder: &desktop
+  - '~/Desktop/'
+  applications: &apps
+  - exe
+  - msi
+  - apk  
+  ```
+
+  to
+
+  ```yaml
+  aliases:
+  - name: desktop
+    kind: folder
+    items:
+      - '~/Desktop/'
+  - name: apps
+    kind: ext
+    items:
+      - exe
+      - msi
+      - apk
+  ```
+
+- then rework the `aliases` correspondingly from:
+
+  ```yaml
+  # Rule for desktop/downloads to move applications into @Apps
+  - folders: 
+      - *downloads
+      - *desktop
+      - *inbox
+    subfolders: false
+    filters:
+      - extension: 
+          - *apps
+    actions:
+      - move: '~/backup/INBOX/@Apps/'
+  ```
+
+  ```yaml
+  # Rule for desktop/downloads to move applications into @Apps
+  - locations: 
+      - ref|downloads
+      - ref|desktop
+      - ref|inbox
+    subfolders: false
+    filters:
+      - extension: 
+          - ref|apps
+    actions:
+      - move: '~/backup/INBOX/@Apps/'
+  ```
+
 ## Goals
 
 For now the first goal for this Rust version of `organize` is to have feature parity (commands) with its Python equivalent.
