@@ -1,4 +1,6 @@
-# organize [![AGPLv3+](https://www.gnu.org/graphics/agplv3-88x31.png)](https://www.gnu.org/licenses/agpl.txt)
+# organize  [![AGPLv3+](https://www.gnu.org/graphics/agplv3-88x31.png)](https://www.gnu.org/licenses/agpl.txt)
+
+<a href="https://crates.io/crates/organize-rs/"><img src="https://img.shields.io/crates/v/organize-rs?style=flat&amp;labelColor=342a5e&amp;color=684d81&amp;logo=Rust&amp;logoColor=white" alt="Crate Release"></a> <a href="https://docs.rs/organize-rs/"><img src="https://img.shields.io/docsrs/organize-rs?style=flat&amp;labelColor=1c1d42&amp;color=4f396a&amp;logo=Rust&amp;logoColor=white" alt="Documentation"></a>
 
 A file management automation tool.
 
