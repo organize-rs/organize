@@ -28,6 +28,8 @@ chrono = { version = "0.4.24", default-features = false, features = [
 regex = "1.8.1"
 indicatif = "0.17.3"
 walkdir = "2.3.3"
+serde_yaml = "0.9.21"
+toml = "0.7.3"
 
 [dependencies.abscissa_core]
 version = "0.7.0"
