@@ -2,10 +2,10 @@
 //! and `organize` operates with
 
 use chrono::{DateTime, Utc};
-use regex::Regex;
+use serde::{Deserialize, Serialize};
 
 /// Comparison conditions for dates
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum OlderNewer {
     Older,
     Newer,
@@ -18,7 +18,7 @@ impl Default for OlderNewer {
 }
 
 /// Duplication detection
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum DetectDuplicateBy {
     FirstSeen,
     Name,
@@ -27,7 +27,7 @@ pub enum DetectDuplicateBy {
 }
 
 /// Comparison conditions for the size of files
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum SizeConditions {
     GreaterThan(u64),
     GreaterOrEqual(u64),
@@ -38,7 +38,7 @@ pub enum SizeConditions {
 
 /// [`OrganizeFilter`] contains filter variants that organize can
 /// use to apply to files/folders.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeFilter {
     /// Matches files / folders by created date
     ///
@@ -259,7 +259,7 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - move: "~/Documents/Invoices/{filecontent.customer}/"
     /// ```
-    Filecontent { expression: Regex },
+    Filecontent { expression: String },
     // TODO: Check for available hash algorithms from organize-py
     // TODO: shake_256, sha3_256, sha1, sha3_224, sha384, sha512, blake2b,
     // TODO: blake2s, sha256, sha224, shake_128, sha3_512, sha3_384 and md5
@@ -393,7 +393,7 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
     /// ```
-    Regex { expression: Regex },
+    Regex { expression: String },
     /// Matches files and folders by size
     ///
     /// Accepts file size conditions, e.g: ">= 500 MB", "< 20k", ">0", "= 10 KiB".

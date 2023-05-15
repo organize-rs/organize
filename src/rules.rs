@@ -6,26 +6,27 @@ pub mod aliases;
 pub mod filters;
 pub mod py_organize;
 
+use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 use crate::rules::{actions::OrganizeAction, filters::OrganizeFilter};
 
 /// Should filters be negated
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum ApplyOrNegateFilter {
     Apply(OrganizeFilter),
     Negate(OrganizeFilter),
 }
 
 /// Should we go recursive into folders
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum Recurse {
     Flat,
     Recursive,
 }
 
 /// Tags that can be applied to rules
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeTag {
     Always,
     Never,
@@ -34,7 +35,7 @@ pub enum OrganizeTag {
 
 /// Application of filters, so whether "all", "any" or "none"
 /// of the filters must apply
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeFilterMode {
     All,
     Any,
@@ -45,14 +46,14 @@ pub enum OrganizeFilterMode {
 ///
 /// When targets is set to dirs, organize will work on
 /// the folders, not on files.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeTargets {
     Dirs,
     Files,
 }
 /// [`OrganizeRule`] contains a list of objects with the required keys
 /// "locations" and "actions". One config can have many [`OrganizeRule`]s.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct OrganizeRule {
     /// rule name
     name: String,

@@ -1,8 +1,10 @@
 //! Actions that can be used in the config file and
 //! `organize` applieds to matching rules
 
+use serde::{Deserialize, Serialize};
+
 /// Colours for `MacOS` tags
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum MacOsTagColours {
     None,
     Gray,
@@ -15,7 +17,7 @@ pub enum MacOsTagColours {
 }
 
 /// Actions for conflict resolution
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum OnConflict {
     Skip,
     Overwrite,
@@ -31,7 +33,7 @@ impl Default for OnConflict {
 }
 
 /// Support template strings
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum TemplateStrings {
     Filename,
     Counter,
@@ -39,7 +41,7 @@ pub enum TemplateStrings {
 }
 
 /// A template for renaming a file
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct RenameTemplate(Vec<TemplateStrings>);
 
 impl Default for RenameTemplate {
@@ -53,7 +55,7 @@ impl Default for RenameTemplate {
 }
 
 /// Mode how should be written to a file
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum WriteMode {
     /// append text to the file
     Append,
@@ -70,7 +72,7 @@ impl Default for WriteMode {
 }
 
 /// A filename that should be written to
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct WriteFile(String);
 
 impl Default for WriteFile {
@@ -83,7 +85,7 @@ impl Default for WriteFile {
 // adapted from: https://organize.readthedocs.io/en/latest/actions/
 //
 /// Actions that can be used within the config file
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeAction {
     /// Do nothing.
     None,
