@@ -518,7 +518,7 @@ pub enum OrganizeFilter {
     #[serde(rename = "extension")]
     Extension {
         #[clap(long)]
-        extensions: Vec<String>,
+        ext: Vec<String>,
     },
     /// Matches file content with the given regular expression
     ///
@@ -545,7 +545,7 @@ pub enum OrganizeFilter {
     #[serde(rename = "filecontent")]
     Filecontent {
         #[clap(long)]
-        expression: String,
+        regex: String,
     },
     // TODO: Check for available hash algorithms from organize-py
     // TODO: shake_256, sha3_256, sha1, sha3_224, sha384, sha512, blake2b,
@@ -669,9 +669,6 @@ pub enum OrganizeFilter {
         #[clap(long)]
         case_sensitive: bool,
     },
-    #[cfg(feature = "research_organize")]
-    #[serde(rename = "python")]
-    Python,
     /// Matches filenames with the given regular expression
     ///
     /// Any named groups `((?P<groupname>.*))` in your regular
@@ -698,7 +695,7 @@ pub enum OrganizeFilter {
     #[serde(rename = "regex")]
     Regex {
         #[clap(long)]
-        expression: String,
+        expr: String,
     },
     /// Matches files and folders by size
     ///
@@ -923,7 +920,7 @@ impl OrganizeFilter {
     }
 
     pub fn as_regex(&self) -> Option<&String> {
-        if let Self::Regex { expression } = self {
+        if let Self::Regex { expr: expression } = self {
             Some(expression)
         } else {
             None
@@ -931,7 +928,7 @@ impl OrganizeFilter {
     }
 
     pub fn try_into_regex(self) -> Result<String, Self> {
-        if let Self::Regex { expression } = self {
+        if let Self::Regex { expr: expression } = self {
             Ok(expression)
         } else {
             Err(self)
@@ -963,7 +960,7 @@ impl OrganizeFilter {
     }
 
     pub fn as_extension(&self) -> Option<&Vec<String>> {
-        if let Self::Extension { extensions } = self {
+        if let Self::Extension { ext: extensions } = self {
             Some(extensions)
         } else {
             None
@@ -971,7 +968,7 @@ impl OrganizeFilter {
     }
 
     pub fn try_into_extension(self) -> Result<Vec<String>, Self> {
-        if let Self::Extension { extensions } = self {
+        if let Self::Extension { ext: extensions } = self {
             Ok(extensions)
         } else {
             Err(self)
@@ -979,7 +976,7 @@ impl OrganizeFilter {
     }
 
     pub fn as_filecontent(&self) -> Option<&String> {
-        if let Self::Filecontent { expression } = self {
+        if let Self::Filecontent { regex: expression } = self {
             Some(expression)
         } else {
             None
@@ -987,7 +984,7 @@ impl OrganizeFilter {
     }
 
     pub fn try_into_filecontent(self) -> Result<String, Self> {
-        if let Self::Filecontent { expression } = self {
+        if let Self::Filecontent { regex: expression } = self {
             Ok(expression)
         } else {
             Err(self)

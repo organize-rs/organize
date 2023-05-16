@@ -18,79 +18,33 @@ From their docs:
 
 This is a Rust implementation of the same concept.
 
-## Migration from `py-organize`
-
-- copy your `config.yaml` and rename it to `organize.yaml`
-- rework `anchors` in your new `organize.yaml` config file
-  from:
-
-  ```yaml
-  desktop_folder: &desktop
-  - '~/Desktop/'
-  applications: &apps
-  - exe
-  - msi
-  - apk  
-  ```
-
-  to
-
-  ```yaml
-  aliases:
-  - name: desktop
-    kind: folder
-    items:
-      - '~/Desktop/'
-  - name: apps
-    kind: ext
-    items:
-      - exe
-      - msi
-      - apk
-  ```
-
-- then rework the `aliases` correspondingly from:
-
-  ```yaml
-  # Rule for desktop/downloads to move applications into @Apps
-  - folders: 
-      - *downloads
-      - *desktop
-      - *inbox
-    subfolders: false
-    filters:
-      - extension: 
-          - *apps
-    actions:
-      - move: '~/backup/INBOX/@Apps/'
-  ```
-
-  ```yaml
-  # Rule for desktop/downloads to move applications into @Apps
-  - locations: 
-      - ref|downloads
-      - ref|desktop
-      - ref|inbox
-    subfolders: false
-    filters:
-      - extension: 
-          - ref|apps
-    actions:
-      - move: '~/backup/INBOX/@Apps/'
-  ```
-
 ## Goals
 
-For now the first goal for this Rust version of `organize` is to have feature parity (commands) with its Python equivalent.
-Though, breaking changes may occur going forward, for the beginning it should work as a drop-in replacement.
+For now the first goal for this Rust version of `organize` is to have feature parity with its Python equivalent.
 
-A big factor for the Rust port for me is that I like Rust. I want to reimplement `organize` in language that has better error handling, and makes it easier to maintain software. It's fast and at the same time makes development less error prone.
+**BUT**: I want to take another approach on tackling the problem. It is also relatively complicated to map all the stuff
+within a `config` file, because we are bound to the syntax of `yaml`/`json`/`toml`/`ron`.
+
+*Maybe this is exactly the problem to solve!*
+
+Basically you want to have a configuration file, which replaces a mini scripting language.
+With predefined `filters` and `actions` that are applied to the items that the filter spits out.
+
+Basically almost everything in the configuration files are parameters for functions/methods.
+
+This makes everything more complicated.
+
+1. What if we implement rusty `organize` in a way, that we can call `organize filter extension --ext "exe, msi, apk" --path {}`
+and it spits out all the paths that match this `precoded` filter?
+This way we can already utilize it easily within shell scripts.
+
+1. On the second implementation stage, we can embed a scripting engine like [rhai](https://crates.io/crates/rhai), where we expose some functionality of rusty `organize` as `functions` and register them with the `rhai` engine.
+
+1. Instead of pressing everything in a complicated configuration file syntax, we can utilize a scripting language and boil it down to its minimum syntax.
+
+That being said, a big factor for the Rust reiteration for me is that I like Rust. I want to reimplement `organize`'s approach in language that has better error handling, and makes it easier to maintain software. That is fast and at the same time makes development less error prone.
 
 I'm the first user of the Rust implementation, and will be going to use it with my private files. Thus an important goal for me is stability.
-
-## Non goals
-
-The Python implementation supports filters and actions that can be passed in via the config file and are written themselves in `Python`. For me it's not a reasonable effort to support `Python` features in that regards.
 
 ## License
 

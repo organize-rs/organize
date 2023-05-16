@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 /// Colours for `MacOS` tags
 #[cfg(target_os = "osx")]
-#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
 pub enum MacOsTagColours {
     None,
     Gray,
@@ -296,7 +296,7 @@ pub enum OrganizeAction {
         /// to be a target directory and the file / dir will be
         /// copied into `destination`and keep its name.
         #[clap(long)]
-        destination: String,
+        dest: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
@@ -358,7 +358,7 @@ pub enum OrganizeAction {
     #[serde(rename = "echo")]
     Echo {
         #[clap(long)]
-        message: String,
+        msg: String,
     },
     /// Add macOS tags.
     ///
@@ -434,7 +434,7 @@ pub enum OrganizeAction {
         /// to be a target directory and the file / dir will be
         /// moved into `destination`and keep its name.
         #[clap(long)]
-        destination: String,
+        dest: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
@@ -495,7 +495,7 @@ pub enum OrganizeAction {
         /// Only the local filesystem is supported.
         // TODO: Can contain placeholders?
         #[clap(long)]
-        destination: String,
+        dest: String,
     },
     /// Move a file or dir into the trash.
     ///
@@ -546,7 +546,7 @@ pub enum OrganizeAction {
     Write {
         /// The text that should be written. Supports templates.
         #[clap(long)]
-        text: String,
+        txt: String,
         /// The file `text` should be written into. Supports templates.
         ///
         // Defaults to `organize-out.txt`
@@ -577,10 +577,6 @@ pub enum OrganizeAction {
         #[clap(long)]
         filesystem: Option<String>,
     },
-    #[cfg(feature = "research_organize")]
-    #[serde(rename = "python")]
-    Python,
-    #[cfg(feature = "research_organize")]
     #[serde(rename = "shell")]
     Shell,
 }
@@ -633,7 +629,7 @@ impl OrganizeAction {
     }
 
     pub fn as_echo(&self) -> Option<&String> {
-        if let Self::Echo { message } = self {
+        if let Self::Echo { msg: message } = self {
             Some(message)
         } else {
             None
@@ -641,7 +637,7 @@ impl OrganizeAction {
     }
 
     pub fn try_into_echo(self) -> Result<String, Self> {
-        if let Self::Echo { message } = self {
+        if let Self::Echo { msg: message } = self {
             Ok(message)
         } else {
             Err(self)
@@ -700,7 +696,7 @@ impl OrganizeAction {
     }
 
     pub fn as_symlink(&self) -> Option<&String> {
-        if let Self::Symlink { destination } = self {
+        if let Self::Symlink { dest: destination } = self {
             Some(destination)
         } else {
             None
@@ -708,7 +704,7 @@ impl OrganizeAction {
     }
 
     pub fn try_into_symlink(self) -> Result<String, Self> {
-        if let Self::Symlink { destination } = self {
+        if let Self::Symlink { dest: destination } = self {
             Ok(destination)
         } else {
             Err(self)

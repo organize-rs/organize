@@ -5,11 +5,8 @@ pub mod actions;
 pub mod aliases;
 pub mod filters;
 
-// Generated from py-organize
-pub mod py_organize;
-
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+// use std::path::PathBuf;
 
 use crate::rules::{actions::OrganizeAction, filters::OrganizeFilter};
 
