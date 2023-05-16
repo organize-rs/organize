@@ -764,7 +764,30 @@ pub enum OrganizeFilter {
 
 impl Runnable for OrganizeFilter {
     fn run(&self) {
-        todo!()
+        match self {
+            OrganizeFilter::DateCreated { value, date, mode } => todo!(),
+            OrganizeFilter::DateLastModified { value, date, mode } => todo!(),
+            OrganizeFilter::Duplicate { detect_original_by } => todo!(),
+            OrganizeFilter::Empty => todo!(),
+            OrganizeFilter::Exif => todo!(),
+            OrganizeFilter::Extension { ext } => todo!(),
+            OrganizeFilter::Filecontent { regex } => todo!(),
+            OrganizeFilter::Mimetype { mimetype } => todo!(),
+            OrganizeFilter::Name {
+                simple_match,
+                starts_with,
+                contains,
+                ends_with,
+                case_sensitive,
+            } => todo!(),
+            OrganizeFilter::Regex { expr } => todo!(),
+            OrganizeFilter::Size {
+                upper_value,
+                upper,
+                lower_value,
+                lower,
+            } => todo!(),
+        }
     }
 }
 

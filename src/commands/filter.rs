@@ -15,6 +15,14 @@ use organize_rs_core::rules::filters::OrganizeFilter;
 pub struct FilterCmd {
     #[clap(subcommand)]
     filters: OrganizeFilter,
+
+    /// Recurse into subfolders
+    #[clap(short, long, global = true)]
+    recursive: bool,
+
+    /// Maximal depth when operating recursively
+    #[clap(short, long, global = true)]
+    max_depth: Option<u64>,
 }
 
 impl Runnable for FilterCmd {

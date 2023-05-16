@@ -5,6 +5,7 @@ pub mod actions;
 pub mod aliases;
 pub mod filters;
 
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 // use std::path::PathBuf;
 
@@ -195,10 +196,11 @@ impl OrganizeFilterMode {
 ///
 /// When targets is set to dirs, organize will work on
 /// the folders, not on files.
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, ValueEnum)]
 pub enum OrganizeTargets {
     Dirs,
     Files,
+    Both,
 }
 
 impl OrganizeTargets {

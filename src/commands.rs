@@ -29,6 +29,7 @@ use abscissa_core::{config::Override, Command, Configurable, FrameworkError, Run
 use clap;
 use directories::BaseDirs;
 use once_cell::sync::Lazy;
+use organize_rs_core::rules::{OrganizeLocation, OrganizeTargets};
 use std::{fs::create_dir_all, path::PathBuf};
 
 /// Organize Configuration Filename
@@ -65,6 +66,14 @@ pub enum OrganizeCmd {
 pub struct EntryPoint {
     #[command(subcommand)]
     cmd: OrganizeCmd,
+
+    /// Targets to operate on
+    #[clap(short, long, global = true)]
+    targets: Option<OrganizeTargets>,
+
+    /// Locations to operate on
+    #[clap(short, long, global = true)]
+    locations: Vec<String>,
     // /// Enable verbose logging
     // #[clap(short, long)]
     // pub verbose: bool,

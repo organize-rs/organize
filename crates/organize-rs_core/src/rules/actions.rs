@@ -291,10 +291,16 @@ pub enum OrganizeAction {
     /// ```
     #[serde(rename = "copy")]
     Copy {
+        /// The source of the file / dir that should be copied from.
+        /// If `src` ends with a slash, it is assumed
+        /// to be a source directory and the file / dir will be
+        /// copied into `destination` and keep its name.
+        #[clap(long)]
+        src: String,
         /// The destination where the file / dir should be copied
-        /// to. If `destination` ends with a slash, it is assumed
+        /// to. If `dest` ends with a slash, it is assumed
         /// to be a target directory and the file / dir will be
-        /// copied into `destination`and keep its name.
+        /// copied into `dest` and keep its name.
         #[clap(long)]
         dest: String,
         /// What should happen in case dest already exists.
@@ -334,7 +340,16 @@ pub enum OrganizeAction {
     ///     - delete
     /// ```
     #[serde(rename = "delete")]
-    Delete,
+    Delete {
+        /// The source of the file / dir that should be deleted.
+        /// If `src` ends with a slash, it is assumed
+        /// to be a source directory and the file / dir will be
+        /// trashed.
+        ///
+        /// USE WITH CARE!
+        #[clap(long)]
+        src: String,
+    },
     /// Prints the given message.
     ///
     /// This can be useful to test your rules, especially in combination
@@ -429,10 +444,16 @@ pub enum OrganizeAction {
     /// ```
     #[serde(rename = "move")]
     Move {
+        /// The source of the file / dir that should be moved.
+        /// If `src` ends with a slash, it is assumed
+        /// to be a source directory and the file / dir will be
+        /// copied into `destination` and keep its name.
+        #[clap(long)]
+        src: String,
         /// The destination where the file / dir should be moved
-        /// to. If `destination` ends with a slash, it is assumed
+        /// to. If `dest` ends with a slash, it is assumed
         /// to be a target directory and the file / dir will be
-        /// moved into `destination`and keep its name.
+        /// moved into `dest`and keep its name.
         #[clap(long)]
         dest: String,
         /// What should happen in case dest already exists.
@@ -470,6 +491,13 @@ pub enum OrganizeAction {
     /// ```
     #[serde(rename = "rename")]
     Rename {
+        /// The source of the file / dir that should be renamed.
+        /// If `src` ends with a slash, it is assumed
+        /// to be a source directory and the file / dir will be
+        /// renamed.
+        #[clap(long)]
+        src: String,
+        /// The new name for the file / dir.
         #[clap(long)]
         name: String,
         /// What should happen in case dest already exists.
@@ -487,6 +515,12 @@ pub enum OrganizeAction {
     /// Create a symbolic link.
     #[serde(rename = "symlink")]
     Symlink {
+        /// The source of the file / dir that should be symlinked.
+        /// If `src` ends with a slash, it is assumed
+        /// to be a source directory and the file / dir will be
+        /// symlinked.
+        #[clap(long)]
+        src: String,
         /// The symlink destination.
         ///
         /// If `destination` ends with a slash `/``, create the symlink
@@ -519,7 +553,14 @@ pub enum OrganizeAction {
     ///       - trash
     /// ```
     #[serde(rename = "trash")]
-    Trash,
+    Trash {
+        /// The source of the file / dir that should be trashed.
+        /// If `src` ends with a slash, it is assumed
+        /// to be a source directory and the file / dir will be
+        /// trashed.
+        #[clap(long)]
+        src: String,
+    },
     /// Write text to a file.
     ///
     /// If the specified path does not exist it will be created.
@@ -612,14 +653,6 @@ impl OrganizeAction {
         matches!(self, Self::Copy { .. })
     }
 
-    /// Returns `true` if the organize action is [`Delete`].
-    ///
-    /// [`Delete`]: OrganizeAction::Delete
-    #[must_use]
-    pub fn is_delete(&self) -> bool {
-        matches!(self, Self::Delete)
-    }
-
     /// Returns `true` if the organize action is [`Echo`].
     ///
     /// [`Echo`]: OrganizeAction::Echo
@@ -695,17 +728,33 @@ impl OrganizeAction {
         matches!(self, Self::Symlink { .. })
     }
 
-    pub fn as_symlink(&self) -> Option<&String> {
-        if let Self::Symlink { dest: destination } = self {
-            Some(destination)
+    /// Returns `true` if the organize action is [`Write`].
+    ///
+    /// [`Write`]: OrganizeAction::Write
+    #[must_use]
+    pub fn is_write(&self) -> bool {
+        matches!(self, Self::Write { .. })
+    }
+
+    /// Returns `true` if the organize action is [`Delete`].
+    ///
+    /// [`Delete`]: OrganizeAction::Delete
+    #[must_use]
+    pub fn is_delete(&self) -> bool {
+        matches!(self, Self::Delete { .. })
+    }
+
+    pub fn as_delete(&self) -> Option<&String> {
+        if let Self::Delete { src } = self {
+            Some(src)
         } else {
             None
         }
     }
 
-    pub fn try_into_symlink(self) -> Result<String, Self> {
-        if let Self::Symlink { dest: destination } = self {
-            Ok(destination)
+    pub fn try_into_delete(self) -> Result<String, Self> {
+        if let Self::Delete { src } = self {
+            Ok(src)
         } else {
             Err(self)
         }
@@ -716,15 +765,23 @@ impl OrganizeAction {
     /// [`Trash`]: OrganizeAction::Trash
     #[must_use]
     pub fn is_trash(&self) -> bool {
-        matches!(self, Self::Trash)
+        matches!(self, Self::Trash { .. })
     }
 
-    /// Returns `true` if the organize action is [`Write`].
-    ///
-    /// [`Write`]: OrganizeAction::Write
-    #[must_use]
-    pub fn is_write(&self) -> bool {
-        matches!(self, Self::Write { .. })
+    pub fn as_trash(&self) -> Option<&String> {
+        if let Self::Trash { src } = self {
+            Some(src)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_trash(self) -> Result<String, Self> {
+        if let Self::Trash { src } = self {
+            Ok(src)
+        } else {
+            Err(self)
+        }
     }
 }
 
