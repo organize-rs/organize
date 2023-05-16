@@ -42,7 +42,7 @@ This way we can already utilize it easily within shell scripts.
 
 1. Instead of pressing everything in a complicated configuration file syntax, we can utilize a scripting language and boil it down to its minimum syntax.
 
-That being said, a big factor for the Rust reiteration for me is that I like Rust. I want to reimplement `organize`'s approach in language that has better error handling, and makes it easier to maintain software. That is fast and at the same time makes development less error prone.
+That being said, a big factor for the Rust reiteration for me is that I like Rust. I want to reimplement `organize`'s approach in a language that has better error handling, and makes it easier to maintain software. That is fast and at the same time makes development less error prone.
 
 I'm the first user of the Rust implementation, and will be going to use it with my private files. Thus an important goal for me is stability.
 
