@@ -10,21 +10,19 @@
 //! See the `impl Configurable` below for how to specify the path to the
 //! application's configuration file.
 
+mod action;
 mod docs;
-mod edit;
-mod reveal;
+mod filter;
 
-// TODO
-mod check;
-mod run;
-mod schema;
-mod sim;
+// Old approach
+// mod edit;
+// mod reveal;
+// mod run;
+// mod schema;
+// mod sim;
 
-use self::reveal::RevealCmd;
 use crate::{
-    commands::{
-        check::CheckCmd, docs::DocsCmd, edit::EditCmd, run::RunCmd, schema::SchemaCmd, sim::SimCmd,
-    },
+    commands::{action::ActionCmd, docs::DocsCmd, filter::FilterCmd},
     config::OrganizeConfig,
 };
 use abscissa_core::{config::Override, Command, Configurable, FrameworkError, Runnable};
@@ -34,28 +32,30 @@ use once_cell::sync::Lazy;
 use std::{fs::create_dir_all, path::PathBuf};
 
 /// Organize Configuration Filename
-pub static CONFIG_FILE: Lazy<PathBuf> = Lazy::new(|| {
-    let dir = if let Some(base_dir) = BaseDirs::new() {
-        let organize_config_dir = base_dir.config_local_dir().join("organize");
-        _ = create_dir_all(&organize_config_dir);
-        organize_config_dir.join("organize.yaml")
-    } else {
-        todo!("alternative default config file locations")
-    };
-    dir
-});
+// pub static CONFIG_FILE: Lazy<PathBuf> = Lazy::new(|| {
+//     let dir = if let Some(base_dir) = BaseDirs::new() {
+//         let organize_config_dir = base_dir.config_local_dir().join("organize");
+//         _ = create_dir_all(&organize_config_dir);
+//         organize_config_dir.join("organize.yaml")
+//     } else {
+//         todo!("alternative default config file locations")
+//     };
+//     dir
+// });
+
+/// Organize Configuration Filename
+pub const CONFIG_FILE: &str = "organize.toml";
 
 /// Organize Subcommands
 /// Subcommands need to be listed in an enum.
 #[derive(clap::Parser, Command, Debug, Runnable)]
 pub enum OrganizeCmd {
-    Reveal(RevealCmd),
-    Check(CheckCmd),
+    /// Actions that organize can apply
+    Action(ActionCmd),
+    /// Show the documentation
     Docs(DocsCmd),
-    Edit(EditCmd),
-    Run(RunCmd),
-    Schema(SchemaCmd),
-    Sim(SimCmd),
+    /// Filters that organize can apply
+    Filter(FilterCmd),
 }
 
 #[allow(clippy::struct_excessive_bools)]
@@ -65,38 +65,36 @@ pub enum OrganizeCmd {
 pub struct EntryPoint {
     #[command(subcommand)]
     cmd: OrganizeCmd,
+    // /// Enable verbose logging
+    // #[clap(short, long)]
+    // pub verbose: bool,
 
-    /// Enable verbose logging
-    #[clap(short, long)]
-    pub verbose: bool,
+    // /// Enable debug mode
+    // #[clap(short, long)]
+    // pub debug: bool,
 
-    /// Enable debug mode
-    #[clap(short, long)]
-    pub debug: bool,
+    // /// Use the specified organize-rs config file
+    // #[clap(short, long)]
+    // pub config: Option<String>,
+    // /// path to the py-organize config file
+    // #[clap(long, env = "ORGANIZE_CONFIG")]
+    // pub py_organize_config: Option<String>,
 
-    /// Use the specified organize-rs config file
-    #[clap(short, long)]
-    pub config: Option<String>,
+    // /// Applicable tags
+    // ///
+    // /// Rules tagged with the special tag always will always run (except if --skip-tags=always is specified)
+    // ///
+    // /// Rules tagged with the special tag never will never run (except if ' --tags=never is specified)
+    // #[clap(long)]
+    // pub tags: Option<Vec<String>>,
 
-    /// path to the py-organize config file
-    #[clap(long, env = "ORGANIZE_CONFIG")]
-    pub py_organize_config: Option<String>,
+    // /// Skip-Tags
+    // #[clap(long)]
+    // pub skip_tags: Option<Vec<String>>,
 
-    /// Applicable tags
-    ///
-    /// Rules tagged with the special tag always will always run (except if --skip-tags=always is specified)
-    ///
-    /// Rules tagged with the special tag never will never run (except if ' --tags=never is specified)
-    #[clap(long)]
-    pub tags: Option<Vec<String>>,
-
-    /// Skip-Tags
-    #[clap(long)]
-    pub skip_tags: Option<Vec<String>>,
-
-    /// if this is set, the output is not colored
-    #[clap(long, env = "NO_COLOR")]
-    pub no_color: bool,
+    // /// if this is set, the output is not colored
+    // #[clap(long, env = "NO_COLOR")]
+    // pub no_color: bool,
 }
 
 impl Runnable for EntryPoint {
@@ -112,16 +110,18 @@ impl Configurable<OrganizeConfig> for EntryPoint {
         // Check if the config file exists, and if it does not, ignore it.
         // If you'd like for a missing configuration file to be a hard error
         // instead, always return `Some(CONFIG_FILE)` here.
-        let filename = self
-            .config
-            .as_ref()
-            .map_or_else(|| CONFIG_FILE.to_path_buf(), PathBuf::from);
+        // let filename = self
+        //     .config
+        //     .as_ref()
+        //     .map(PathBuf::from)
+        //     .unwrap_or_else(|| CONFIG_FILE.into());
 
-        if filename.exists() {
-            Some(filename)
-        } else {
-            None
-        }
+        // if filename.exists() {
+        //     Some(filename)
+        // } else {
+        //     None
+        // }
+        None
     }
 
     /// Apply changes to the config after it's been loaded, e.g. overriding

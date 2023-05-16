@@ -1,6 +1,8 @@
 //! Actions that can be used in the config file and
 //! `organize` applieds to matching rules
 
+use abscissa_core::{Command, Runnable};
+use clap::{Parser, ValueEnum};
 use serde::{Deserialize, Serialize};
 
 /// Colours for `MacOS` tags
@@ -92,7 +94,7 @@ impl Default for MacOsTagColours {
 }
 
 /// Actions for conflict resolution
-#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
 pub enum OnConflict {
     Skip,
     Overwrite,
@@ -150,7 +152,7 @@ impl Default for OnConflict {
 }
 
 /// Support template strings
-#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
 pub enum TemplateStrings {
     Filename,
     Counter,
@@ -183,22 +185,8 @@ impl TemplateStrings {
     }
 }
 
-/// A template for renaming a file
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct RenameTemplate(Vec<TemplateStrings>);
-
-impl Default for RenameTemplate {
-    fn default() -> Self {
-        Self(vec![
-            TemplateStrings::Filename,
-            TemplateStrings::Counter,
-            TemplateStrings::Extension,
-        ])
-    }
-}
-
 /// Mode how should be written to a file
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, ValueEnum)]
 pub enum WriteMode {
     /// append text to the file
     Append,
@@ -240,21 +228,11 @@ impl Default for WriteMode {
     }
 }
 
-/// A filename that should be written to
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct WriteFile(String);
-
-impl Default for WriteFile {
-    fn default() -> Self {
-        Self("organize_out.txt".to_string())
-    }
-}
-
 // TODO: Shell supported
 // adapted from: https://organize.readthedocs.io/en/latest/actions/
 //
 /// Actions that can be used within the config file
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Command, Parser)]
 pub enum OrganizeAction {
     /// Do nothing.
     None,
@@ -282,8 +260,11 @@ pub enum OrganizeAction {
     ///     - confirm: "Delete {name}?"
     ///     - trash
     /// ```
+    #[serde(rename = "confirm")]
     Confirm {
+        #[clap(long)]
         text: Option<String>,
+        #[clap(long)]
         vars: Option<Vec<String>>,
     },
     /// Copy a file or dir to a new location.
@@ -308,24 +289,29 @@ pub enum OrganizeAction {
     ///          dest: "~/Desktop/{extension.upper()}/"
     ///          on_conflict: overwrite
     /// ```
+    #[serde(rename = "copy")]
     Copy {
         /// The destination where the file / dir should be copied
         /// to. If `destination` ends with a slash, it is assumed
         /// to be a target directory and the file / dir will be
         /// copied into `destination`and keep its name.
+        #[clap(long)]
         destination: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
         /// Defaults to rename_new.
+        #[clap(long)]
         on_conflict: OnConflict,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
-        rename_template: RenameTemplate,
+        #[clap(long)]
+        rename_template: Vec<TemplateStrings>,
         /// An opener url of the filesystem you want to copy to.
         ///
         /// If this is not given, the local filesystem is used.
+        #[clap(long)]
         filesystem: Option<String>,
     },
     /// Delete a file from disk.
@@ -347,6 +333,7 @@ pub enum OrganizeAction {
     ///     actions:
     ///     - delete
     /// ```
+    #[serde(rename = "delete")]
     Delete,
     /// Prints the given message.
     ///
@@ -368,7 +355,11 @@ pub enum OrganizeAction {
     ///    actions:
     ///      - echo: "Found old file"
     /// ```
-    Echo { message: String },
+    #[serde(rename = "echo")]
+    Echo {
+        #[clap(long)]
+        message: String,
+    },
     /// Add macOS tags.
     ///
     /// The color can be specified in brackets after the tag name.
@@ -404,7 +395,11 @@ pub enum OrganizeAction {
     ///         - Year-{created.year} (red)
     /// ```
     #[cfg(target_os = "osx")]
-    MacOsTags { tags: Vec<String> },
+    #[serde(rename = "macos_tags")]
+    MacOsTags {
+        #[clap(long)]
+        tags: Vec<String>,
+    },
     /// Move a file to a new location.
     ///
     /// The file can also be renamed. If the specified path does
@@ -432,24 +427,29 @@ pub enum OrganizeAction {
     ///           dest: "~/Desktop/{extension.upper()}/"
     ///           on_conflict: "overwrite"
     /// ```
+    #[serde(rename = "move")]
     Move {
         /// The destination where the file / dir should be moved
         /// to. If `destination` ends with a slash, it is assumed
         /// to be a target directory and the file / dir will be
         /// moved into `destination`and keep its name.
+        #[clap(long)]
         destination: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
         /// Defaults to rename_new.
+        #[clap(long)]
         on_conflict: OnConflict,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
-        rename_template: RenameTemplate,
+        #[clap(long)]
+        rename_template: Vec<TemplateStrings>,
         /// An opener url of the filesystem you want to move to.
         ///
         /// If this is not given, the local filesystem is used.
+        #[clap(long)]
         filesystem: Option<String>,
     },
     /// Renames a file.
@@ -468,19 +468,24 @@ pub enum OrganizeAction {
     ///     actions:
     ///       - rename: "{name}.pdf"
     /// ```
+    #[serde(rename = "rename")]
     Rename {
+        #[clap(long)]
         name: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
         /// Defaults to rename_new.
+        #[clap(long)]
         on_conflict: OnConflict,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
-        rename_template: RenameTemplate,
+        #[clap(long)]
+        rename_template: Vec<TemplateStrings>,
     },
     /// Create a symbolic link.
+    #[serde(rename = "symlink")]
     Symlink {
         /// The symlink destination.
         ///
@@ -489,6 +494,7 @@ pub enum OrganizeAction {
         ///
         /// Only the local filesystem is supported.
         // TODO: Can contain placeholders?
+        #[clap(long)]
         destination: String,
     },
     /// Move a file or dir into the trash.
@@ -512,6 +518,7 @@ pub enum OrganizeAction {
     ///     actions:
     ///       - trash
     /// ```
+    #[serde(rename = "trash")]
     Trash,
     /// Write text to a file.
     ///
@@ -535,38 +542,53 @@ pub enum OrganizeAction {
     ///           mode: "append"
     ///           clear_before_first_write: true
     /// ```
+    #[serde(rename = "write")]
     Write {
         /// The text that should be written. Supports templates.
+        #[clap(long)]
         text: String,
         /// The file `text` should be written into. Supports templates.
         ///
         // Defaults to `organize-out.txt`
-        file: WriteFile,
+        #[clap(long)]
+        file: String,
         /// Can be either `append` (append text to the file), `prepend`
         /// (insert text as first line) or `overwrite` (overwrite content
         /// with text).
         ///
         /// Defaults to `append`.
+        #[clap(long)]
         mode: WriteMode,
         /// Whether to append a newline to the given text.
         ///
         /// Defaults to `true`.
+        #[clap(long)]
         newline: Option<bool>,
         /// Clears the file before first appending / prepending text to it.
         /// This happens only the first time write_file is run. If the rule
         /// filters don't match anything the file is left as it is.
         ///
         /// Defaults to `false`.
+        #[clap(long)]
         clear_before_first_write: Option<bool>,
         /// An opener url of the filesystem the textfile is on.
         ///
         /// If this is not given, the local filesystem is used.
+        #[clap(long)]
         filesystem: Option<String>,
     },
     #[cfg(feature = "research_organize")]
+    #[serde(rename = "python")]
     Python,
     #[cfg(feature = "research_organize")]
+    #[serde(rename = "shell")]
     Shell,
+}
+
+impl Runnable for OrganizeAction {
+    fn run(&self) {
+        todo!()
+    }
 }
 
 impl OrganizeAction {

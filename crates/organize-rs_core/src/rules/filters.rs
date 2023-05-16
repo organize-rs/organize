@@ -1,11 +1,12 @@
-//! FilterSelf::Extension()in the config file(s)
+//! FilterSelf::Extension()he config file(s)
 //! and `organize` operates with
 
-use chrono::{DateTime, Utc};
+use abscissa_core::{Command, Runnable};
+use clap::{Parser, ValueEnum};
 use serde::{Deserialize, Serialize};
 
 /// Comparison conditions for dates
-#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
 pub enum OlderNewer {
     Older,
     Newer,
@@ -36,14 +37,20 @@ impl Default for OlderNewer {
 }
 
 /// Duplication detection
-#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
 pub enum DetectDuplicateBy {
-    #[cfg(target_os = "osx")]
+    /// Whatever file is visited first is the original.
+    ///
+    /// This depends on the order of your location entries.
     FirstSeen,
+    /// The first entry sorted by name is the original.
     Name,
+    /// The first entry sorted by creation date is the original.
     Created,
+    /// The first file sorted by date of last modification is the original.
     LastModified,
-    Hash,
+    // TODO
+    // Hash,
 }
 
 impl Default for DetectDuplicateBy {
@@ -57,7 +64,6 @@ impl DetectDuplicateBy {
     ///
     /// [`FirstSeen`]: DetectDuplicateBy::FirstSeen
     #[must_use]
-    #[cfg(target_os = "osx")]
     pub fn is_first_seen(&self) -> bool {
         matches!(self, Self::FirstSeen)
     }
@@ -85,14 +91,6 @@ impl DetectDuplicateBy {
     pub fn is_last_modified(&self) -> bool {
         matches!(self, Self::LastModified)
     }
-
-    /// Returns `true` if the detect duplicate by is [`Hash`].
-    ///
-    /// [`Hash`]: DetectDuplicateBy::Hash
-    #[must_use]
-    pub fn is_hash(&self) -> bool {
-        matches!(self, Self::Hash)
-    }
 }
 
 /// Comparison conditions for the size of files
@@ -103,6 +101,16 @@ pub enum SizeConditions {
     SmallerThan(u64),
     SmallerOrEqual(u64),
     EqualTo(u64),
+}
+
+/// Comparison conditions for the size of files
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
+pub enum SizeConditionsRaw {
+    GreaterThan,
+    GreaterOrEqual,
+    SmallerThan,
+    SmallerOrEqual,
+    EqualTo,
 }
 
 impl SizeConditions {
@@ -230,24 +238,55 @@ impl SizeConditions {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum FilterDate {
     /// specify number of years
+    #[serde(rename = "years")]
     Years(u16),
     /// specify number of months
+    #[serde(rename = "months")]
     Months(u64),
     /// specify number of weeks
+    #[serde(rename = "weeks")]
     Weeks(f64),
     /// specify number of days
+    #[serde(rename = "days")]
     Days(f64),
     /// specify number of hours
+    #[serde(rename = "hours")]
     Hours(f64),
     /// specify number of minutes
+    #[serde(rename = "minutes")]
     Minutes(f64),
     /// specify number of seconds
+    #[serde(rename = "seconds")]
     Seconds(f64),
+}
+#[derive(Debug, Clone, Deserialize, Serialize, ValueEnum)]
+pub enum FilterDateRaw {
+    /// specify number of years
+    #[serde(rename = "years")]
+    Years,
+    /// specify number of months
+    #[serde(rename = "months")]
+    Months,
+    /// specify number of weeks
+    #[serde(rename = "weeks")]
+    Weeks,
+    /// specify number of days
+    #[serde(rename = "days")]
+    Days,
+    /// specify number of hours
+    #[serde(rename = "hours")]
+    Hours,
+    /// specify number of minutes
+    #[serde(rename = "minutes")]
+    Minutes,
+    /// specify number of seconds
+    #[serde(rename = "seconds")]
+    Seconds,
 }
 
 /// [`OrganizeFilter`] contains filter variants that organize can
 /// use to apply to files/folders.
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Command, Parser)]
 pub enum OrganizeFilter {
     /// Matches files / folders by created date
     ///
@@ -269,8 +308,13 @@ pub enum OrganizeFilter {
     ///      actions:
     ///        - move: "~/Documents/PDF/{created.year}/"
     /// ```
+    #[serde(rename = "created")]
     DateCreated {
-        date: DateTime<Utc>,
+        #[clap(long)]
+        value: u64,
+        #[clap(long)]
+        date: FilterDateRaw,
+        #[clap(long)]
         mode: OlderNewer,
     },
     /// Matches files by the time the file was added to a folder
@@ -293,8 +337,13 @@ pub enum OrganizeFilter {
     ///        - echo: "Date added: {date_added.strftime('%Y-%m-%d')}"
     /// ```
     #[cfg(target_os = "osx")]
+    #[serde(rename = "date_added")]
     DateAdded {
-        date: DateTime<Utc>,
+        #[clap(long)]
+        value: u64,
+        #[clap(long)]
+        date: FilterDateRaw,
+        #[clap(long)]
         mode: OlderNewer,
     },
     /// Matches files by the time the file was last used
@@ -317,8 +366,13 @@ pub enum OrganizeFilter {
     ///        - echo: "Date last used: {date_lastused.strftime('%Y-%m-%d')}"
     /// ```
     #[cfg(target_os = "osx")]
+    #[serde(rename = "date_lastused")]
     DateLastUsed {
-        date: DateTime<Utc>,
+        #[clap(long)]
+        value: u64,
+        #[clap(long)]
+        date: FilterDateRaw,
+        #[clap(long)]
         mode: OlderNewer,
     },
     /// Matches files by last modified date
@@ -341,14 +395,26 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - move: "~/Documents/PDF/{lastmodified.year}/"
     /// ```
+    #[serde(rename = "last_modified")]
     DateLastModified {
-        date: DateTime<Utc>,
+        #[clap(long)]
+        value: u64,
+        #[clap(long)]
+        date: FilterDateRaw,
+        #[clap(long)]
         mode: OlderNewer,
     },
     /// A fast duplicate file finder
     ///
     /// This filter compares files byte by byte and finds identical
     /// files with potentially different filenames.
+    ///
+    /// You can reverse the sorting method by prefixing a `-`.
+    ///
+    /// So with detect_original_by: "-created" the file with the older
+    /// creation date is the original and the younger file is the
+    /// duplicate. This works on all methods, for example "-first_seen",
+    /// "-name", "-created", "-lastmodified".
     ///
     /// # Result
     ///
@@ -371,8 +437,10 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - echo: "{path} is a duplicate of {duplicate.original}"
     /// ```
+    #[serde(rename = "duplicate")]
     Duplicate {
-        detect_original_by: DetectDuplicateBy,
+        #[clap(long)]
+        detect_original_by: Option<DetectDuplicateBy>,
     },
     /// Finds empty dirs and files
     ///
@@ -391,6 +459,7 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - delete
     /// ```
+    #[serde(rename = "empty")]
     Empty,
     /// Filter by image EXIF data
     ///
@@ -423,6 +492,7 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - copy: ~/Pictures/with_gps/{relative_path}/
     /// ```
+    #[serde(rename = "exif")]
     Exif,
     /// Filter by file extension
     ///
@@ -446,7 +516,10 @@ pub enum OrganizeFilter {
     ///       - echo: "Found JPG file: {path}"
     /// ```
     #[serde(rename = "extension")]
-    Extension(Vec<String>),
+    Extension {
+        #[clap(long)]
+        extensions: Vec<String>,
+    },
     /// Matches file content with the given regular expression
     ///
     /// Any named groups `((?P<groupname>.*))` in your regular
@@ -469,7 +542,11 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - move: "~/Documents/Invoices/{filecontent.customer}/"
     /// ```
-    Filecontent { expression: String },
+    #[serde(rename = "filecontent")]
+    Filecontent {
+        #[clap(long)]
+        expression: String,
+    },
     // TODO: Check for available hash algorithms from organize-py
     // TODO: shake_256, sha3_256, sha1, sha3_224, sha384, sha512, blake2b,
     // TODO: blake2s, sha256, sha224, shake_128, sha3_512, sha3_384 and md5
@@ -494,6 +571,7 @@ pub enum OrganizeFilter {
     ///       - echo: "{hash} {size.decimal}"
     /// ```
     #[cfg(feature = "research_organize")]
+    #[serde(rename = "hash")]
     Hash,
     /// Filter by macOS tags
     ///
@@ -513,7 +591,11 @@ pub enum OrganizeFilter {
     ///       - echo: "Match found!"
     /// ```
     #[cfg(target_os = "osx")]
-    MacOsTags { tags: Vec<String> },
+    #[serde(rename = "macos_tags")]
+    MacOsTags {
+        #[clap(long)]
+        tags: Vec<String>,
+    },
     /// Filter by MIME type associated with the file extension
     ///
     /// Supports a single string or list of MIME type strings as argument.
@@ -538,7 +620,11 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - echo: "This file is an image: {mimetype}"
     /// ```
-    Mimetype { mimetype: Vec<String> },
+    #[serde(rename = "mimetype")]
+    Mimetype {
+        #[clap(long)]
+        mimetype: Vec<String>,
+    },
     /// Match files and folders by name
     ///
     /// # Example
@@ -562,23 +648,29 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - echo: "Found a match."
     /// ```
+    #[serde(rename = "name")]
     Name {
         // TODO: alternative?
         /// A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
-        #[cfg(feature = "research_organize")]
+        #[clap(long)]
         simple_match: String,
         /// The filename must begin with the given string
+        #[clap(long)]
         starts_with: String,
         /// The filename must contain the given string
+        #[clap(long)]
         contains: String,
         /// The filename (without extension) must end with the given string
+        #[clap(long)]
         ends_with: String,
         /// By default, the matching is case sensitive.
         ///
         /// Change this to False to use case insensitive matching.
+        #[clap(long)]
         case_sensitive: bool,
     },
     #[cfg(feature = "research_organize")]
+    #[serde(rename = "python")]
     Python,
     /// Matches filenames with the given regular expression
     ///
@@ -603,7 +695,11 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
     /// ```
-    Regex { expression: String },
+    #[serde(rename = "regex")]
+    Regex {
+        #[clap(long)]
+        expression: String,
+    },
     /// Matches files and folders by size
     ///
     /// Accepts file size conditions, e.g: ">= 500 MB", "< 20k", ">0", "= 10 KiB".
@@ -656,10 +752,23 @@ pub enum OrganizeFilter {
     ///     actions:
     ///       - move: "~/Pictures/sorted/{relative_path}/"
     /// ```
+    #[serde(rename = "size")]
     Size {
-        upper: Option<SizeConditions>,
-        lower: Option<SizeConditions>,
+        #[clap(long)]
+        upper_value: Option<u64>,
+        #[clap(long)]
+        upper: Option<SizeConditionsRaw>,
+        #[clap(long)]
+        lower_value: Option<u64>,
+        #[clap(long)]
+        lower: Option<SizeConditionsRaw>,
     },
+}
+
+impl Runnable for OrganizeFilter {
+    fn run(&self) {
+        todo!()
+    }
 }
 
 impl OrganizeFilter {
@@ -705,22 +814,6 @@ impl OrganizeFilter {
         matches!(self, Self::Duplicate { .. })
     }
 
-    pub fn as_duplicate(&self) -> Option<&DetectDuplicateBy> {
-        if let Self::Duplicate { detect_original_by } = self {
-            Some(detect_original_by)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_duplicate(self) -> Result<DetectDuplicateBy, Self> {
-        if let Self::Duplicate { detect_original_by } = self {
-            Ok(detect_original_by)
-        } else {
-            Err(self)
-        }
-    }
-
     /// Returns `true` if the organize filter is [`Empty`].
     ///
     /// [`Empty`]: OrganizeFilter::Empty
@@ -745,44 +838,12 @@ impl OrganizeFilter {
         matches!(self, Self::Extension { .. })
     }
 
-    pub fn as_extension(&self) -> Option<&Vec<String>> {
-        if let Self::Extension(extensions) = self {
-            Some(extensions)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_extension(self) -> Result<Vec<String>, Self> {
-        if let Self::Extension(extensions) = self {
-            Ok(extensions)
-        } else {
-            Err(self)
-        }
-    }
-
     /// Returns `true` if the organize filter is [`Filecontent`].
     ///
     /// [`Filecontent`]: OrganizeFilter::Filecontent
     #[must_use]
     pub fn is_filecontent(&self) -> bool {
         matches!(self, Self::Filecontent { .. })
-    }
-
-    pub fn as_filecontent(&self) -> Option<&String> {
-        if let Self::Filecontent { expression } = self {
-            Some(expression)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_filecontent(self) -> Result<String, Self> {
-        if let Self::Filecontent { expression } = self {
-            Ok(expression)
-        } else {
-            Err(self)
-        }
     }
 
     /// Returns `true` if the organize filter is [`Hash`].
@@ -883,5 +944,53 @@ impl OrganizeFilter {
     #[must_use]
     pub fn is_size(&self) -> bool {
         matches!(self, Self::Size { .. })
+    }
+
+    pub fn as_duplicate(&self) -> Option<&Option<DetectDuplicateBy>> {
+        if let Self::Duplicate { detect_original_by } = self {
+            Some(detect_original_by)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_duplicate(self) -> Result<Option<DetectDuplicateBy>, Self> {
+        if let Self::Duplicate { detect_original_by } = self {
+            Ok(detect_original_by)
+        } else {
+            Err(self)
+        }
+    }
+
+    pub fn as_extension(&self) -> Option<&Vec<String>> {
+        if let Self::Extension { extensions } = self {
+            Some(extensions)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_extension(self) -> Result<Vec<String>, Self> {
+        if let Self::Extension { extensions } = self {
+            Ok(extensions)
+        } else {
+            Err(self)
+        }
+    }
+
+    pub fn as_filecontent(&self) -> Option<&String> {
+        if let Self::Filecontent { expression } = self {
+            Some(expression)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_filecontent(self) -> Result<String, Self> {
+        if let Self::Filecontent { expression } = self {
+            Ok(expression)
+        } else {
+            Err(self)
+        }
     }
 }

@@ -6,7 +6,7 @@ pub mod aliases;
 pub mod filters;
 
 // Generated from py-organize
-// pub mod py_organize;
+pub mod py_organize;
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -221,6 +221,13 @@ impl OrganizeTargets {
         matches!(self, Self::Dirs)
     }
 }
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct OrganizeLocation {
+    path: String,
+    max_depth: Option<u64>,
+}
+
 /// [`OrganizeRule`] contains a list of objects with the required keys
 /// "locations" and "actions". One config can have many [`OrganizeRule`]s.
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -233,7 +240,7 @@ pub struct OrganizeRule {
     /// the folders, not on files
     targets: OrganizeTargets,
     /// list of locations
-    locations: Vec<String>,
+    locations: Vec<OrganizeLocation>,
     /// whether to recurse into subfolders of all locations
     #[serde(rename = "subfolders")]
     recursive: Recurse,
@@ -280,7 +287,7 @@ impl OrganizeRule {
         self.name.as_ref()
     }
 
-    pub fn locations(&self) -> &[String] {
+    pub fn locations(&self) -> &[OrganizeLocation] {
         self.locations.as_ref()
     }
 }

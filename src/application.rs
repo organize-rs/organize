@@ -67,36 +67,36 @@ impl Application for OrganizeApp {
 
         // Load config *after* framework components so that we can
         // report an error to the terminal if it occurs.
-        let config = match command.config_path() {
-            Some(path) => {
-                let file = File::open(path)?;
+        // let config = match command.config_path() {
+        //     Some(path) => {
+        //         let file = File::open(path)?;
 
-                let config: OrganizeConfig = match serde_yaml::from_reader(file) {
-                    Ok(config) => config,
-                    Err(err) => {
-                        // TODO: Hard error here
-                        status_err!(
-                            "organize could not parse the provided config file. Using default. Errored: {}", err
-                        );
-                        OrganizeConfig::default()
-                    }
-                };
-                config
+        //         let config: OrganizeConfig = match serde_yaml::from_reader(file) {
+        //             Ok(config) => config,
+        //             Err(err) => {
+        //                 // TODO: Hard error here
+        //                 status_err!(
+        //                     "organize could not parse the provided config file. Using default. Errored: {}", err
+        //                 );
+        //                 OrganizeConfig::default()
+        //             }
+        //         };
+        //         config
 
-                // match self.load_config(&path) {
-                //     Ok(config) => config,
-                //     Err(err) => {
-                //         status_err!("organize could not parse the provided config file.");
-                //         return Err(err);
-                //     }
-                // },
-            }
-            None => OrganizeConfig::default(),
-        };
+        //         // match self.load_config(&path) {
+        //         //     Ok(config) => config,
+        //         //     Err(err) => {
+        //         //         status_err!("organize could not parse the provided config file.");
+        //         //         return Err(err);
+        //         //     }
+        //         // },
+        //     }
+        //     None => OrganizeConfig::default(),
+        // };
 
-        let config = command.process_config(config)?;
+        // let config = command.process_config(config)?;
 
-        self.config.set_once(config);
+        // self.config.set_once(config);
 
         let mut app_components = self.state.components_mut();
         app_components.register(framework_components)
@@ -111,16 +111,17 @@ impl Application for OrganizeApp {
         // Configure components
         self.state.components_mut().after_config(&config)?;
         // TODO: Remove? We handle that in `register_components` now
-        // self.config.set_once(config);
+        self.config.set_once(config);
         Ok(())
     }
 
     /// Get tracing configuration from command-line options
     fn tracing_config(&self, command: &EntryPoint) -> trace::Config {
-        if command.verbose {
-            trace::Config::verbose()
-        } else {
-            trace::Config::default()
-        }
+        // if command.verbose {
+        //     trace::Config::verbose()
+        // } else {
+        //     trace::Config::default()
+        // }
+        trace::Config::default()
     }
 }

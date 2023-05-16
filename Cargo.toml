@@ -17,6 +17,15 @@ members = ["crates/organize-rs_core"]
 default = []
 research_organize = []
 
+[[example]]
+name = "parse-py-config"
+path = "examples/parse_py_organize_config.rs"
+test = true
+bench = true
+doc = true
+harness = true
+edition = "2021"
+
 [workspace.dependencies]
 organize-rs_core = { path = "crates/organize-rs_core" }
 clap = { version = "4", features = ["derive", "env", "wrap_help"] }
@@ -55,6 +64,7 @@ walkdir.workspace = true
 serde_yaml.workspace = true
 toml.workspace = true
 abscissa_core.workspace = true
+rhai = { version = "1.14.0", features = ["serde"] }
 
 
 [dev-dependencies]

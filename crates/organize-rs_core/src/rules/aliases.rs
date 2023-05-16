@@ -36,13 +36,16 @@ impl Default for ItemKind {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct Alias {
+pub struct Alias(String);
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct Reference {
     name: String,
     kind: ItemKind,
     items: Vec<String>,
 }
 
-impl Alias {
+impl Reference {
     pub fn name(&self) -> &str {
         self.name.as_ref()
     }
