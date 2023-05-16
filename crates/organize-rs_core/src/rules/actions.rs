@@ -624,7 +624,43 @@ pub enum OrganizeAction {
 
 impl Runnable for OrganizeAction {
     fn run(&self) {
-        todo!()
+        match self {
+            OrganizeAction::None => todo!(),
+            OrganizeAction::Confirm { text, vars } => todo!(),
+            OrganizeAction::Copy {
+                src,
+                dst,
+                on_conflict,
+                rename_template,
+                filesystem,
+            } => todo!(),
+            OrganizeAction::Delete { src } => todo!(),
+            OrganizeAction::Echo { msg } => todo!(),
+            OrganizeAction::Move {
+                src,
+                dst,
+                on_conflict,
+                rename_template,
+                filesystem,
+            } => todo!(),
+            OrganizeAction::Rename {
+                src,
+                name,
+                on_conflict,
+                rename_template,
+            } => todo!(),
+            OrganizeAction::Symlink { src, dst } => todo!(),
+            OrganizeAction::Trash { src } => todo!(),
+            OrganizeAction::Write {
+                txt,
+                file,
+                mode,
+                newline,
+                clear_before_first_write,
+                filesystem,
+            } => todo!(),
+            OrganizeAction::Shell => todo!(),
+        }
     }
 }
 

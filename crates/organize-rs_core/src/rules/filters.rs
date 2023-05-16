@@ -772,7 +772,7 @@ impl Runnable for OrganizeFilter {
             OrganizeFilter::Duplicate { detect_original_by } => todo!(),
             OrganizeFilter::Empty => todo!(),
             OrganizeFilter::Exif => todo!(),
-            OrganizeFilter::Extension { exts: ext } => todo!(),
+            OrganizeFilter::Extension { exts } => todo!(),
             OrganizeFilter::Filecontent { regex } => todo!(),
             OrganizeFilter::Mimetype { mimetype } => todo!(),
             OrganizeFilter::Name {
