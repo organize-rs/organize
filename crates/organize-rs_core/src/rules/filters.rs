@@ -517,8 +517,10 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "extension")]
     Extension {
+        /// The file extensions to match (does not need to start
+        /// with a colon)
         #[clap(long)]
-        ext: Vec<String>,
+        exts: Vec<String>,
     },
     /// Matches file content with the given regular expression
     ///
@@ -770,7 +772,7 @@ impl Runnable for OrganizeFilter {
             OrganizeFilter::Duplicate { detect_original_by } => todo!(),
             OrganizeFilter::Empty => todo!(),
             OrganizeFilter::Exif => todo!(),
-            OrganizeFilter::Extension { ext } => todo!(),
+            OrganizeFilter::Extension { exts: ext } => todo!(),
             OrganizeFilter::Filecontent { regex } => todo!(),
             OrganizeFilter::Mimetype { mimetype } => todo!(),
             OrganizeFilter::Name {
@@ -983,7 +985,7 @@ impl OrganizeFilter {
     }
 
     pub fn as_extension(&self) -> Option<&Vec<String>> {
-        if let Self::Extension { ext: extensions } = self {
+        if let Self::Extension { exts: extensions } = self {
             Some(extensions)
         } else {
             None
@@ -991,7 +993,7 @@ impl OrganizeFilter {
     }
 
     pub fn try_into_extension(self) -> Result<Vec<String>, Self> {
-        if let Self::Extension { ext: extensions } = self {
+        if let Self::Extension { exts: extensions } = self {
             Ok(extensions)
         } else {
             Err(self)

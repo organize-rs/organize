@@ -298,11 +298,11 @@ pub enum OrganizeAction {
         #[clap(long)]
         src: String,
         /// The destination where the file / dir should be copied
-        /// to. If `dest` ends with a slash, it is assumed
+        /// to. If `dst` ends with a slash, it is assumed
         /// to be a target directory and the file / dir will be
-        /// copied into `dest` and keep its name.
+        /// copied into `dst` and keep its name.
         #[clap(long)]
-        dest: String,
+        dst: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
@@ -451,11 +451,11 @@ pub enum OrganizeAction {
         #[clap(long)]
         src: String,
         /// The destination where the file / dir should be moved
-        /// to. If `dest` ends with a slash, it is assumed
+        /// to. If `dst` ends with a slash, it is assumed
         /// to be a target directory and the file / dir will be
-        /// moved into `dest`and keep its name.
+        /// moved into `dst`and keep its name.
         #[clap(long)]
-        dest: String,
+        dst: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
@@ -523,13 +523,13 @@ pub enum OrganizeAction {
         src: String,
         /// The symlink destination.
         ///
-        /// If `destination` ends with a slash `/``, create the symlink
+        /// If `dst` ends with a slash `/``, create the symlink
         /// in the given directory.
         ///
         /// Only the local filesystem is supported.
         // TODO: Can contain placeholders?
         #[clap(long)]
-        dest: String,
+        dst: String,
     },
     /// Move a file or dir into the trash.
     ///

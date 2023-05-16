@@ -15,6 +15,10 @@ use organize_rs_core::rules::actions::OrganizeAction;
 pub struct ActionCmd {
     #[clap(subcommand)]
     actions: OrganizeAction,
+
+    /// Simulate an action
+    #[clap(short, long, global = true)]
+    dry_run: bool,
 }
 
 impl Runnable for ActionCmd {

@@ -47,9 +47,12 @@ walkdir = "2.3.3"
 serde_yaml = "0.9.21"
 toml = "0.7.3"
 abscissa_core = "0.7.0"
+rhai = { version = "1.14.0", features = ["serde"] }
+czkawka_core = "5.1.0"
 
 [dependencies]
 organize-rs_core.workspace = true
+rhai.workspace = true
 clap.workspace = true
 directories.workspace = true
 serde.workspace = true
@@ -64,7 +67,6 @@ walkdir.workspace = true
 serde_yaml.workspace = true
 toml.workspace = true
 abscissa_core.workspace = true
-rhai = { version = "1.14.0", features = ["serde"] }
 
 
 [dev-dependencies]
