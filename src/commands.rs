@@ -67,13 +67,6 @@ pub struct EntryPoint {
     #[command(subcommand)]
     cmd: OrganizeCmd,
 
-    /// Targets to operate on
-    #[clap(short, long, global = true)]
-    targets: Option<OrganizeTargets>,
-
-    /// Locations to operate on
-    #[clap(short, long, global = true)]
-    locations: Vec<String>,
     // /// Enable verbose logging
     // #[clap(short, long)]
     // pub verbose: bool,

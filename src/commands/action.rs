@@ -16,9 +16,9 @@ pub struct ActionCmd {
     #[clap(subcommand)]
     actions: OrganizeAction,
 
-    /// Simulate an action
+    /// Run an action destructively
     #[clap(short, long, global = true)]
-    dry_run: bool,
+    destructive_run: bool,
 }
 
 impl Runnable for ActionCmd {

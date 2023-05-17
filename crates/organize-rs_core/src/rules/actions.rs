@@ -1,7 +1,6 @@
 //! Actions that can be used in the config file and
 //! `organize` applieds to matching rules
 
-use abscissa_core::{Command, Runnable};
 use clap::{Parser, ValueEnum};
 use serde::{Deserialize, Serialize};
 
@@ -232,7 +231,7 @@ impl Default for WriteMode {
 // adapted from: https://organize.readthedocs.io/en/latest/actions/
 //
 /// Actions that can be used within the config file
-#[derive(Debug, Clone, Deserialize, Serialize, Command, Parser)]
+#[derive(Debug, Clone, Deserialize, Serialize, Parser)]
 pub enum OrganizeAction {
     /// Do nothing.
     None,
@@ -622,8 +621,8 @@ pub enum OrganizeAction {
     Shell,
 }
 
-impl Runnable for OrganizeAction {
-    fn run(&self) {
+impl OrganizeAction {
+    pub fn run(&self) {
         match self {
             OrganizeAction::None => todo!(),
             OrganizeAction::Confirm { text, vars } => todo!(),
@@ -662,9 +661,7 @@ impl Runnable for OrganizeAction {
             OrganizeAction::Shell => todo!(),
         }
     }
-}
 
-impl OrganizeAction {
     /// Returns `true` if the organize action is [`None`].
     ///
     /// [`None`]: OrganizeAction::None

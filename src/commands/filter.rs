@@ -1,8 +1,15 @@
 //! Filters that organize can apply
 
-use abscissa_core::{Command, Runnable};
+use std::ops::Deref;
+
+use abscissa_core::{Application, Command, Runnable};
 use clap::Parser;
-use organize_rs_core::rules::filters::OrganizeFilter;
+use organize_rs_core::{
+    filter_walker,
+    rules::{filters::OrganizeFilter, OrganizeTargets},
+};
+
+use crate::application::ORGANIZE_APP;
 
 /// `filter` subcommand
 ///
@@ -16,6 +23,14 @@ pub struct FilterCmd {
     #[clap(subcommand)]
     filters: OrganizeFilter,
 
+    /// Locations to operate on
+    #[clap(short, long, global = true)]
+    locations: Vec<String>,
+
+    /// Targets to operate on
+    #[clap(short, long, global = true)]
+    targets: Option<OrganizeTargets>,
+
     /// Recurse into subfolders
     #[clap(short, long, global = true)]
     recursive: bool,
@@ -26,8 +41,19 @@ pub struct FilterCmd {
 }
 
 impl Runnable for FilterCmd {
-    /// Start the application.
     fn run(&self) {
-        // Your code goes here
+        println!("Filter chosen: {:?}", self.filters);
+        let filter = self.filters.get_filter();
+
+        let mut filtered = vec![];
+
+        self.locations.into_iter().for_each(|path| {
+            filtered.push(filter_walker(path, filter.deref(), self.max_depth));
+        });
+
+        filtered.into_iter().for_each(|f| {
+            f.into_iter()
+                .for_each(|dir_entry| println!("{dir_entry:?}"))
+        })
     }
 }

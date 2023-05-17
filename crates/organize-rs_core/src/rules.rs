@@ -203,6 +203,12 @@ pub enum OrganizeTargets {
     Both,
 }
 
+impl Default for OrganizeTargets {
+    fn default() -> Self {
+        Self::Files
+    }
+}
+
 impl OrganizeTargets {
     /// Returns `true` if the organize targets is [`Files`].
     ///

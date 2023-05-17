@@ -1,9 +1,18 @@
 //! FilterSelf::Extension()he config file(s)
 //! and `organize` operates with
 
-use abscissa_core::{Command, Runnable};
 use clap::{Parser, ValueEnum};
 use serde::{Deserialize, Serialize};
+
+pub struct FilterFn(Box<dyn FnMut(walkdir::DirEntry) -> bool>);
+
+impl std::ops::Deref for FilterFn {
+    type Target = Box<dyn FnMut(walkdir::DirEntry) -> bool>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 /// Comparison conditions for dates
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
@@ -286,7 +295,7 @@ pub enum FilterDateRaw {
 
 /// [`OrganizeFilter`] contains filter variants that organize can
 /// use to apply to files/folders.
-#[derive(Debug, Clone, Deserialize, Serialize, Command, Parser)]
+#[derive(Debug, Clone, Deserialize, Serialize, Parser)]
 pub enum OrganizeFilter {
     /// Matches files / folders by created date
     ///
@@ -764,8 +773,8 @@ pub enum OrganizeFilter {
     },
 }
 
-impl Runnable for OrganizeFilter {
-    fn run(&self) {
+impl OrganizeFilter {
+    pub fn get_filter(&self) -> FilterFn {
         match self {
             OrganizeFilter::DateCreated { value, date, mode } => todo!(),
             OrganizeFilter::DateLastModified { value, date, mode } => todo!(),
@@ -791,9 +800,7 @@ impl Runnable for OrganizeFilter {
             } => todo!(),
         }
     }
-}
 
-impl OrganizeFilter {
     /// Returns `true` if the organize filter is [`DateCreated`].
     ///
     /// [`DateCreated`]: OrganizeFilter::DateCreated

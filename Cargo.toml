@@ -17,15 +17,6 @@ members = ["crates/organize-rs_core"]
 default = []
 research_organize = []
 
-[[example]]
-name = "parse-py-config"
-path = "examples/parse_py_organize_config.rs"
-test = true
-bench = true
-doc = true
-harness = true
-edition = "2021"
-
 [workspace.dependencies]
 organize-rs_core = { path = "crates/organize-rs_core" }
 clap = { version = "4", features = ["derive", "env", "wrap_help"] }
@@ -48,7 +39,8 @@ serde_yaml = "0.9.21"
 toml = "0.7.3"
 abscissa_core = "0.7.0"
 rhai = { version = "1.14.0", features = ["serde"] }
-czkawka_core = "5.1.0"
+czkawka_core = "4.1.0"
+itertools = "0.10.5"
 
 [dependencies]
 organize-rs_core.workspace = true
@@ -67,6 +59,7 @@ walkdir.workspace = true
 serde_yaml.workspace = true
 toml.workspace = true
 abscissa_core.workspace = true
+
 
 
 [dev-dependencies]
