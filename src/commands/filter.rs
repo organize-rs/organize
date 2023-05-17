@@ -51,9 +51,9 @@ impl Runnable for FilterCmd {
             filtered.push(filter_walker(path, filter.deref(), self.max_depth));
         });
 
-        filtered.into_iter().for_each(|f| {
-            f.into_iter()
-                .for_each(|dir_entry| println!("{dir_entry:?}"))
-        })
+        filtered
+            .into_iter()
+            .flat_map(|f| f)
+            .for_each(|dir_entry| println!("{dir_entry:?}"))
     }
 }
