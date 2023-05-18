@@ -5,13 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.1.0 (2023-05-18)
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 14 commits contributed to the release over the course of 3 calendar days.
+ - 15 commits contributed to the release over the course of 3 calendar days.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Add Changelogs ([`3b0ccbd`](https://github.com/organize-rs/organize/commit/3b0ccbda803b2a51cb5a33a03e8c9a382caeae96))
     - Update readme and version ([`287b420`](https://github.com/organize-rs/organize/commit/287b420a81ad730f79d90250c6fde2c7dda6f662))
     - Fix `name` filter `--ends_with` to include `file_stem` ([`af0efed`](https://github.com/organize-rs/organize/commit/af0efed87cabec1c5d7cf465452511008b2e475a))
     - Implement `name` filter ([`88587b0`](https://github.com/organize-rs/organize/commit/88587b09d28b0e1d8dfb9161086308edb19fbfbc))
