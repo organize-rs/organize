@@ -18,6 +18,16 @@ From their docs:
 
 This is a Rust implementation of the same concept.
 
+## Example
+
+- Filter `files`, which file stem ends with `go`, recursive, maximum `2` levels deep:
+
+  `organize filter --recursive --max-depth 2 name --locations "C:\organize\" --targets files --ends-with "go"`
+
+- Filter `files` in `two locations`, which extensions match `rs` or `toml`, recursive, maximum `2` levels deep
+
+  `filter --recursive --max-depth 2 extension --locations C:\organize --locations D:\folders --targets files --exts rs --exts toml`
+
 ## Goals
 
 For now the first goal for this Rust version of `organize` is to have feature parity with its Python equivalent.
