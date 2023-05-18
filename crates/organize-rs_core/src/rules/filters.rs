@@ -1,6 +1,8 @@
 //! FilterSelf::Extension()he config file(s)
 //! and `organize` operates with
 //!
+use std::borrow::BorrowMut;
+
 #[cfg(feature = "cli")]
 use clap::{Args, Subcommand, ValueEnum};
 
@@ -717,8 +719,8 @@ pub enum OrganizeFilter {
         /// By default, the matching is case sensitive.
         ///
         /// Change this to `False` to use case insensitive matching.
-        #[cfg_attr(feature = "cli", arg(long, default_value_t = true))]
-        case_sensitive: bool,
+        #[cfg_attr(feature = "cli", arg(long))]
+        case_insensitive: bool,
     },
     /// Matches filenames with the given regular expression
     ///
@@ -831,21 +833,21 @@ pub struct SizeFilterUpperArgs {
 }
 
 impl OrganizeFilter {
-    pub fn get_filter(&self) -> impl FnMut(&DirEntry) -> bool {
+    pub fn get_filter(&self) -> Box<dyn FnMut(&DirEntry) -> bool> {
         match self {
+            OrganizeFilter::Extension { exts } => Box::new(self.filter_by_extension(exts.clone())),
+            OrganizeFilter::Name {
+                arguments,
+                case_insensitive: case_sensitive,
+            } => Box::new(self.filter_by_name(arguments.clone(), *case_sensitive)),
             OrganizeFilter::Duplicate {
                 detect_original_by,
                 reverse,
             } => todo!(),
             OrganizeFilter::Empty => todo!(),
             OrganizeFilter::Exif => todo!(),
-            OrganizeFilter::Extension { exts } => self.filter_by_extension(exts.clone()),
             OrganizeFilter::Filecontent { regex } => todo!(),
             OrganizeFilter::Mimetype { mimetype } => todo!(),
-            OrganizeFilter::Name {
-                arguments,
-                case_sensitive,
-            } => todo!(),
             OrganizeFilter::Regex { expr } => todo!(),
             OrganizeFilter::Created { date, mode } => todo!(),
             #[cfg(target_os = "osx")]
@@ -1077,18 +1079,49 @@ impl OrganizeFilter {
         }
     }
 
-    fn filter_by_name<'str, O>(
+    fn filter_by_name(
         &self,
-        simple_match: O,
-        starts_with: O,
-        contains: O,
-        ends_with: O,
-        case_sensitive: bool,
-    ) -> impl FnMut(&DirEntry) -> bool
-    where
-        O: Into<Option<&'str String>>,
-    {
-        todo!("implement filtering by name");
-        move |file: &DirEntry| true
+        arguments: NameFilterArgs,
+        case_insensitive: bool,
+    ) -> impl FnMut(&DirEntry) -> bool {
+        move |file: &DirEntry| -> bool {
+            let file = file.clone();
+            let file_path = file.into_path();
+            if let Some(file_name) = file_path.file_name() {
+                let mut file_name_str = file_name.to_string_lossy().into_owned();
+
+                if case_insensitive {
+                    file_name_str = file_name_str.to_lowercase();
+                }
+
+                match &arguments {
+                    NameFilterArgs { starts_with, .. } if arguments.starts_with.is_some() => {
+                        let mut sw = starts_with.clone().expect("should contain value");
+                        if case_insensitive {
+                            sw = sw.to_lowercase();
+                        }
+
+                        file_name_str.starts_with(&sw)
+                    }
+                    NameFilterArgs { contains, .. } if arguments.contains.is_some() => {
+                        let mut c = contains.clone().expect("should contain value");
+                        if case_insensitive {
+                            c = c.to_lowercase();
+                        }
+                        file_name_str.contains(&c)
+                    }
+                    NameFilterArgs { ends_with, .. } if arguments.ends_with.is_some() => {
+                        let mut ew = ends_with.clone().expect("should contain value");
+                        if case_insensitive {
+                            ew = ew.to_lowercase();
+                        }
+                        file_name_str.ends_with(&ew)
+                    }
+                    NameFilterArgs { .. } => false,
+                }
+            } else {
+                false
+            }
+        }
     }
 }
