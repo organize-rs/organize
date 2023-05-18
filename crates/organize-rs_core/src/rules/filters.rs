@@ -278,7 +278,7 @@ impl FilterRecursive {
 #[derive(Display, Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "cli", group(required = true, multiple = false))]
 pub struct NameFilterArgs {
-    // TODO: alternative?
+    // TODO: Not implemented, searching for alternatives
     /// A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
     #[cfg_attr(feature = "cli", arg(long))]
     simple_match: Option<String>,
@@ -1087,6 +1087,7 @@ impl OrganizeFilter {
         move |file: &DirEntry| -> bool {
             let file = file.clone();
             let file_path = file.into_path();
+            let file_stem = file_path.file_stem();
             if let Some(file_name) = file_path.file_name() {
                 let mut file_name_str = file_name.to_string_lossy().into_owned();
 
@@ -1115,7 +1116,11 @@ impl OrganizeFilter {
                         if case_insensitive {
                             ew = ew.to_lowercase();
                         }
-                        file_name_str.ends_with(&ew)
+                        if let Some(stem) = file_stem {
+                            stem.to_string_lossy().ends_with(&ew)
+                        } else {
+                            file_name_str.ends_with(&ew)
+                        }
                     }
                     NameFilterArgs { .. } => false,
                 }
