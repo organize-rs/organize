@@ -1,6 +1,6 @@
 //! Filters that organize can apply
 
-use std::fs::FileType;
+use std::{borrow::BorrowMut, fs::FileType};
 
 use abscissa_core::{Application, Command, Runnable};
 use clap::Parser;
@@ -46,7 +46,7 @@ pub struct FilterCmd {
 impl Runnable for FilterCmd {
     fn run(&self) {
         println!("Filter chosen: {:?}", self.filters);
-        // let filter = self.filters.get_filter();
+        let filter = self.filters.get_filter();
 
         let viable_locations = self
             .locations
@@ -62,19 +62,12 @@ impl Runnable for FilterCmd {
                     Some(OrganizeTargets::Both) | None => true,
                 }
             })
-            // .inspect(|dir_entry| println!("{dir_entry:?}"))
             .collect_vec();
 
         let filtered = viable_locations
             .into_iter()
-            .filter(|f| {
-                let filename = f
-                    .file_name()
-                    .to_str()
-                    .expect("filename can be converted to string");
-                filename.contains("rs")
-            })
-            .inspect(|dir_entry| println!("{dir_entry:?}"))
+            .filter(filter)
+            .inspect(|dir_entry| println!("{}", dir_entry.path().display()))
             .collect_vec();
     }
 }

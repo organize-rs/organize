@@ -765,7 +765,7 @@ pub enum OrganizeFilter {
 }
 
 impl OrganizeFilter {
-    pub fn get_filter<'dir>(&self) -> impl FnMut(&'dir DirEntry) -> bool {
+    pub fn get_filter(&self) -> impl FnMut(&DirEntry) -> bool {
         match self {
             OrganizeFilter::DateCreated { value, date, mode } => todo!(),
             OrganizeFilter::DateLastModified { value, date, mode } => todo!(),
@@ -1014,19 +1014,16 @@ impl OrganizeFilter {
         }
     }
 
-    fn filter_by_extension<I>(&self, exts: I) -> impl FnMut(&DirEntry) -> bool
-    where
-        I: IntoIterator<Item = String>,
-    {
-        let mut exts = exts.into_iter();
-
-        move |file: &walkdir::DirEntry| {
-            let og_extension = file.clone().into_path();
-            match og_extension.extension() {
-                Some(extension) => {
-                    exts.any(|f| f == extension.to_str().expect("extension should be convertable"))
-                }
-                None => false,
+    fn filter_by_extension(&self, exts: Vec<String>) -> impl FnMut(&DirEntry) -> bool {
+        move |file: &DirEntry| -> bool {
+            let mut exts = exts.clone().into_iter();
+            let file = file.clone();
+            let file_path = file.into_path();
+            if let Some(extension) = file_path.extension() {
+                let extension_str = extension.to_string_lossy();
+                exts.any(|f| f == extension_str)
+            } else {
+                false
             }
         }
     }
