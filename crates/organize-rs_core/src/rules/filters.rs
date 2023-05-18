@@ -3,16 +3,7 @@
 
 use clap::{Parser, ValueEnum};
 use serde::{Deserialize, Serialize};
-
-pub struct FilterFn(Box<dyn FnMut(walkdir::DirEntry) -> bool>);
-
-impl std::ops::Deref for FilterFn {
-    type Target = Box<dyn FnMut(walkdir::DirEntry) -> bool>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
+use walkdir::DirEntry;
 
 /// Comparison conditions for dates
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
@@ -774,14 +765,14 @@ pub enum OrganizeFilter {
 }
 
 impl OrganizeFilter {
-    pub fn get_filter(&self) -> FilterFn {
+    pub fn get_filter<'dir>(&self) -> impl FnMut(&'dir DirEntry) -> bool {
         match self {
             OrganizeFilter::DateCreated { value, date, mode } => todo!(),
             OrganizeFilter::DateLastModified { value, date, mode } => todo!(),
             OrganizeFilter::Duplicate { detect_original_by } => todo!(),
             OrganizeFilter::Empty => todo!(),
             OrganizeFilter::Exif => todo!(),
-            OrganizeFilter::Extension { exts } => todo!(),
+            OrganizeFilter::Extension { exts } => self.filter_by_extension(exts.clone()),
             OrganizeFilter::Filecontent { regex } => todo!(),
             OrganizeFilter::Mimetype { mimetype } => todo!(),
             OrganizeFilter::Name {
@@ -1020,6 +1011,23 @@ impl OrganizeFilter {
             Ok(expression)
         } else {
             Err(self)
+        }
+    }
+
+    fn filter_by_extension<I>(&self, exts: I) -> impl FnMut(&DirEntry) -> bool
+    where
+        I: IntoIterator<Item = String>,
+    {
+        let mut exts = exts.into_iter();
+
+        move |file: &walkdir::DirEntry| {
+            let og_extension = file.clone().into_path();
+            match og_extension.extension() {
+                Some(extension) => {
+                    exts.any(|f| f == extension.to_str().expect("extension should be convertable"))
+                }
+                None => false,
+            }
         }
     }
 }

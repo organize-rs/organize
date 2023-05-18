@@ -41,6 +41,7 @@ abscissa_core = "0.7.0"
 rhai = { version = "1.14.0", features = ["serde"] }
 czkawka_core = "4.1.0"
 itertools = "0.10.5"
+displaydoc = "0.2.4"
 
 [dependencies]
 organize-rs_core.workspace = true
@@ -59,7 +60,7 @@ walkdir.workspace = true
 serde_yaml.workspace = true
 toml.workspace = true
 abscissa_core.workspace = true
-
+itertools.workspace = true
 
 
 [dev-dependencies]

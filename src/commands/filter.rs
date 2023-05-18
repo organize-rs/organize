@@ -1,13 +1,16 @@
 //! Filters that organize can apply
 
-use std::ops::Deref;
+use std::fs::FileType;
 
 use abscissa_core::{Application, Command, Runnable};
 use clap::Parser;
+use itertools::Itertools;
 use organize_rs_core::{
-    filter_walker,
+    error::OrganizeResult,
     rules::{filters::OrganizeFilter, OrganizeTargets},
+    FilterWalker,
 };
+use walkdir::DirEntry;
 
 use crate::application::ORGANIZE_APP;
 
@@ -43,17 +46,35 @@ pub struct FilterCmd {
 impl Runnable for FilterCmd {
     fn run(&self) {
         println!("Filter chosen: {:?}", self.filters);
-        let filter = self.filters.get_filter();
+        // let filter = self.filters.get_filter();
 
-        let mut filtered = vec![];
+        let viable_locations = self
+            .locations
+            .iter()
+            .map(|path| FilterWalker::entries(path, self.max_depth))
+            .flatten_ok()
+            .filter_map(std::result::Result::ok)
+            .filter(|f| {
+                let file_type = &f.file_type();
+                match self.targets {
+                    Some(OrganizeTargets::Dirs) => FileType::is_dir(file_type),
+                    Some(OrganizeTargets::Files) => FileType::is_file(file_type),
+                    Some(OrganizeTargets::Both) | None => true,
+                }
+            })
+            // .inspect(|dir_entry| println!("{dir_entry:?}"))
+            .collect_vec();
 
-        self.locations.into_iter().for_each(|path| {
-            filtered.push(filter_walker(path, filter.deref(), self.max_depth));
-        });
-
-        filtered
+        let filtered = viable_locations
             .into_iter()
-            .flat_map(|f| f)
-            .for_each(|dir_entry| println!("{dir_entry:?}"))
+            .filter(|f| {
+                let filename = f
+                    .file_name()
+                    .to_str()
+                    .expect("filename can be converted to string");
+                filename.contains("rs")
+            })
+            .inspect(|dir_entry| println!("{dir_entry:?}"))
+            .collect_vec();
     }
 }
