@@ -5,12 +5,13 @@ repository = "https://github.com/organize-rs/organize"
 license = "AGPL-3.0-or-later"
 categories = ["command-line-utilities"]
 keywords = ["cli", "file-management", "automation"]
+description = "organize - a file management automation tool"
 
 [package]
 name = "organize-rs"
 version = "0.2.0"
 edition.workspace = true
-description = "organize - a file management automation tool"
+description.workspace = true
 authors.workspace = true
 documentation = "https://docs.rs/organize-rs"
 repository.workspace = true
