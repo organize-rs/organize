@@ -1,14 +1,22 @@
-[package]
-name = "organize-rs"
-version = "0.2.0"
+[workspace.package]
 edition = "2021"
-description = "organize - a file management automation tool"
 authors = ["the organize-rs authors"]
-documentation = "https://docs.rs/organize-rs"
 repository = "https://github.com/organize-rs/organize"
 license = "AGPL-3.0-or-later"
 categories = ["command-line-utilities"]
 keywords = ["cli", "file-management", "automation"]
+
+[package]
+name = "organize-rs"
+version = "0.2.0"
+edition.workspace = true
+description = "organize - a file management automation tool"
+authors.workspace = true
+documentation = "https://docs.rs/organize-rs"
+repository.workspace = true
+license.workspace = true
+categories.workspace = true
+keywords.workspace = true
 
 [workspace]
 members = ["crates/organize-rs_core"]
