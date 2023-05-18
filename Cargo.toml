@@ -1,6 +1,6 @@
 [package]
 name = "organize-rs"
-version = "0.2.0"
+version = "0.1.1"
 edition = "2021"
 description = "organize - a file management automation tool"
 authors = ["the organize-rs authors"]
