@@ -1117,7 +1117,13 @@ impl OrganizeFilter {
                             ew = ew.to_lowercase();
                         }
                         if let Some(stem) = file_stem {
-                            stem.to_string_lossy().ends_with(&ew)
+                            let mut new_stem = stem.to_string_lossy().into_owned();
+
+                            if case_insensitive {
+                                new_stem = new_stem.to_lowercase();
+                            }
+
+                            new_stem.ends_with(&ew)
                         } else {
                             file_name_str.ends_with(&ew)
                         }
