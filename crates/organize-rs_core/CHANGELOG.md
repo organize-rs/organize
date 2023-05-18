@@ -5,13 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.1.0 (2023-05-18)
+## 0.1.1 (2023-05-18)
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 16 commits contributed to the release over the course of 3 calendar days.
+ - 21 commits contributed to the release over the course of 3 calendar days.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Update Versions ([`bb0cbce`](https://github.com/organize-rs/organize/commit/bb0cbce647d6f864100e81d1ac65a50fecb614c7))
+    - Fix file_stem case insensitivity ([`03509fe`](https://github.com/organize-rs/organize/commit/03509fe7f6eedf5a94253a2e8e094c47ba114f69))
+    - Add description to core lib ([`3b83e8e`](https://github.com/organize-rs/organize/commit/3b83e8ec10c2cbf24c7c35923aba9fc75687921c))
+    - Update workspace manifests ([`d4eba0d`](https://github.com/organize-rs/organize/commit/d4eba0d0052f1d114bd7988edacfc5e53a62e4a9))
+    - Adjusting changelogs prior to release of organize-rs_core v0.1.0, organize-rs v0.2.0 ([`2dbdfe3`](https://github.com/organize-rs/organize/commit/2dbdfe3b7b2b656075901a013a587f6e6d4883cf))
     - Adjusting changelogs prior to release of organize-rs_core v0.1.0, organize-rs v0.2.0 ([`c008e22`](https://github.com/organize-rs/organize/commit/c008e22937993460a2997c33c13410625c25fc5b))
     - Add Changelogs ([`3b0ccbd`](https://github.com/organize-rs/organize/commit/3b0ccbda803b2a51cb5a33a03e8c9a382caeae96))
     - Update readme and version ([`287b420`](https://github.com/organize-rs/organize/commit/287b420a81ad730f79d90250c6fde2c7dda6f662))
@@ -39,4 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Start parsing config ([`0e36272`](https://github.com/organize-rs/organize/commit/0e36272f9e7db8e65daaad39d228d986ab952673))
     - Refactor to workspace and create new core library ([`0de540b`](https://github.com/organize-rs/organize/commit/0de540b0aa0ab07dc4f3b118e6f95b30312ea44e))
 </details>
+
+## 0.1.0 (2023-05-18)
 
