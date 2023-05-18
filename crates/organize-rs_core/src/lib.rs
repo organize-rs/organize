@@ -12,15 +12,15 @@ use walkdir::{DirEntry, WalkDir};
 pub struct FilterWalker {}
 
 impl FilterWalker {
-    pub fn entries<A, I>(path: A, max_depth: I) -> OrganizeResult<Vec<DirEntry>>
+    pub fn entries<A>(path: A, max_depth: u64) -> OrganizeResult<Vec<DirEntry>>
     where
         A: AsRef<Path>,
-        I: Into<Option<u64>>,
     {
-        let depth = usize::try_from(max_depth.into().unwrap_or(0))?;
+        let depth = usize::try_from(max_depth)?;
 
         let files: Vec<DirEntry> = WalkDir::new(path)
             .max_depth(depth)
+            .contents_first(true)
             .into_iter()
             .filter_map(|f| f.ok())
             .collect();

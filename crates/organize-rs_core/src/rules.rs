@@ -5,16 +5,21 @@ pub mod actions;
 pub mod aliases;
 pub mod filters;
 
+#[cfg(feature = "cli")]
 use clap::ValueEnum;
+
+use displaydoc::Display;
 use serde::{Deserialize, Serialize};
 // use std::path::PathBuf;
 
 use crate::rules::{actions::OrganizeAction, filters::OrganizeFilter};
 
 /// Should filters be negated
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub enum ApplyOrNegateFilter {
+    /// Apply a filter
     Apply(OrganizeFilter),
+    /// Negate this filter
     Negate(OrganizeFilter),
 }
 
@@ -69,10 +74,12 @@ impl ApplyOrNegateFilter {
 }
 
 /// Should we go recursive into folders
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Display, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Recurse {
+    /// operate on top-level only
     #[serde(rename = "false")]
     Flat,
+    /// recurse into subfolders
     #[serde(rename = "true")]
     Recursive,
 }
@@ -102,10 +109,13 @@ impl Default for Recurse {
 }
 
 /// Tags that can be applied to rules
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord)]
 pub enum OrganizeTag {
+    /// Always run filters/actions with this tag
     Always,
+    /// Never run filters/actions with this tag
     Never,
+    /// Custom tag for running filters/actions
     Custom(String),
 }
 
@@ -153,10 +163,13 @@ impl OrganizeTag {
 
 /// Application of filters, so whether "all", "any" or "none"
 /// of the filters must apply
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Copy)]
 pub enum OrganizeFilterMode {
+    /// All of the filters need to apply
     All,
+    /// Any of the filters need to apply
     Any,
+    /// None of the filters need to apply
     None,
 }
 
@@ -196,10 +209,14 @@ impl OrganizeFilterMode {
 ///
 /// When targets is set to dirs, organize will work on
 /// the folders, not on files.
-#[derive(Debug, Clone, Deserialize, Serialize, ValueEnum)]
+#[cfg_attr(feature = "cli", derive(ValueEnum))]
+#[derive(Debug, Clone, Deserialize, Serialize, Display, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum OrganizeTargets {
+    /// operate only on directories
     Dirs,
+    /// operate only on files
     Files,
+    /// operate on both
     Both,
 }
 

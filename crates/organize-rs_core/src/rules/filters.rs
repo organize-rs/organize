@@ -1,14 +1,20 @@
 //! FilterSelf::Extension()he config file(s)
 //! and `organize` operates with
+//!
+#[cfg(feature = "cli")]
+use clap::{Args, Subcommand, ValueEnum};
 
-use clap::{Parser, ValueEnum};
+use displaydoc::Display;
 use serde::{Deserialize, Serialize};
 use walkdir::DirEntry;
 
 /// Comparison conditions for dates
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
+#[cfg_attr(feature = "cli", derive(ValueEnum))]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
 pub enum OlderNewer {
+    /// older
     Older,
+    /// newer
     Newer,
 }
 
@@ -37,7 +43,8 @@ impl Default for OlderNewer {
 }
 
 /// Duplication detection
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
+#[cfg_attr(feature = "cli", derive(ValueEnum))]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum DetectDuplicateBy {
     /// Whatever file is visited first is the original.
     ///
@@ -104,7 +111,8 @@ pub enum SizeConditions {
 }
 
 /// Comparison conditions for the size of files
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
+#[cfg_attr(feature = "cli", derive(ValueEnum))]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum SizeConditionsRaw {
     GreaterThan,
     GreaterOrEqual,
@@ -235,58 +243,117 @@ impl SizeConditions {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub enum FilterDate {
-    /// specify number of years
-    #[serde(rename = "years")]
-    Years(u16),
-    /// specify number of months
-    #[serde(rename = "months")]
-    Months(u64),
-    /// specify number of weeks
-    #[serde(rename = "weeks")]
-    Weeks(f64),
-    /// specify number of days
-    #[serde(rename = "days")]
-    Days(f64),
-    /// specify number of hours
-    #[serde(rename = "hours")]
-    Hours(f64),
-    /// specify number of minutes
-    #[serde(rename = "minutes")]
-    Minutes(f64),
-    /// specify number of seconds
-    #[serde(rename = "seconds")]
-    Seconds(f64),
+#[cfg_attr(feature = "cli", derive(Args))]
+#[derive(Display, Debug, Clone, Deserialize, Serialize)]
+#[cfg_attr(feature = "cli", group(required = true, multiple = true))]
+pub struct FilterRecursive {
+    /// Recurse into subfolders
+    #[cfg_attr(
+        feature = "cli",
+        arg(short, long, default_value_t = false, global = true, group = "recurse")
+    )]
+    recursive: bool,
+
+    /// Maximal depth when operating recursively
+    #[cfg_attr(
+        feature = "cli",
+        arg(short, long, global = true, default_value_t = 1, requires = "recurse")
+    )]
+    max_depth: u64,
 }
-#[derive(Debug, Clone, Deserialize, Serialize, ValueEnum)]
-pub enum FilterDateRaw {
+
+impl FilterRecursive {
+    pub fn recursive(&self) -> bool {
+        self.recursive
+    }
+
+    pub fn max_depth(&self) -> u64 {
+        self.max_depth
+    }
+}
+
+#[cfg_attr(feature = "cli", derive(Args))]
+#[derive(Display, Debug, Clone, Deserialize, Serialize)]
+#[cfg_attr(feature = "cli", group(required = true, multiple = false))]
+pub struct NameFilterArgs {
+    // TODO: alternative?
+    /// A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
+    #[cfg_attr(feature = "cli", arg(long))]
+    simple_match: Option<String>,
+    /// The filename must begin with the given string
+    #[cfg_attr(feature = "cli", arg(long))]
+    starts_with: Option<String>,
+    /// The filename must contain the given string
+    #[cfg_attr(feature = "cli", arg(long))]
+    contains: Option<String>,
+    /// The filename (without extension) must end with the given string
+    #[cfg_attr(feature = "cli", arg(long))]
+    ends_with: Option<String>,
+}
+
+// #[derive(Debug, Clone, Deserialize, Serialize, Display)]
+// pub enum FilterDate {
+//     /// specify number of years
+//     #[serde(rename = "years")]
+//     Years(u16),
+//     /// specify number of months
+//     #[serde(rename = "months")]
+//     Months(u64),
+//     /// specify number of weeks
+//     #[serde(rename = "weeks")]
+//     Weeks(f64),
+//     /// specify number of days
+//     #[serde(rename = "days")]
+//     Days(f64),
+//     /// specify number of hours
+//     #[serde(rename = "hours")]
+//     Hours(f64),
+//     /// specify number of minutes
+//     #[serde(rename = "minutes")]
+//     Minutes(f64),
+//     /// specify number of seconds
+//     #[serde(rename = "seconds")]
+//     Seconds(f64),
+// }
+
+#[cfg_attr(feature = "cli", derive(Args))]
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[cfg_attr(feature = "cli", group(required = true, multiple = false))]
+pub struct FilterDate {
     /// specify number of years
     #[serde(rename = "years")]
-    Years,
+    #[cfg_attr(feature = "cli", arg(long))]
+    years: u64,
     /// specify number of months
     #[serde(rename = "months")]
-    Months,
+    #[cfg_attr(feature = "cli", arg(long))]
+    months: u64,
     /// specify number of weeks
     #[serde(rename = "weeks")]
-    Weeks,
+    #[cfg_attr(feature = "cli", arg(long))]
+    weeks: f64,
     /// specify number of days
     #[serde(rename = "days")]
-    Days,
+    #[cfg_attr(feature = "cli", arg(long))]
+    days: f64,
     /// specify number of hours
     #[serde(rename = "hours")]
-    Hours,
+    #[cfg_attr(feature = "cli", arg(long))]
+    hours: f64,
     /// specify number of minutes
     #[serde(rename = "minutes")]
-    Minutes,
+    #[cfg_attr(feature = "cli", arg(long))]
+    minutes: f64,
     /// specify number of seconds
     #[serde(rename = "seconds")]
-    Seconds,
+    #[cfg_attr(feature = "cli", arg(long))]
+    seconds: f64,
 }
 
 /// [`OrganizeFilter`] contains filter variants that organize can
 /// use to apply to files/folders.
-#[derive(Debug, Clone, Deserialize, Serialize, Parser)]
+#[cfg_attr(feature = "cli", derive(Subcommand))]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeFilter {
     /// Matches files / folders by created date
     ///
@@ -309,12 +376,10 @@ pub enum OrganizeFilter {
     ///        - move: "~/Documents/PDF/{created.year}/"
     /// ```
     #[serde(rename = "created")]
-    DateCreated {
-        #[clap(long)]
-        value: u64,
-        #[clap(long)]
-        date: FilterDateRaw,
-        #[clap(long)]
+    Created {
+        #[cfg_attr(feature = "cli", command(flatten))]
+        date: FilterDate,
+        #[cfg_attr(feature = "cli", arg(long))]
         mode: OlderNewer,
     },
     /// Matches files by the time the file was added to a folder
@@ -338,12 +403,10 @@ pub enum OrganizeFilter {
     /// ```
     #[cfg(target_os = "osx")]
     #[serde(rename = "date_added")]
-    DateAdded {
-        #[clap(long)]
-        value: u64,
-        #[clap(long)]
-        date: FilterDateRaw,
-        #[clap(long)]
+    Added {
+        #[cfg_attr(feature = "cli", command(flatten))]
+        date: FilterDate,
+        #[cfg_attr(feature = "cli", arg(long))]
         mode: OlderNewer,
     },
     /// Matches files by the time the file was last used
@@ -367,12 +430,10 @@ pub enum OrganizeFilter {
     /// ```
     #[cfg(target_os = "osx")]
     #[serde(rename = "date_lastused")]
-    DateLastUsed {
-        #[clap(long)]
-        value: u64,
-        #[clap(long)]
-        date: FilterDateRaw,
-        #[clap(long)]
+    LastUsed {
+        #[cfg_attr(feature = "cli", command(flatten))]
+        date: FilterDate,
+        #[cfg_attr(feature = "cli", arg(long))]
         mode: OlderNewer,
     },
     /// Matches files by last modified date
@@ -396,12 +457,10 @@ pub enum OrganizeFilter {
     ///       - move: "~/Documents/PDF/{lastmodified.year}/"
     /// ```
     #[serde(rename = "last_modified")]
-    DateLastModified {
-        #[clap(long)]
-        value: u64,
-        #[clap(long)]
-        date: FilterDateRaw,
-        #[clap(long)]
+    LastModified {
+        #[cfg_attr(feature = "cli", command(flatten))]
+        date: FilterDate,
+        #[cfg_attr(feature = "cli", arg(long))]
         mode: OlderNewer,
     },
     /// A fast duplicate file finder
@@ -409,7 +468,7 @@ pub enum OrganizeFilter {
     /// This filter compares files byte by byte and finds identical
     /// files with potentially different filenames.
     ///
-    /// You can reverse the sorting method by prefixing a `-`.
+    /// You can reverse the sorting method by setting `reverse`.
     ///
     /// So with detect_original_by: "-created" the file with the older
     /// creation date is the original and the younger file is the
@@ -439,8 +498,10 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "duplicate")]
     Duplicate {
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         detect_original_by: Option<DetectDuplicateBy>,
+        #[cfg_attr(feature = "cli", arg(long))]
+        reverse: bool,
     },
     /// Finds empty dirs and files
     ///
@@ -517,9 +578,8 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "extension")]
     Extension {
-        /// The file extensions to match (does not need to start
-        /// with a colon)
-        #[clap(long)]
+        /// The file extensions to match (without dot)
+        #[cfg_attr(feature = "cli", arg(long))]
         exts: Vec<String>,
     },
     /// Matches file content with the given regular expression
@@ -546,7 +606,7 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "filecontent")]
     Filecontent {
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         regex: String,
     },
     // TODO: Check for available hash algorithms from organize-py
@@ -595,7 +655,7 @@ pub enum OrganizeFilter {
     #[cfg(target_os = "osx")]
     #[serde(rename = "macos_tags")]
     MacOsTags {
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         tags: Vec<String>,
     },
     /// Filter by MIME type associated with the file extension
@@ -624,7 +684,7 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "mimetype")]
     Mimetype {
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         mimetype: Vec<String>,
     },
     /// Match files and folders by name
@@ -652,23 +712,12 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "name")]
     Name {
-        // TODO: alternative?
-        /// A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
-        #[clap(long)]
-        simple_match: String,
-        /// The filename must begin with the given string
-        #[clap(long)]
-        starts_with: String,
-        /// The filename must contain the given string
-        #[clap(long)]
-        contains: String,
-        /// The filename (without extension) must end with the given string
-        #[clap(long)]
-        ends_with: String,
+        #[cfg_attr(feature = "cli", command(flatten))]
+        arguments: NameFilterArgs,
         /// By default, the matching is case sensitive.
         ///
-        /// Change this to False to use case insensitive matching.
-        #[clap(long)]
+        /// Change this to `False` to use case insensitive matching.
+        #[cfg_attr(feature = "cli", arg(long, default_value_t = true))]
         case_sensitive: bool,
     },
     /// Matches filenames with the given regular expression
@@ -696,7 +745,7 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "regex")]
     Regex {
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         expr: String,
     },
     /// Matches files and folders by size
@@ -753,42 +802,58 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "size")]
     Size {
-        #[clap(long)]
-        upper_value: Option<u64>,
-        #[clap(long)]
-        upper: Option<SizeConditionsRaw>,
-        #[clap(long)]
-        lower_value: Option<u64>,
-        #[clap(long)]
-        lower: Option<SizeConditionsRaw>,
+        #[cfg_attr(feature = "cli", command(flatten))]
+        upper: SizeFilterUpperArgs,
+        #[cfg_attr(feature = "cli", command(flatten))]
+        lower: SizeFilterLowerArgs,
     },
+}
+
+// TODO: Grouping CLI or better option?
+// Enum variants would be better as it was intended
+#[cfg_attr(feature = "cli", derive(Args))]
+#[derive(Display, Debug, Clone, Deserialize, Serialize)]
+#[cfg_attr(feature = "cli", group(required = false, multiple = true))]
+pub struct SizeFilterLowerArgs {
+    #[cfg_attr(feature = "cli", arg(long))]
+    lower_value: Option<u64>,
+    #[cfg_attr(feature = "cli", arg(long))]
+    lower: Option<SizeConditionsRaw>,
+}
+#[cfg_attr(feature = "cli", derive(Args))]
+#[derive(Display, Debug, Clone, Deserialize, Serialize)]
+#[cfg_attr(feature = "cli", group(required = false, multiple = true))]
+pub struct SizeFilterUpperArgs {
+    #[cfg_attr(feature = "cli", arg(long))]
+    upper_value: Option<u64>,
+    #[cfg_attr(feature = "cli", arg(long))]
+    upper: Option<SizeConditionsRaw>,
 }
 
 impl OrganizeFilter {
     pub fn get_filter(&self) -> impl FnMut(&DirEntry) -> bool {
         match self {
-            OrganizeFilter::DateCreated { value, date, mode } => todo!(),
-            OrganizeFilter::DateLastModified { value, date, mode } => todo!(),
-            OrganizeFilter::Duplicate { detect_original_by } => todo!(),
+            OrganizeFilter::Duplicate {
+                detect_original_by,
+                reverse,
+            } => todo!(),
             OrganizeFilter::Empty => todo!(),
             OrganizeFilter::Exif => todo!(),
             OrganizeFilter::Extension { exts } => self.filter_by_extension(exts.clone()),
             OrganizeFilter::Filecontent { regex } => todo!(),
             OrganizeFilter::Mimetype { mimetype } => todo!(),
             OrganizeFilter::Name {
-                simple_match,
-                starts_with,
-                contains,
-                ends_with,
+                arguments,
                 case_sensitive,
             } => todo!(),
             OrganizeFilter::Regex { expr } => todo!(),
-            OrganizeFilter::Size {
-                upper_value,
-                upper,
-                lower_value,
-                lower,
-            } => todo!(),
+            OrganizeFilter::Created { date, mode } => todo!(),
+            #[cfg(target_os = "osx")]
+            OrganizeFilter::Added { date, mode } => todo!(),
+            #[cfg(target_os = "osx")]
+            OrganizeFilter::LastUsed { date, mode } => todo!(),
+            OrganizeFilter::LastModified { date, mode } => todo!(),
+            OrganizeFilter::Size { upper, lower } => todo!(),
         }
     }
 
@@ -797,33 +862,33 @@ impl OrganizeFilter {
     /// [`DateCreated`]: OrganizeFilter::DateCreated
     #[must_use]
     pub fn is_date_created(&self) -> bool {
-        matches!(self, Self::DateCreated { .. })
+        matches!(self, Self::Created { .. })
     }
 
-    /// Returns `true` if the organize filter is [`DateAdded`].
+    /// Returns `true` if the organize filter is [`Added`].
     ///
-    /// [`DateAdded`]: OrganizeFilter::DateAdded
+    /// [`Added`]: OrganizeFilter::Added
     #[must_use]
     #[cfg(target_os = "osx")]
     pub fn is_date_added(&self) -> bool {
-        matches!(self, Self::DateAdded { .. })
+        matches!(self, Self::Added { .. })
     }
 
-    /// Returns `true` if the organize filter is [`DateLastUsed`].
+    /// Returns `true` if the organize filter is [`LastUsed`].
     ///
-    /// [`DateLastUsed`]: OrganizeFilter::DateLastUsed
+    /// [`LastUsed`]: OrganizeFilter::LastUsed
     #[must_use]
     #[cfg(target_os = "osx")]
     pub fn is_date_last_used(&self) -> bool {
-        matches!(self, Self::DateLastUsed { .. })
+        matches!(self, Self::LastUsed { .. })
     }
 
-    /// Returns `true` if the organize filter is [`DateLastModified`].
+    /// Returns `true` if the organize filter is [`LastModified`].
     ///
-    /// [`DateLastModified`]: OrganizeFilter::DateLastModified
+    /// [`LastModified`]: OrganizeFilter::LastModified
     #[must_use]
     pub fn is_date_last_modified(&self) -> bool {
-        matches!(self, Self::DateLastModified { .. })
+        matches!(self, Self::LastModified { .. })
     }
 
     /// Returns `true` if the organize filter is [`Duplicate`].
@@ -966,22 +1031,6 @@ impl OrganizeFilter {
         matches!(self, Self::Size { .. })
     }
 
-    pub fn as_duplicate(&self) -> Option<&Option<DetectDuplicateBy>> {
-        if let Self::Duplicate { detect_original_by } = self {
-            Some(detect_original_by)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_duplicate(self) -> Result<Option<DetectDuplicateBy>, Self> {
-        if let Self::Duplicate { detect_original_by } = self {
-            Ok(detect_original_by)
-        } else {
-            Err(self)
-        }
-    }
-
     pub fn as_extension(&self) -> Option<&Vec<String>> {
         if let Self::Extension { exts: extensions } = self {
             Some(extensions)
@@ -1026,5 +1075,20 @@ impl OrganizeFilter {
                 false
             }
         }
+    }
+
+    fn filter_by_name<'str, O>(
+        &self,
+        simple_match: O,
+        starts_with: O,
+        contains: O,
+        ends_with: O,
+        case_sensitive: bool,
+    ) -> impl FnMut(&DirEntry) -> bool
+    where
+        O: Into<Option<&'str String>>,
+    {
+        todo!("implement filtering by name");
+        move |file: &DirEntry| true
     }
 }

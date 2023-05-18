@@ -1,7 +1,7 @@
 //! Actions that organize can apply
 
 use abscissa_core::{Command, Runnable};
-use clap::Parser;
+use clap::{Args, Parser};
 use organize_rs_core::rules::actions::OrganizeAction;
 
 /// `action` subcommand
@@ -11,13 +11,13 @@ use organize_rs_core::rules::actions::OrganizeAction;
 /// for a more comprehensive example:
 ///
 /// <https://docs.rs/clap/>
-#[derive(Command, Debug, Parser)]
+#[derive(Command, Debug, Args)]
 pub struct ActionCmd {
     #[clap(subcommand)]
     actions: OrganizeAction,
 
     /// Run an action destructively
-    #[clap(short, long, global = true)]
+    #[arg(short, long, global = true, default_value_t = false)]
     destructive_run: bool,
 }
 

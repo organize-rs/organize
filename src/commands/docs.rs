@@ -1,10 +1,10 @@
 //! `docs` subcommand
 
 use abscissa_core::{Command, Runnable};
-use clap::Parser;
+use clap::{Parser, Args};
 
 /// Opens the documentation.
-#[derive(Command, Debug, Parser)]
+#[derive(Command, Debug, Args)]
 pub struct DocsCmd {}
 
 impl Runnable for DocsCmd {

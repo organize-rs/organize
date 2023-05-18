@@ -1,12 +1,16 @@
 //! Actions that can be used in the config file and
 //! `organize` applieds to matching rules
 
-use clap::{Parser, ValueEnum};
+#[cfg(feature = "cli")]
+use clap::{Subcommand, ValueEnum};
+
+use displaydoc::Display;
 use serde::{Deserialize, Serialize};
 
 /// Colours for `MacOS` tags
 #[cfg(target_os = "osx")]
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
+#[cfg_attr(feature = "cli", derive(ValueEnum))]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum MacOsTagColours {
     None,
     Gray,
@@ -93,12 +97,18 @@ impl Default for MacOsTagColours {
 }
 
 /// Actions for conflict resolution
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
+#[cfg_attr(feature = "cli", derive(ValueEnum))]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
 pub enum OnConflict {
+    /// Skip the item
     Skip,
+    /// Overwrite the item
     Overwrite,
+    /// Move the item to trash
     Trash,
+    /// Rename the newly created item
     RenameNew,
+    /// Rename the initial item
     RenameExisting,
 }
 
@@ -151,10 +161,14 @@ impl Default for OnConflict {
 }
 
 /// Support template strings
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, ValueEnum)]
+#[cfg_attr(feature = "cli", derive(ValueEnum))]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
 pub enum TemplateStrings {
+    /// {{filename}}
     Filename,
+    /// {{counter}}
     Counter,
+    /// {{extension}}
     Extension,
 }
 
@@ -185,7 +199,8 @@ impl TemplateStrings {
 }
 
 /// Mode how should be written to a file
-#[derive(Debug, Clone, Deserialize, Serialize, ValueEnum)]
+#[cfg_attr(feature = "cli", derive(ValueEnum))]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum WriteMode {
     /// append text to the file
     Append,
@@ -231,7 +246,8 @@ impl Default for WriteMode {
 // adapted from: https://organize.readthedocs.io/en/latest/actions/
 //
 /// Actions that can be used within the config file
-#[derive(Debug, Clone, Deserialize, Serialize, Parser)]
+#[cfg_attr(feature = "cli", derive(Subcommand))]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeAction {
     /// Do nothing.
     None,
@@ -261,9 +277,9 @@ pub enum OrganizeAction {
     /// ```
     #[serde(rename = "confirm")]
     Confirm {
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         text: Option<String>,
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         vars: Option<Vec<String>>,
     },
     /// Copy a file or dir to a new location.
@@ -294,29 +310,29 @@ pub enum OrganizeAction {
         /// If `src` ends with a slash, it is assumed
         /// to be a source directory and the file / dir will be
         /// copied into `destination` and keep its name.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         src: String,
         /// The destination where the file / dir should be copied
         /// to. If `dst` ends with a slash, it is assumed
         /// to be a target directory and the file / dir will be
         /// copied into `dst` and keep its name.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         dst: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
         /// Defaults to rename_new.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         on_conflict: OnConflict,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         rename_template: Vec<TemplateStrings>,
         /// An opener url of the filesystem you want to copy to.
         ///
         /// If this is not given, the local filesystem is used.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         filesystem: Option<String>,
     },
     /// Delete a file from disk.
@@ -346,7 +362,7 @@ pub enum OrganizeAction {
         /// trashed.
         ///
         /// USE WITH CARE!
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         src: String,
     },
     /// Prints the given message.
@@ -371,7 +387,7 @@ pub enum OrganizeAction {
     /// ```
     #[serde(rename = "echo")]
     Echo {
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         msg: String,
     },
     /// Add macOS tags.
@@ -411,7 +427,7 @@ pub enum OrganizeAction {
     #[cfg(target_os = "osx")]
     #[serde(rename = "macos_tags")]
     MacOsTags {
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         tags: Vec<String>,
     },
     /// Move a file to a new location.
@@ -447,29 +463,29 @@ pub enum OrganizeAction {
         /// If `src` ends with a slash, it is assumed
         /// to be a source directory and the file / dir will be
         /// copied into `destination` and keep its name.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         src: String,
         /// The destination where the file / dir should be moved
         /// to. If `dst` ends with a slash, it is assumed
         /// to be a target directory and the file / dir will be
         /// moved into `dst`and keep its name.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         dst: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
         /// Defaults to rename_new.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         on_conflict: OnConflict,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         rename_template: Vec<TemplateStrings>,
         /// An opener url of the filesystem you want to move to.
         ///
         /// If this is not given, the local filesystem is used.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         filesystem: Option<String>,
     },
     /// Renames a file.
@@ -494,21 +510,21 @@ pub enum OrganizeAction {
         /// If `src` ends with a slash, it is assumed
         /// to be a source directory and the file / dir will be
         /// renamed.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         src: String,
         /// The new name for the file / dir.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         name: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
         /// Defaults to rename_new.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         on_conflict: OnConflict,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         rename_template: Vec<TemplateStrings>,
     },
     /// Create a symbolic link.
@@ -518,7 +534,7 @@ pub enum OrganizeAction {
         /// If `src` ends with a slash, it is assumed
         /// to be a source directory and the file / dir will be
         /// symlinked.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         src: String,
         /// The symlink destination.
         ///
@@ -527,7 +543,7 @@ pub enum OrganizeAction {
         ///
         /// Only the local filesystem is supported.
         // TODO: Can contain placeholders?
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         dst: String,
     },
     /// Move a file or dir into the trash.
@@ -557,7 +573,7 @@ pub enum OrganizeAction {
         /// If `src` ends with a slash, it is assumed
         /// to be a source directory and the file / dir will be
         /// trashed.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         src: String,
     },
     /// Write text to a file.
@@ -585,36 +601,36 @@ pub enum OrganizeAction {
     #[serde(rename = "write")]
     Write {
         /// The text that should be written. Supports templates.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         txt: String,
         /// The file `text` should be written into. Supports templates.
         ///
         // Defaults to `organize-out.txt`
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         file: String,
         /// Can be either `append` (append text to the file), `prepend`
         /// (insert text as first line) or `overwrite` (overwrite content
         /// with text).
         ///
         /// Defaults to `append`.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         mode: WriteMode,
         /// Whether to append a newline to the given text.
         ///
         /// Defaults to `true`.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         newline: Option<bool>,
         /// Clears the file before first appending / prepending text to it.
         /// This happens only the first time write_file is run. If the rule
         /// filters don't match anything the file is left as it is.
         ///
         /// Defaults to `false`.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         clear_before_first_write: Option<bool>,
         /// An opener url of the filesystem the textfile is on.
         ///
         /// If this is not given, the local filesystem is used.
-        #[clap(long)]
+        #[cfg_attr(feature = "cli", arg(long))]
         filesystem: Option<String>,
     },
     #[serde(rename = "shell")]

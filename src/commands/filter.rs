@@ -3,11 +3,14 @@
 use std::{borrow::BorrowMut, fs::FileType};
 
 use abscissa_core::{Application, Command, Runnable};
-use clap::Parser;
+use clap::{Args, Parser};
 use itertools::Itertools;
 use organize_rs_core::{
     error::OrganizeResult,
-    rules::{filters::OrganizeFilter, OrganizeTargets},
+    rules::{
+        filters::{FilterRecursive, OrganizeFilter},
+        OrganizeTargets,
+    },
     FilterWalker,
 };
 use walkdir::DirEntry;
@@ -21,26 +24,21 @@ use crate::application::ORGANIZE_APP;
 /// for a more comprehensive example:
 ///
 /// <https://docs.rs/clap/>
-#[derive(Command, Debug, Parser)]
+#[derive(Command, Debug, Args)]
 pub struct FilterCmd {
     #[clap(subcommand)]
     filters: OrganizeFilter,
 
     /// Locations to operate on
-    #[clap(short, long, global = true)]
+    #[arg(short, long, global = true)]
     locations: Vec<String>,
 
     /// Targets to operate on
-    #[clap(short, long, global = true)]
-    targets: Option<OrganizeTargets>,
+    #[arg(short, long, global = true, default_value_t = OrganizeTargets::Files, value_enum)]
+    targets: OrganizeTargets,
 
-    /// Recurse into subfolders
-    #[clap(short, long, global = true)]
-    recursive: bool,
-
-    /// Maximal depth when operating recursively
-    #[clap(short, long, global = true)]
-    max_depth: Option<u64>,
+    #[command(flatten)]
+    recursive: FilterRecursive,
 }
 
 impl Runnable for FilterCmd {
@@ -51,15 +49,15 @@ impl Runnable for FilterCmd {
         let viable_locations = self
             .locations
             .iter()
-            .map(|path| FilterWalker::entries(path, self.max_depth))
+            .map(|path| FilterWalker::entries(path, self.recursive.max_depth()))
             .flatten_ok()
             .filter_map(std::result::Result::ok)
             .filter(|f| {
                 let file_type = &f.file_type();
                 match self.targets {
-                    Some(OrganizeTargets::Dirs) => FileType::is_dir(file_type),
-                    Some(OrganizeTargets::Files) => FileType::is_file(file_type),
-                    Some(OrganizeTargets::Both) | None => true,
+                    OrganizeTargets::Dirs => FileType::is_dir(file_type),
+                    OrganizeTargets::Files => FileType::is_file(file_type),
+                    OrganizeTargets::Both => true,
                 }
             })
             .collect_vec();

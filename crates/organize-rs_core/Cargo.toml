@@ -5,9 +5,13 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = []
+cli = ["dep:clap", "dep:indicatif"]
+
 [dependencies]
 czkawka_core.workspace = true
-clap.workspace = true
+clap = { workspace = true, optional = true }
 directories.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -16,7 +20,7 @@ once_cell.workspace = true
 duct.workspace = true
 chrono.workspace = true
 regex.workspace = true
-indicatif.workspace = true
+indicatif = { workspace = true, optional = true }
 walkdir.workspace = true
 serde_yaml.workspace = true
 toml.workspace = true

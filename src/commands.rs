@@ -1,16 +1,7 @@
 //! Organize Subcommands
-//!
-//! This is where you specify the subcommands of your application.
-//!
-//! The default application comes with two subcommands:
-//!
-//! - `start`: launches the application
-//! - `--version`: print application version
-//!
-//! See the `impl Configurable` below for how to specify the path to the
-//! application's configuration file.
 
 mod action;
+mod completions;
 mod docs;
 mod filter;
 
@@ -22,11 +13,11 @@ mod filter;
 // mod sim;
 
 use crate::{
-    commands::{action::ActionCmd, docs::DocsCmd, filter::FilterCmd},
+    commands::{action::ActionCmd, completions::CompletionsCmd, docs::DocsCmd, filter::FilterCmd},
     config::OrganizeConfig,
 };
 use abscissa_core::{config::Override, Command, Configurable, FrameworkError, Runnable};
-use clap;
+use clap::{self, Subcommand};
 use directories::BaseDirs;
 use once_cell::sync::Lazy;
 use organize_rs_core::rules::{OrganizeLocation, OrganizeTargets};
@@ -49,7 +40,7 @@ pub const CONFIG_FILE: &str = "organize.toml";
 
 /// Organize Subcommands
 /// Subcommands need to be listed in an enum.
-#[derive(clap::Parser, Command, Debug, Runnable)]
+#[derive(Subcommand, Command, Debug, Runnable)]
 pub enum OrganizeCmd {
     /// Actions that organize can apply
     Action(ActionCmd),
@@ -57,6 +48,8 @@ pub enum OrganizeCmd {
     Docs(DocsCmd),
     /// Filters that organize can apply
     Filter(FilterCmd),
+    /// Generate Completions for your shell
+    Completions(CompletionsCmd),
 }
 
 #[allow(clippy::struct_excessive_bools)]
@@ -66,7 +59,6 @@ pub enum OrganizeCmd {
 pub struct EntryPoint {
     #[command(subcommand)]
     cmd: OrganizeCmd,
-
     // /// Enable verbose logging
     // #[clap(short, long)]
     // pub verbose: bool,
