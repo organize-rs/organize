@@ -27,7 +27,7 @@ default = []
 research_organize = []
 
 [workspace.dependencies]
-organize-rs_core = { path = "crates/organize-rs_core", features = ["cli"] }
+organize-rs_core = { version = "0.1.0", path = "crates/organize-rs_core", features = ["cli"] }
 clap = { version = "4", features = ["derive", "env", "wrap_help"] }
 directories = "5.0.1"
 serde = { version = "1", features = ["serde_derive"] }
