@@ -5,13 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.1.1 (2023-05-18)
+## 0.1.2 (2023-05-19)
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 21 commits contributed to the release over the course of 3 calendar days.
+ - 23 commits contributed to the release over the course of 3 calendar days.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Implement `empty` filter and global ignore for file names and directory paths ([`d51a81a`](https://github.com/organize-rs/organize/commit/d51a81a593cb37c54c0c91edfac60a5eb8de7c89))
+    - Adjusting changelogs prior to release of organize-rs_core v0.1.1, organize-rs v0.2.1 ([`1e0e2dc`](https://github.com/organize-rs/organize/commit/1e0e2dc36593da72422817d50eff61f13444ea32))
     - Update Versions ([`bb0cbce`](https://github.com/organize-rs/organize/commit/bb0cbce647d6f864100e81d1ac65a50fecb614c7))
     - Fix file_stem case insensitivity ([`03509fe`](https://github.com/organize-rs/organize/commit/03509fe7f6eedf5a94253a2e8e094c47ba114f69))
     - Add description to core lib ([`3b83e8e`](https://github.com/organize-rs/organize/commit/3b83e8ec10c2cbf24c7c35923aba9fc75687921c))
@@ -44,6 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Start parsing config ([`0e36272`](https://github.com/organize-rs/organize/commit/0e36272f9e7db8e65daaad39d228d986ab952673))
     - Refactor to workspace and create new core library ([`0de540b`](https://github.com/organize-rs/organize/commit/0de540b0aa0ab07dc4f3b118e6f95b30312ea44e))
 </details>
+
+## 0.1.1 (2023-05-18)
 
 ## 0.1.0 (2023-05-18)
 
