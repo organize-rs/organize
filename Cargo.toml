@@ -101,7 +101,6 @@ blake3 = { version = "1.3.3", features = ["digest", "rayon"] }
 # File size information in a human readable way
 humansize = { version = "2.1.3", features = ["impl_style"] }
 rayon = "1.7.0"
-human-panic = "1.1.4"
 
 # infer file and MIME type by magic number
 infer = "0.13.0"

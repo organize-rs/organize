@@ -245,7 +245,7 @@ impl SizeConditions {
 
 #[cfg_attr(feature = "cli", derive(Args))]
 #[derive(Display, Debug, Clone, Deserialize, Serialize)]
-#[cfg_attr(feature = "cli", group(required = true, multiple = true))]
+#[cfg_attr(feature = "cli", group(required = false, multiple = true))]
 pub struct FilterRecursive {
     /// Recurse into subfolders
     #[cfg_attr(
@@ -853,7 +853,7 @@ impl OrganizeFilter {
             #[cfg(target_os = "osx")]
             OrganizeFilter::LastUsed { date, mode } => todo!(),
             OrganizeFilter::LastModified { date: _, mode: _ } => todo!(),
-            OrganizeFilter::Size { upper: _, lower: _ } => todo!(),
+            OrganizeFilter::Size { upper: _, lower: _ } => panic!(),
         }
     }
 
