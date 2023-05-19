@@ -1,0 +1,1266 @@
+#compdef organize
+
+autoload -U is-at-least
+
+_organize() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-h[Print help]' \
+'--help[Print help]' \
+'-V[Print version]' \
+'--version[Print version]' \
+":: :_organize_commands" \
+"*::: :->organize-rs" \
+&& ret=0
+    case $state in
+    (organize-rs)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:organize-command-$line[1]:"
+        case $line[1] in
+            (action)
+_arguments "${_arguments_options[@]}" \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_organize__action_commands" \
+"*::: :->action" \
+&& ret=0
+
+    case $state in
+    (action)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:organize-action-command-$line[1]:"
+        case $line[1] in
+            (none)
+_arguments "${_arguments_options[@]}" \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(confirm)
+_arguments "${_arguments_options[@]}" \
+'--text=[]:TEXT: ' \
+'*--vars=[]:VARS: ' \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(copy)
+_arguments "${_arguments_options[@]}" \
+'--src=[The source of the file / dir that should be copied from. If \`src\` ends with a slash, it is assumed to be a source directory and the file / dir will be copied into \`destination\` and keep its name]:SRC: ' \
+'--dst=[The destination where the file / dir should be copied to. If \`dst\` ends with a slash, it is assumed to be a target directory and the file / dir will be copied into \`dst\` and keep its name]:DST: ' \
+'--on-conflict=[What should happen in case dest already exists. One of skip, overwrite, trash, rename_new and rename_existing]:ON_CONFLICT:((skip\:"Skip the item"
+overwrite\:"Overwrite the item"
+trash\:"Move the item to trash"
+rename-new\:"Rename the newly created item"
+rename-existing\:"Rename the initial item"))' \
+'*--rename-template=[A template for renaming the file / dir in case of a conflict]:RENAME_TEMPLATE:((filename\:"{{filename}}"
+counter\:"{{counter}}"
+extension\:"{{extension}}"))' \
+'--filesystem=[An opener url of the filesystem you want to copy to]:FILESYSTEM: ' \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(delete)
+_arguments "${_arguments_options[@]}" \
+'--src=[The source of the file / dir that should be deleted. If \`src\` ends with a slash, it is assumed to be a source directory and the file / dir will be trashed]:SRC: ' \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(echo)
+_arguments "${_arguments_options[@]}" \
+'--msg=[]:MSG: ' \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(move)
+_arguments "${_arguments_options[@]}" \
+'--src=[The source of the file / dir that should be moved. If \`src\` ends with a slash, it is assumed to be a source directory and the file / dir will be copied into \`destination\` and keep its name]:SRC: ' \
+'--dst=[The destination where the file / dir should be moved to. If \`dst\` ends with a slash, it is assumed to be a target directory and the file / dir will be moved into \`dst\`and keep its name]:DST: ' \
+'--on-conflict=[What should happen in case dest already exists. One of skip, overwrite, trash, rename_new and rename_existing]:ON_CONFLICT:((skip\:"Skip the item"
+overwrite\:"Overwrite the item"
+trash\:"Move the item to trash"
+rename-new\:"Rename the newly created item"
+rename-existing\:"Rename the initial item"))' \
+'*--rename-template=[A template for renaming the file / dir in case of a conflict]:RENAME_TEMPLATE:((filename\:"{{filename}}"
+counter\:"{{counter}}"
+extension\:"{{extension}}"))' \
+'--filesystem=[An opener url of the filesystem you want to move to]:FILESYSTEM: ' \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(rename)
+_arguments "${_arguments_options[@]}" \
+'--src=[The source of the file / dir that should be renamed. If \`src\` ends with a slash, it is assumed to be a source directory and the file / dir will be renamed]:SRC: ' \
+'--name=[The new name for the file / dir]:NAME: ' \
+'--on-conflict=[What should happen in case dest already exists. One of skip, overwrite, trash, rename_new and rename_existing]:ON_CONFLICT:((skip\:"Skip the item"
+overwrite\:"Overwrite the item"
+trash\:"Move the item to trash"
+rename-new\:"Rename the newly created item"
+rename-existing\:"Rename the initial item"))' \
+'*--rename-template=[A template for renaming the file / dir in case of a conflict]:RENAME_TEMPLATE:((filename\:"{{filename}}"
+counter\:"{{counter}}"
+extension\:"{{extension}}"))' \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(symlink)
+_arguments "${_arguments_options[@]}" \
+'--src=[The source of the file / dir that should be symlinked. If \`src\` ends with a slash, it is assumed to be a source directory and the file / dir will be symlinked]:SRC: ' \
+'--dst=[The symlink destination]:DST: ' \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(trash)
+_arguments "${_arguments_options[@]}" \
+'--src=[The source of the file / dir that should be trashed. If \`src\` ends with a slash, it is assumed to be a source directory and the file / dir will be trashed]:SRC: ' \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(write)
+_arguments "${_arguments_options[@]}" \
+'--txt=[The text that should be written. Supports templates]:TXT: ' \
+'--file=[The file \`text\` should be written into. Supports templates]:FILE: ' \
+'--mode=[Can be either \`append\` (append text to the file), \`prepend\` (insert text as first line) or \`overwrite\` (overwrite content with text)]:MODE:((append\:"append text to the file"
+prepend\:"insert text as first line"
+overwrite\:"overwrite content with text"))' \
+'--newline=[Whether to append a newline to the given text]:NEWLINE:(true false)' \
+'--clear-before-first-write=[Clears the file before first appending / prepending text to it. This happens only the first time write_file is run. If the rule filters don'\''t match anything the file is left as it is]:CLEAR_BEFORE_FIRST_WRITE:(true false)' \
+'--filesystem=[An opener url of the filesystem the textfile is on]:FILESYSTEM: ' \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(shell)
+_arguments "${_arguments_options[@]}" \
+'-d[Run an action destructively]' \
+'--destructive-run[Run an action destructively]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+":: :_organize__action__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:organize-action-help-command-$line[1]:"
+        case $line[1] in
+            (none)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(confirm)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(copy)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(delete)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(echo)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(move)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(rename)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(symlink)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(trash)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(write)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(shell)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(docs)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(filter)
+_arguments "${_arguments_options[@]}" \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+":: :_organize__filter_commands" \
+"*::: :->filter" \
+&& ret=0
+
+    case $state in
+    (filter)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:organize-filter-command-$line[1]:"
+        case $line[1] in
+            (created)
+_arguments "${_arguments_options[@]}" \
+'--years=[specify number of years]:YEARS: ' \
+'--months=[specify number of months]:MONTHS: ' \
+'--weeks=[specify number of weeks]:WEEKS: ' \
+'--days=[specify number of days]:DAYS: ' \
+'--hours=[specify number of hours]:HOURS: ' \
+'--minutes=[specify number of minutes]:MINUTES: ' \
+'--seconds=[specify number of seconds]:SECONDS: ' \
+'--mode=[]:MODE:((older\:"older"
+newer\:"newer"))' \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(last-modified)
+_arguments "${_arguments_options[@]}" \
+'--years=[specify number of years]:YEARS: ' \
+'--months=[specify number of months]:MONTHS: ' \
+'--weeks=[specify number of weeks]:WEEKS: ' \
+'--days=[specify number of days]:DAYS: ' \
+'--hours=[specify number of hours]:HOURS: ' \
+'--minutes=[specify number of minutes]:MINUTES: ' \
+'--seconds=[specify number of seconds]:SECONDS: ' \
+'--mode=[]:MODE:((older\:"older"
+newer\:"newer"))' \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(duplicate)
+_arguments "${_arguments_options[@]}" \
+'--detect-original-by=[]:DETECT_ORIGINAL_BY:((first-seen\:"Whatever file is visited first is the original"
+name\:"The first entry sorted by name is the original"
+created\:"The first entry sorted by creation date is the original"
+last-modified\:"The first file sorted by date of last modification is the original"))' \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--reverse[]' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(empty)
+_arguments "${_arguments_options[@]}" \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(exif)
+_arguments "${_arguments_options[@]}" \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(extension)
+_arguments "${_arguments_options[@]}" \
+'*--exts=[The file extensions to match (without dot)]:EXTS: ' \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(filecontent)
+_arguments "${_arguments_options[@]}" \
+'--regex=[]:REGEX: ' \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(mimetype)
+_arguments "${_arguments_options[@]}" \
+'*--mimetype=[]:MIMETYPE: ' \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(name)
+_arguments "${_arguments_options[@]}" \
+'--simple-match=[A matching string in \[simplematch-syntax\](https\://github.com/tfeldmann/simplematch)]:SIMPLE_MATCH: ' \
+'--starts-with=[The filename must begin with the given string]:STARTS_WITH: ' \
+'--contains=[The filename must contain the given string]:CONTAINS: ' \
+'--ends-with=[The filename (without extension) must end with the given string]:ENDS_WITH: ' \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--case-insensitive[By default, the matching is case sensitive]' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(regex)
+_arguments "${_arguments_options[@]}" \
+'--expr=[]:EXPR: ' \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(size)
+_arguments "${_arguments_options[@]}" \
+'--upper-value=[]:UPPER_VALUE: ' \
+'--upper=[]:UPPER:(greater-than greater-or-equal smaller-than smaller-or-equal equal-to)' \
+'--lower-value=[]:LOWER_VALUE: ' \
+'--lower=[]:LOWER:(greater-than greater-or-equal smaller-than smaller-or-equal equal-to)' \
+'*-l+[Locations to operate on]:LOCATIONS: ' \
+'*--locations=[Locations to operate on]:LOCATIONS: ' \
+'*--ignore-name=[Words in file names to be ignored]:IGNORE_NAME: ' \
+'*--ignore-path=[Words in Paths to be ignored]:IGNORE_PATH: ' \
+'-t+[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'--targets=[Targets to operate on]:TARGETS:((dirs\:"operate only on directories"
+files\:"operate only on files"
+both\:"operate on both"))' \
+'-m+[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'--max-depth=[Maximal depth when operating recursively]:MAX_DEPTH: ' \
+'-r[Recurse into subfolders]' \
+'--recursive[Recurse into subfolders]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+":: :_organize__filter__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:organize-filter-help-command-$line[1]:"
+        case $line[1] in
+            (created)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(last-modified)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(duplicate)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(empty)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(exif)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(extension)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(filecontent)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(mimetype)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(name)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(regex)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(size)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(completions)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help]' \
+'--help[Print help]' \
+':shell -- Shell to generate completions for:(bash fish zsh powershell)' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+":: :_organize__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:organize-help-command-$line[1]:"
+        case $line[1] in
+            (action)
+_arguments "${_arguments_options[@]}" \
+":: :_organize__help__action_commands" \
+"*::: :->action" \
+&& ret=0
+
+    case $state in
+    (action)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:organize-help-action-command-$line[1]:"
+        case $line[1] in
+            (none)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(confirm)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(copy)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(delete)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(echo)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(move)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(rename)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(symlink)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(trash)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(write)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(shell)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(docs)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(filter)
+_arguments "${_arguments_options[@]}" \
+":: :_organize__help__filter_commands" \
+"*::: :->filter" \
+&& ret=0
+
+    case $state in
+    (filter)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:organize-help-filter-command-$line[1]:"
+        case $line[1] in
+            (created)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(last-modified)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(duplicate)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(empty)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(exif)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(extension)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(filecontent)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(mimetype)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(name)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(regex)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(size)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(completions)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_organize_commands] )) ||
+_organize_commands() {
+    local commands; commands=(
+'action:Actions that organize can apply' \
+'docs:Show the documentation' \
+'filter:Filters that organize can apply' \
+'completions:Generate Completions for your shell' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'organize commands' commands "$@"
+}
+(( $+functions[_organize__action_commands] )) ||
+_organize__action_commands() {
+    local commands; commands=(
+'none:Do nothing' \
+'confirm:Confirm before deleting a duplicate' \
+'copy:Copy a file or dir to a new location' \
+'delete:Delete a file from disk' \
+'echo:Prints the given message' \
+'move:Move a file to a new location' \
+'rename:Renames a file' \
+'symlink:Create a symbolic link' \
+'trash:Move a file or dir into the trash' \
+'write:Write text to a file' \
+'shell:' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'organize action commands' commands "$@"
+}
+(( $+functions[_organize__help__action_commands] )) ||
+_organize__help__action_commands() {
+    local commands; commands=(
+'none:Do nothing' \
+'confirm:Confirm before deleting a duplicate' \
+'copy:Copy a file or dir to a new location' \
+'delete:Delete a file from disk' \
+'echo:Prints the given message' \
+'move:Move a file to a new location' \
+'rename:Renames a file' \
+'symlink:Create a symbolic link' \
+'trash:Move a file or dir into the trash' \
+'write:Write text to a file' \
+'shell:' \
+    )
+    _describe -t commands 'organize help action commands' commands "$@"
+}
+(( $+functions[_organize__completions_commands] )) ||
+_organize__completions_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize completions commands' commands "$@"
+}
+(( $+functions[_organize__help__completions_commands] )) ||
+_organize__help__completions_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help completions commands' commands "$@"
+}
+(( $+functions[_organize__action__confirm_commands] )) ||
+_organize__action__confirm_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action confirm commands' commands "$@"
+}
+(( $+functions[_organize__action__help__confirm_commands] )) ||
+_organize__action__help__confirm_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help confirm commands' commands "$@"
+}
+(( $+functions[_organize__help__action__confirm_commands] )) ||
+_organize__help__action__confirm_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action confirm commands' commands "$@"
+}
+(( $+functions[_organize__action__copy_commands] )) ||
+_organize__action__copy_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action copy commands' commands "$@"
+}
+(( $+functions[_organize__action__help__copy_commands] )) ||
+_organize__action__help__copy_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help copy commands' commands "$@"
+}
+(( $+functions[_organize__help__action__copy_commands] )) ||
+_organize__help__action__copy_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action copy commands' commands "$@"
+}
+(( $+functions[_organize__filter__created_commands] )) ||
+_organize__filter__created_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter created commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__created_commands] )) ||
+_organize__filter__help__created_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help created commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__created_commands] )) ||
+_organize__help__filter__created_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter created commands' commands "$@"
+}
+(( $+functions[_organize__action__delete_commands] )) ||
+_organize__action__delete_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action delete commands' commands "$@"
+}
+(( $+functions[_organize__action__help__delete_commands] )) ||
+_organize__action__help__delete_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help delete commands' commands "$@"
+}
+(( $+functions[_organize__help__action__delete_commands] )) ||
+_organize__help__action__delete_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action delete commands' commands "$@"
+}
+(( $+functions[_organize__docs_commands] )) ||
+_organize__docs_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize docs commands' commands "$@"
+}
+(( $+functions[_organize__help__docs_commands] )) ||
+_organize__help__docs_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help docs commands' commands "$@"
+}
+(( $+functions[_organize__filter__duplicate_commands] )) ||
+_organize__filter__duplicate_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter duplicate commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__duplicate_commands] )) ||
+_organize__filter__help__duplicate_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help duplicate commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__duplicate_commands] )) ||
+_organize__help__filter__duplicate_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter duplicate commands' commands "$@"
+}
+(( $+functions[_organize__action__echo_commands] )) ||
+_organize__action__echo_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action echo commands' commands "$@"
+}
+(( $+functions[_organize__action__help__echo_commands] )) ||
+_organize__action__help__echo_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help echo commands' commands "$@"
+}
+(( $+functions[_organize__help__action__echo_commands] )) ||
+_organize__help__action__echo_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action echo commands' commands "$@"
+}
+(( $+functions[_organize__filter__empty_commands] )) ||
+_organize__filter__empty_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter empty commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__empty_commands] )) ||
+_organize__filter__help__empty_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help empty commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__empty_commands] )) ||
+_organize__help__filter__empty_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter empty commands' commands "$@"
+}
+(( $+functions[_organize__filter__exif_commands] )) ||
+_organize__filter__exif_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter exif commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__exif_commands] )) ||
+_organize__filter__help__exif_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help exif commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__exif_commands] )) ||
+_organize__help__filter__exif_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter exif commands' commands "$@"
+}
+(( $+functions[_organize__filter__extension_commands] )) ||
+_organize__filter__extension_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter extension commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__extension_commands] )) ||
+_organize__filter__help__extension_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help extension commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__extension_commands] )) ||
+_organize__help__filter__extension_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter extension commands' commands "$@"
+}
+(( $+functions[_organize__filter__filecontent_commands] )) ||
+_organize__filter__filecontent_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter filecontent commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__filecontent_commands] )) ||
+_organize__filter__help__filecontent_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help filecontent commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__filecontent_commands] )) ||
+_organize__help__filter__filecontent_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter filecontent commands' commands "$@"
+}
+(( $+functions[_organize__filter_commands] )) ||
+_organize__filter_commands() {
+    local commands; commands=(
+'created:Matches files / folders by created date' \
+'last-modified:Matches files by last modified date' \
+'duplicate:A fast duplicate file finder' \
+'empty:Finds empty dirs and files' \
+'exif:Filter by image EXIF data' \
+'extension:Filter by file extension' \
+'filecontent:Matches file content with the given regular expression' \
+'mimetype:Filter by MIME type associated with the file extension' \
+'name:Match files and folders by name' \
+'regex:Matches filenames with the given regular expression' \
+'size:Matches files and folders by size' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'organize filter commands' commands "$@"
+}
+(( $+functions[_organize__help__filter_commands] )) ||
+_organize__help__filter_commands() {
+    local commands; commands=(
+'created:Matches files / folders by created date' \
+'last-modified:Matches files by last modified date' \
+'duplicate:A fast duplicate file finder' \
+'empty:Finds empty dirs and files' \
+'exif:Filter by image EXIF data' \
+'extension:Filter by file extension' \
+'filecontent:Matches file content with the given regular expression' \
+'mimetype:Filter by MIME type associated with the file extension' \
+'name:Match files and folders by name' \
+'regex:Matches filenames with the given regular expression' \
+'size:Matches files and folders by size' \
+    )
+    _describe -t commands 'organize help filter commands' commands "$@"
+}
+(( $+functions[_organize__action__help_commands] )) ||
+_organize__action__help_commands() {
+    local commands; commands=(
+'none:Do nothing' \
+'confirm:Confirm before deleting a duplicate' \
+'copy:Copy a file or dir to a new location' \
+'delete:Delete a file from disk' \
+'echo:Prints the given message' \
+'move:Move a file to a new location' \
+'rename:Renames a file' \
+'symlink:Create a symbolic link' \
+'trash:Move a file or dir into the trash' \
+'write:Write text to a file' \
+'shell:' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'organize action help commands' commands "$@"
+}
+(( $+functions[_organize__action__help__help_commands] )) ||
+_organize__action__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help help commands' commands "$@"
+}
+(( $+functions[_organize__filter__help_commands] )) ||
+_organize__filter__help_commands() {
+    local commands; commands=(
+'created:Matches files / folders by created date' \
+'last-modified:Matches files by last modified date' \
+'duplicate:A fast duplicate file finder' \
+'empty:Finds empty dirs and files' \
+'exif:Filter by image EXIF data' \
+'extension:Filter by file extension' \
+'filecontent:Matches file content with the given regular expression' \
+'mimetype:Filter by MIME type associated with the file extension' \
+'name:Match files and folders by name' \
+'regex:Matches filenames with the given regular expression' \
+'size:Matches files and folders by size' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'organize filter help commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__help_commands] )) ||
+_organize__filter__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help help commands' commands "$@"
+}
+(( $+functions[_organize__help_commands] )) ||
+_organize__help_commands() {
+    local commands; commands=(
+'action:Actions that organize can apply' \
+'docs:Show the documentation' \
+'filter:Filters that organize can apply' \
+'completions:Generate Completions for your shell' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'organize help commands' commands "$@"
+}
+(( $+functions[_organize__help__help_commands] )) ||
+_organize__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help help commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__last-modified_commands] )) ||
+_organize__filter__help__last-modified_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help last-modified commands' commands "$@"
+}
+(( $+functions[_organize__filter__last-modified_commands] )) ||
+_organize__filter__last-modified_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter last-modified commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__last-modified_commands] )) ||
+_organize__help__filter__last-modified_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter last-modified commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__mimetype_commands] )) ||
+_organize__filter__help__mimetype_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help mimetype commands' commands "$@"
+}
+(( $+functions[_organize__filter__mimetype_commands] )) ||
+_organize__filter__mimetype_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter mimetype commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__mimetype_commands] )) ||
+_organize__help__filter__mimetype_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter mimetype commands' commands "$@"
+}
+(( $+functions[_organize__action__help__move_commands] )) ||
+_organize__action__help__move_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help move commands' commands "$@"
+}
+(( $+functions[_organize__action__move_commands] )) ||
+_organize__action__move_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action move commands' commands "$@"
+}
+(( $+functions[_organize__help__action__move_commands] )) ||
+_organize__help__action__move_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action move commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__name_commands] )) ||
+_organize__filter__help__name_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help name commands' commands "$@"
+}
+(( $+functions[_organize__filter__name_commands] )) ||
+_organize__filter__name_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter name commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__name_commands] )) ||
+_organize__help__filter__name_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter name commands' commands "$@"
+}
+(( $+functions[_organize__action__help__none_commands] )) ||
+_organize__action__help__none_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help none commands' commands "$@"
+}
+(( $+functions[_organize__action__none_commands] )) ||
+_organize__action__none_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action none commands' commands "$@"
+}
+(( $+functions[_organize__help__action__none_commands] )) ||
+_organize__help__action__none_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action none commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__regex_commands] )) ||
+_organize__filter__help__regex_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help regex commands' commands "$@"
+}
+(( $+functions[_organize__filter__regex_commands] )) ||
+_organize__filter__regex_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter regex commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__regex_commands] )) ||
+_organize__help__filter__regex_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter regex commands' commands "$@"
+}
+(( $+functions[_organize__action__help__rename_commands] )) ||
+_organize__action__help__rename_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help rename commands' commands "$@"
+}
+(( $+functions[_organize__action__rename_commands] )) ||
+_organize__action__rename_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action rename commands' commands "$@"
+}
+(( $+functions[_organize__help__action__rename_commands] )) ||
+_organize__help__action__rename_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action rename commands' commands "$@"
+}
+(( $+functions[_organize__action__help__shell_commands] )) ||
+_organize__action__help__shell_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help shell commands' commands "$@"
+}
+(( $+functions[_organize__action__shell_commands] )) ||
+_organize__action__shell_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action shell commands' commands "$@"
+}
+(( $+functions[_organize__help__action__shell_commands] )) ||
+_organize__help__action__shell_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action shell commands' commands "$@"
+}
+(( $+functions[_organize__filter__help__size_commands] )) ||
+_organize__filter__help__size_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter help size commands' commands "$@"
+}
+(( $+functions[_organize__filter__size_commands] )) ||
+_organize__filter__size_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize filter size commands' commands "$@"
+}
+(( $+functions[_organize__help__filter__size_commands] )) ||
+_organize__help__filter__size_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help filter size commands' commands "$@"
+}
+(( $+functions[_organize__action__help__symlink_commands] )) ||
+_organize__action__help__symlink_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help symlink commands' commands "$@"
+}
+(( $+functions[_organize__action__symlink_commands] )) ||
+_organize__action__symlink_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action symlink commands' commands "$@"
+}
+(( $+functions[_organize__help__action__symlink_commands] )) ||
+_organize__help__action__symlink_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action symlink commands' commands "$@"
+}
+(( $+functions[_organize__action__help__trash_commands] )) ||
+_organize__action__help__trash_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help trash commands' commands "$@"
+}
+(( $+functions[_organize__action__trash_commands] )) ||
+_organize__action__trash_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action trash commands' commands "$@"
+}
+(( $+functions[_organize__help__action__trash_commands] )) ||
+_organize__help__action__trash_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action trash commands' commands "$@"
+}
+(( $+functions[_organize__action__help__write_commands] )) ||
+_organize__action__help__write_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action help write commands' commands "$@"
+}
+(( $+functions[_organize__action__write_commands] )) ||
+_organize__action__write_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize action write commands' commands "$@"
+}
+(( $+functions[_organize__help__action__write_commands] )) ||
+_organize__help__action__write_commands() {
+    local commands; commands=()
+    _describe -t commands 'organize help action write commands' commands "$@"
+}
+
+if [ "$funcstack[1]" = "_organize" ]; then
+    _organize "$@"
+else
+    compdef _organize organize
+fi

@@ -20,7 +20,7 @@ categories.workspace = true
 keywords.workspace = true
 
 [workspace]
-members = ["crates/organize-rs_core"]
+members = ["crates/organize-rs_core", "crates/organize-rs_testing"]
 
 [features]
 default = []
@@ -30,6 +30,7 @@ research_organize = []
 organize-rs_core = { version = "0.1.1", path = "crates/organize-rs_core", features = [
     "cli",
 ] }
+organize-rs_testing = { path = "crates/organize-rs_testing" }
 clap = { version = "4", features = ["derive", "env", "wrap_help"] }
 directories = "5.0.1"
 serde = { version = "1", features = ["serde_derive"] }
@@ -55,6 +56,10 @@ itertools = "0.10.5"
 displaydoc = "0.2.4"
 clap_complete = "4.2.3"
 
+# dev dependencies
+tempfile = "3.5.0"
+aho-corasick = "1.0.1"
+
 [dependencies]
 organize-rs_core.workspace = true
 rhai.workspace = true
@@ -75,10 +80,20 @@ abscissa_core.workspace = true
 itertools.workspace = true
 clap_complete.workspace = true
 
-
 [dev-dependencies]
 abscissa_core = { workspace = true, features = ["testing"] }
 once_cell.workspace = true
+organize-rs_testing.workspace = true
+
+[[bin]]
+name = "organize"
+path = "src/bin/organize.rs"
+test = true
+bench = true
+doc = true
+harness = true
+edition = "2021"
+#required-features = []  
 
 [profile.dev]
 opt-level = 0

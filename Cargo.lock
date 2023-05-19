@@ -1794,6 +1794,7 @@ dependencies = [
  "itertools",
  "once_cell",
  "organize-rs_core",
+ "organize-rs_testing",
  "regex",
  "rhai",
  "serde",
@@ -1824,6 +1825,14 @@ dependencies = [
  "thiserror",
  "toml 0.7.3",
  "walkdir",
+]
+
+[[package]]
+name = "organize-rs_testing"
+version = "0.1.0"
+dependencies = [
+ "aho-corasick",
+ "tempfile",
 ]
 
 [[package]]

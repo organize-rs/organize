@@ -1,0 +1,608 @@
+
+using namespace System.Management.Automation
+using namespace System.Management.Automation.Language
+
+Register-ArgumentCompleter -Native -CommandName 'organize' -ScriptBlock {
+    param($wordToComplete, $commandAst, $cursorPosition)
+
+    $commandElements = $commandAst.CommandElements
+    $command = @(
+        'organize'
+        for ($i = 1; $i -lt $commandElements.Count; $i++) {
+            $element = $commandElements[$i]
+            if ($element -isnot [StringConstantExpressionAst] -or
+                $element.StringConstantType -ne [StringConstantType]::BareWord -or
+                $element.Value.StartsWith('-') -or
+                $element.Value -eq $wordToComplete) {
+                break
+        }
+        $element.Value
+    }) -join ';'
+
+    $completions = @(switch ($command) {
+        'organize' {
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help')
+            [CompletionResult]::new('-V', 'V', [CompletionResultType]::ParameterName, 'Print version')
+            [CompletionResult]::new('--version', 'version', [CompletionResultType]::ParameterName, 'Print version')
+            [CompletionResult]::new('action', 'action', [CompletionResultType]::ParameterValue, 'Actions that organize can apply')
+            [CompletionResult]::new('docs', 'docs', [CompletionResultType]::ParameterValue, 'Show the documentation')
+            [CompletionResult]::new('filter', 'filter', [CompletionResultType]::ParameterValue, 'Filters that organize can apply')
+            [CompletionResult]::new('completions', 'completions', [CompletionResultType]::ParameterValue, 'Generate Completions for your shell')
+            [CompletionResult]::new('help', 'help', [CompletionResultType]::ParameterValue, 'Print this message or the help of the given subcommand(s)')
+            break
+        }
+        'organize;action' {
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help')
+            [CompletionResult]::new('none', 'none', [CompletionResultType]::ParameterValue, 'Do nothing')
+            [CompletionResult]::new('confirm', 'confirm', [CompletionResultType]::ParameterValue, 'Confirm before deleting a duplicate')
+            [CompletionResult]::new('copy', 'copy', [CompletionResultType]::ParameterValue, 'Copy a file or dir to a new location')
+            [CompletionResult]::new('delete', 'delete', [CompletionResultType]::ParameterValue, 'Delete a file from disk')
+            [CompletionResult]::new('echo', 'echo', [CompletionResultType]::ParameterValue, 'Prints the given message')
+            [CompletionResult]::new('move', 'move', [CompletionResultType]::ParameterValue, 'Move a file to a new location')
+            [CompletionResult]::new('rename', 'rename', [CompletionResultType]::ParameterValue, 'Renames a file')
+            [CompletionResult]::new('symlink', 'symlink', [CompletionResultType]::ParameterValue, 'Create a symbolic link')
+            [CompletionResult]::new('trash', 'trash', [CompletionResultType]::ParameterValue, 'Move a file or dir into the trash')
+            [CompletionResult]::new('write', 'write', [CompletionResultType]::ParameterValue, 'Write text to a file')
+            [CompletionResult]::new('shell', 'shell', [CompletionResultType]::ParameterValue, 'shell')
+            [CompletionResult]::new('help', 'help', [CompletionResultType]::ParameterValue, 'Print this message or the help of the given subcommand(s)')
+            break
+        }
+        'organize;action;none' {
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help')
+            break
+        }
+        'organize;action;confirm' {
+            [CompletionResult]::new('--text', 'text', [CompletionResultType]::ParameterName, 'text')
+            [CompletionResult]::new('--vars', 'vars', [CompletionResultType]::ParameterName, 'vars')
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;action;copy' {
+            [CompletionResult]::new('--src', 'src', [CompletionResultType]::ParameterName, 'The source of the file / dir that should be copied from. If `src` ends with a slash, it is assumed to be a source directory and the file / dir will be copied into `destination` and keep its name')
+            [CompletionResult]::new('--dst', 'dst', [CompletionResultType]::ParameterName, 'The destination where the file / dir should be copied to. If `dst` ends with a slash, it is assumed to be a target directory and the file / dir will be copied into `dst` and keep its name')
+            [CompletionResult]::new('--on-conflict', 'on-conflict', [CompletionResultType]::ParameterName, 'What should happen in case dest already exists. One of skip, overwrite, trash, rename_new and rename_existing')
+            [CompletionResult]::new('--rename-template', 'rename-template', [CompletionResultType]::ParameterName, 'A template for renaming the file / dir in case of a conflict')
+            [CompletionResult]::new('--filesystem', 'filesystem', [CompletionResultType]::ParameterName, 'An opener url of the filesystem you want to copy to')
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;action;delete' {
+            [CompletionResult]::new('--src', 'src', [CompletionResultType]::ParameterName, 'The source of the file / dir that should be deleted. If `src` ends with a slash, it is assumed to be a source directory and the file / dir will be trashed')
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;action;echo' {
+            [CompletionResult]::new('--msg', 'msg', [CompletionResultType]::ParameterName, 'msg')
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;action;move' {
+            [CompletionResult]::new('--src', 'src', [CompletionResultType]::ParameterName, 'The source of the file / dir that should be moved. If `src` ends with a slash, it is assumed to be a source directory and the file / dir will be copied into `destination` and keep its name')
+            [CompletionResult]::new('--dst', 'dst', [CompletionResultType]::ParameterName, 'The destination where the file / dir should be moved to. If `dst` ends with a slash, it is assumed to be a target directory and the file / dir will be moved into `dst`and keep its name')
+            [CompletionResult]::new('--on-conflict', 'on-conflict', [CompletionResultType]::ParameterName, 'What should happen in case dest already exists. One of skip, overwrite, trash, rename_new and rename_existing')
+            [CompletionResult]::new('--rename-template', 'rename-template', [CompletionResultType]::ParameterName, 'A template for renaming the file / dir in case of a conflict')
+            [CompletionResult]::new('--filesystem', 'filesystem', [CompletionResultType]::ParameterName, 'An opener url of the filesystem you want to move to')
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;action;rename' {
+            [CompletionResult]::new('--src', 'src', [CompletionResultType]::ParameterName, 'The source of the file / dir that should be renamed. If `src` ends with a slash, it is assumed to be a source directory and the file / dir will be renamed')
+            [CompletionResult]::new('--name', 'name', [CompletionResultType]::ParameterName, 'The new name for the file / dir')
+            [CompletionResult]::new('--on-conflict', 'on-conflict', [CompletionResultType]::ParameterName, 'What should happen in case dest already exists. One of skip, overwrite, trash, rename_new and rename_existing')
+            [CompletionResult]::new('--rename-template', 'rename-template', [CompletionResultType]::ParameterName, 'A template for renaming the file / dir in case of a conflict')
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;action;symlink' {
+            [CompletionResult]::new('--src', 'src', [CompletionResultType]::ParameterName, 'The source of the file / dir that should be symlinked. If `src` ends with a slash, it is assumed to be a source directory and the file / dir will be symlinked')
+            [CompletionResult]::new('--dst', 'dst', [CompletionResultType]::ParameterName, 'The symlink destination')
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;action;trash' {
+            [CompletionResult]::new('--src', 'src', [CompletionResultType]::ParameterName, 'The source of the file / dir that should be trashed. If `src` ends with a slash, it is assumed to be a source directory and the file / dir will be trashed')
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;action;write' {
+            [CompletionResult]::new('--txt', 'txt', [CompletionResultType]::ParameterName, 'The text that should be written. Supports templates')
+            [CompletionResult]::new('--file', 'file', [CompletionResultType]::ParameterName, 'The file `text` should be written into. Supports templates')
+            [CompletionResult]::new('--mode', 'mode', [CompletionResultType]::ParameterName, 'Can be either `append` (append text to the file), `prepend` (insert text as first line) or `overwrite` (overwrite content with text)')
+            [CompletionResult]::new('--newline', 'newline', [CompletionResultType]::ParameterName, 'Whether to append a newline to the given text')
+            [CompletionResult]::new('--clear-before-first-write', 'clear-before-first-write', [CompletionResultType]::ParameterName, 'Clears the file before first appending / prepending text to it. This happens only the first time write_file is run. If the rule filters don''t match anything the file is left as it is')
+            [CompletionResult]::new('--filesystem', 'filesystem', [CompletionResultType]::ParameterName, 'An opener url of the filesystem the textfile is on')
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;action;shell' {
+            [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('--destructive-run', 'destructive-run', [CompletionResultType]::ParameterName, 'Run an action destructively')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help')
+            break
+        }
+        'organize;action;help' {
+            [CompletionResult]::new('none', 'none', [CompletionResultType]::ParameterValue, 'Do nothing')
+            [CompletionResult]::new('confirm', 'confirm', [CompletionResultType]::ParameterValue, 'Confirm before deleting a duplicate')
+            [CompletionResult]::new('copy', 'copy', [CompletionResultType]::ParameterValue, 'Copy a file or dir to a new location')
+            [CompletionResult]::new('delete', 'delete', [CompletionResultType]::ParameterValue, 'Delete a file from disk')
+            [CompletionResult]::new('echo', 'echo', [CompletionResultType]::ParameterValue, 'Prints the given message')
+            [CompletionResult]::new('move', 'move', [CompletionResultType]::ParameterValue, 'Move a file to a new location')
+            [CompletionResult]::new('rename', 'rename', [CompletionResultType]::ParameterValue, 'Renames a file')
+            [CompletionResult]::new('symlink', 'symlink', [CompletionResultType]::ParameterValue, 'Create a symbolic link')
+            [CompletionResult]::new('trash', 'trash', [CompletionResultType]::ParameterValue, 'Move a file or dir into the trash')
+            [CompletionResult]::new('write', 'write', [CompletionResultType]::ParameterValue, 'Write text to a file')
+            [CompletionResult]::new('shell', 'shell', [CompletionResultType]::ParameterValue, 'shell')
+            [CompletionResult]::new('help', 'help', [CompletionResultType]::ParameterValue, 'Print this message or the help of the given subcommand(s)')
+            break
+        }
+        'organize;action;help;none' {
+            break
+        }
+        'organize;action;help;confirm' {
+            break
+        }
+        'organize;action;help;copy' {
+            break
+        }
+        'organize;action;help;delete' {
+            break
+        }
+        'organize;action;help;echo' {
+            break
+        }
+        'organize;action;help;move' {
+            break
+        }
+        'organize;action;help;rename' {
+            break
+        }
+        'organize;action;help;symlink' {
+            break
+        }
+        'organize;action;help;trash' {
+            break
+        }
+        'organize;action;help;write' {
+            break
+        }
+        'organize;action;help;shell' {
+            break
+        }
+        'organize;action;help;help' {
+            break
+        }
+        'organize;docs' {
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help')
+            break
+        }
+        'organize;filter' {
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('created', 'created', [CompletionResultType]::ParameterValue, 'Matches files / folders by created date')
+            [CompletionResult]::new('last-modified', 'last-modified', [CompletionResultType]::ParameterValue, 'Matches files by last modified date')
+            [CompletionResult]::new('duplicate', 'duplicate', [CompletionResultType]::ParameterValue, 'A fast duplicate file finder')
+            [CompletionResult]::new('empty', 'empty', [CompletionResultType]::ParameterValue, 'Finds empty dirs and files')
+            [CompletionResult]::new('exif', 'exif', [CompletionResultType]::ParameterValue, 'Filter by image EXIF data')
+            [CompletionResult]::new('extension', 'extension', [CompletionResultType]::ParameterValue, 'Filter by file extension')
+            [CompletionResult]::new('filecontent', 'filecontent', [CompletionResultType]::ParameterValue, 'Matches file content with the given regular expression')
+            [CompletionResult]::new('mimetype', 'mimetype', [CompletionResultType]::ParameterValue, 'Filter by MIME type associated with the file extension')
+            [CompletionResult]::new('name', 'name', [CompletionResultType]::ParameterValue, 'Match files and folders by name')
+            [CompletionResult]::new('regex', 'regex', [CompletionResultType]::ParameterValue, 'Matches filenames with the given regular expression')
+            [CompletionResult]::new('size', 'size', [CompletionResultType]::ParameterValue, 'Matches files and folders by size')
+            [CompletionResult]::new('help', 'help', [CompletionResultType]::ParameterValue, 'Print this message or the help of the given subcommand(s)')
+            break
+        }
+        'organize;filter;created' {
+            [CompletionResult]::new('--years', 'years', [CompletionResultType]::ParameterName, 'specify number of years')
+            [CompletionResult]::new('--months', 'months', [CompletionResultType]::ParameterName, 'specify number of months')
+            [CompletionResult]::new('--weeks', 'weeks', [CompletionResultType]::ParameterName, 'specify number of weeks')
+            [CompletionResult]::new('--days', 'days', [CompletionResultType]::ParameterName, 'specify number of days')
+            [CompletionResult]::new('--hours', 'hours', [CompletionResultType]::ParameterName, 'specify number of hours')
+            [CompletionResult]::new('--minutes', 'minutes', [CompletionResultType]::ParameterName, 'specify number of minutes')
+            [CompletionResult]::new('--seconds', 'seconds', [CompletionResultType]::ParameterName, 'specify number of seconds')
+            [CompletionResult]::new('--mode', 'mode', [CompletionResultType]::ParameterName, 'mode')
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;last-modified' {
+            [CompletionResult]::new('--years', 'years', [CompletionResultType]::ParameterName, 'specify number of years')
+            [CompletionResult]::new('--months', 'months', [CompletionResultType]::ParameterName, 'specify number of months')
+            [CompletionResult]::new('--weeks', 'weeks', [CompletionResultType]::ParameterName, 'specify number of weeks')
+            [CompletionResult]::new('--days', 'days', [CompletionResultType]::ParameterName, 'specify number of days')
+            [CompletionResult]::new('--hours', 'hours', [CompletionResultType]::ParameterName, 'specify number of hours')
+            [CompletionResult]::new('--minutes', 'minutes', [CompletionResultType]::ParameterName, 'specify number of minutes')
+            [CompletionResult]::new('--seconds', 'seconds', [CompletionResultType]::ParameterName, 'specify number of seconds')
+            [CompletionResult]::new('--mode', 'mode', [CompletionResultType]::ParameterName, 'mode')
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;duplicate' {
+            [CompletionResult]::new('--detect-original-by', 'detect-original-by', [CompletionResultType]::ParameterName, 'detect-original-by')
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--reverse', 'reverse', [CompletionResultType]::ParameterName, 'reverse')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;empty' {
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;exif' {
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;extension' {
+            [CompletionResult]::new('--exts', 'exts', [CompletionResultType]::ParameterName, 'The file extensions to match (without dot)')
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;filecontent' {
+            [CompletionResult]::new('--regex', 'regex', [CompletionResultType]::ParameterName, 'regex')
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;mimetype' {
+            [CompletionResult]::new('--mimetype', 'mimetype', [CompletionResultType]::ParameterName, 'mimetype')
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;name' {
+            [CompletionResult]::new('--simple-match', 'simple-match', [CompletionResultType]::ParameterName, 'A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)')
+            [CompletionResult]::new('--starts-with', 'starts-with', [CompletionResultType]::ParameterName, 'The filename must begin with the given string')
+            [CompletionResult]::new('--contains', 'contains', [CompletionResultType]::ParameterName, 'The filename must contain the given string')
+            [CompletionResult]::new('--ends-with', 'ends-with', [CompletionResultType]::ParameterName, 'The filename (without extension) must end with the given string')
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--case-insensitive', 'case-insensitive', [CompletionResultType]::ParameterName, 'By default, the matching is case sensitive')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;regex' {
+            [CompletionResult]::new('--expr', 'expr', [CompletionResultType]::ParameterName, 'expr')
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;size' {
+            [CompletionResult]::new('--upper-value', 'upper-value', [CompletionResultType]::ParameterName, 'upper-value')
+            [CompletionResult]::new('--upper', 'upper', [CompletionResultType]::ParameterName, 'upper')
+            [CompletionResult]::new('--lower-value', 'lower-value', [CompletionResultType]::ParameterName, 'lower-value')
+            [CompletionResult]::new('--lower', 'lower', [CompletionResultType]::ParameterName, 'lower')
+            [CompletionResult]::new('-l', 'l', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--locations', 'locations', [CompletionResultType]::ParameterName, 'Locations to operate on')
+            [CompletionResult]::new('--ignore-name', 'ignore-name', [CompletionResultType]::ParameterName, 'Words in file names to be ignored')
+            [CompletionResult]::new('--ignore-path', 'ignore-path', [CompletionResultType]::ParameterName, 'Words in Paths to be ignored')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('--targets', 'targets', [CompletionResultType]::ParameterName, 'Targets to operate on')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('--max-depth', 'max-depth', [CompletionResultType]::ParameterName, 'Maximal depth when operating recursively')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('--recursive', 'recursive', [CompletionResultType]::ParameterName, 'Recurse into subfolders')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            break
+        }
+        'organize;filter;help' {
+            [CompletionResult]::new('created', 'created', [CompletionResultType]::ParameterValue, 'Matches files / folders by created date')
+            [CompletionResult]::new('last-modified', 'last-modified', [CompletionResultType]::ParameterValue, 'Matches files by last modified date')
+            [CompletionResult]::new('duplicate', 'duplicate', [CompletionResultType]::ParameterValue, 'A fast duplicate file finder')
+            [CompletionResult]::new('empty', 'empty', [CompletionResultType]::ParameterValue, 'Finds empty dirs and files')
+            [CompletionResult]::new('exif', 'exif', [CompletionResultType]::ParameterValue, 'Filter by image EXIF data')
+            [CompletionResult]::new('extension', 'extension', [CompletionResultType]::ParameterValue, 'Filter by file extension')
+            [CompletionResult]::new('filecontent', 'filecontent', [CompletionResultType]::ParameterValue, 'Matches file content with the given regular expression')
+            [CompletionResult]::new('mimetype', 'mimetype', [CompletionResultType]::ParameterValue, 'Filter by MIME type associated with the file extension')
+            [CompletionResult]::new('name', 'name', [CompletionResultType]::ParameterValue, 'Match files and folders by name')
+            [CompletionResult]::new('regex', 'regex', [CompletionResultType]::ParameterValue, 'Matches filenames with the given regular expression')
+            [CompletionResult]::new('size', 'size', [CompletionResultType]::ParameterValue, 'Matches files and folders by size')
+            [CompletionResult]::new('help', 'help', [CompletionResultType]::ParameterValue, 'Print this message or the help of the given subcommand(s)')
+            break
+        }
+        'organize;filter;help;created' {
+            break
+        }
+        'organize;filter;help;last-modified' {
+            break
+        }
+        'organize;filter;help;duplicate' {
+            break
+        }
+        'organize;filter;help;empty' {
+            break
+        }
+        'organize;filter;help;exif' {
+            break
+        }
+        'organize;filter;help;extension' {
+            break
+        }
+        'organize;filter;help;filecontent' {
+            break
+        }
+        'organize;filter;help;mimetype' {
+            break
+        }
+        'organize;filter;help;name' {
+            break
+        }
+        'organize;filter;help;regex' {
+            break
+        }
+        'organize;filter;help;size' {
+            break
+        }
+        'organize;filter;help;help' {
+            break
+        }
+        'organize;completions' {
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help')
+            break
+        }
+        'organize;help' {
+            [CompletionResult]::new('action', 'action', [CompletionResultType]::ParameterValue, 'Actions that organize can apply')
+            [CompletionResult]::new('docs', 'docs', [CompletionResultType]::ParameterValue, 'Show the documentation')
+            [CompletionResult]::new('filter', 'filter', [CompletionResultType]::ParameterValue, 'Filters that organize can apply')
+            [CompletionResult]::new('completions', 'completions', [CompletionResultType]::ParameterValue, 'Generate Completions for your shell')
+            [CompletionResult]::new('help', 'help', [CompletionResultType]::ParameterValue, 'Print this message or the help of the given subcommand(s)')
+            break
+        }
+        'organize;help;action' {
+            [CompletionResult]::new('none', 'none', [CompletionResultType]::ParameterValue, 'Do nothing')
+            [CompletionResult]::new('confirm', 'confirm', [CompletionResultType]::ParameterValue, 'Confirm before deleting a duplicate')
+            [CompletionResult]::new('copy', 'copy', [CompletionResultType]::ParameterValue, 'Copy a file or dir to a new location')
+            [CompletionResult]::new('delete', 'delete', [CompletionResultType]::ParameterValue, 'Delete a file from disk')
+            [CompletionResult]::new('echo', 'echo', [CompletionResultType]::ParameterValue, 'Prints the given message')
+            [CompletionResult]::new('move', 'move', [CompletionResultType]::ParameterValue, 'Move a file to a new location')
+            [CompletionResult]::new('rename', 'rename', [CompletionResultType]::ParameterValue, 'Renames a file')
+            [CompletionResult]::new('symlink', 'symlink', [CompletionResultType]::ParameterValue, 'Create a symbolic link')
+            [CompletionResult]::new('trash', 'trash', [CompletionResultType]::ParameterValue, 'Move a file or dir into the trash')
+            [CompletionResult]::new('write', 'write', [CompletionResultType]::ParameterValue, 'Write text to a file')
+            [CompletionResult]::new('shell', 'shell', [CompletionResultType]::ParameterValue, 'shell')
+            break
+        }
+        'organize;help;action;none' {
+            break
+        }
+        'organize;help;action;confirm' {
+            break
+        }
+        'organize;help;action;copy' {
+            break
+        }
+        'organize;help;action;delete' {
+            break
+        }
+        'organize;help;action;echo' {
+            break
+        }
+        'organize;help;action;move' {
+            break
+        }
+        'organize;help;action;rename' {
+            break
+        }
+        'organize;help;action;symlink' {
+            break
+        }
+        'organize;help;action;trash' {
+            break
+        }
+        'organize;help;action;write' {
+            break
+        }
+        'organize;help;action;shell' {
+            break
+        }
+        'organize;help;docs' {
+            break
+        }
+        'organize;help;filter' {
+            [CompletionResult]::new('created', 'created', [CompletionResultType]::ParameterValue, 'Matches files / folders by created date')
+            [CompletionResult]::new('last-modified', 'last-modified', [CompletionResultType]::ParameterValue, 'Matches files by last modified date')
+            [CompletionResult]::new('duplicate', 'duplicate', [CompletionResultType]::ParameterValue, 'A fast duplicate file finder')
+            [CompletionResult]::new('empty', 'empty', [CompletionResultType]::ParameterValue, 'Finds empty dirs and files')
+            [CompletionResult]::new('exif', 'exif', [CompletionResultType]::ParameterValue, 'Filter by image EXIF data')
+            [CompletionResult]::new('extension', 'extension', [CompletionResultType]::ParameterValue, 'Filter by file extension')
+            [CompletionResult]::new('filecontent', 'filecontent', [CompletionResultType]::ParameterValue, 'Matches file content with the given regular expression')
+            [CompletionResult]::new('mimetype', 'mimetype', [CompletionResultType]::ParameterValue, 'Filter by MIME type associated with the file extension')
+            [CompletionResult]::new('name', 'name', [CompletionResultType]::ParameterValue, 'Match files and folders by name')
+            [CompletionResult]::new('regex', 'regex', [CompletionResultType]::ParameterValue, 'Matches filenames with the given regular expression')
+            [CompletionResult]::new('size', 'size', [CompletionResultType]::ParameterValue, 'Matches files and folders by size')
+            break
+        }
+        'organize;help;filter;created' {
+            break
+        }
+        'organize;help;filter;last-modified' {
+            break
+        }
+        'organize;help;filter;duplicate' {
+            break
+        }
+        'organize;help;filter;empty' {
+            break
+        }
+        'organize;help;filter;exif' {
+            break
+        }
+        'organize;help;filter;extension' {
+            break
+        }
+        'organize;help;filter;filecontent' {
+            break
+        }
+        'organize;help;filter;mimetype' {
+            break
+        }
+        'organize;help;filter;name' {
+            break
+        }
+        'organize;help;filter;regex' {
+            break
+        }
+        'organize;help;filter;size' {
+            break
+        }
+        'organize;help;completions' {
+            break
+        }
+        'organize;help;help' {
+            break
+        }
+    })
+
+    $completions.Where{ $_.CompletionText -like "$wordToComplete*" } |
+        Sort-Object -Property ListItemText
+}
