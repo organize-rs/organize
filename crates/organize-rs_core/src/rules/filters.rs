@@ -1,8 +1,6 @@
 //! FilterSelf::Extension()he config file(s)
 //! and `organize` operates with
 //!
-use std::borrow::BorrowMut;
-
 #[cfg(feature = "cli")]
 use clap::{Args, Subcommand, ValueEnum};
 
