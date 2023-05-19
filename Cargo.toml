@@ -49,7 +49,7 @@ regex = "1.8.1"
 indicatif = "0.17.3"
 walkdir = "2.3.3"
 serde_yaml = "0.9.21"
-toml = "0.7.3"
+toml = "0.7.4"
 abscissa_core = "0.7.0"
 rhai = { version = "1.14.0", features = ["serde"] }
 czkawka_core = "4.1.0"
