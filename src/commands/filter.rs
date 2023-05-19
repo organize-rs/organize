@@ -1,9 +1,9 @@
 //! Filters that organize can apply
 
-use std::{fs::FileType};
+use std::fs::FileType;
 
 use abscissa_core::{Command, Runnable};
-use clap::{Args};
+use clap::Args;
 use itertools::Itertools;
 use organize_rs_core::{
     rules::{
@@ -12,9 +12,6 @@ use organize_rs_core::{
     },
     FilterWalker,
 };
-
-
-
 
 /// `filter` subcommand
 ///

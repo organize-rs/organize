@@ -19,9 +19,7 @@ use crate::{
 use abscissa_core::{Command, Configurable, FrameworkError, Runnable};
 use clap::{self, Subcommand};
 
-
-
-use std::{path::PathBuf};
+use std::path::PathBuf;
 
 /// Organize Configuration Filename
 // pub static CONFIG_FILE: Lazy<PathBuf> = Lazy::new(|| {

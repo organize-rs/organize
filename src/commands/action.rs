@@ -1,7 +1,7 @@
 //! Actions that organize can apply
 
 use abscissa_core::{Command, Runnable};
-use clap::{Args};
+use clap::Args;
 use organize_rs_core::rules::actions::OrganizeAction;
 
 /// `action` subcommand

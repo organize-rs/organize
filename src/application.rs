@@ -1,14 +1,11 @@
 //! Organize Abscissa Application
 
-
-
 use crate::{commands::EntryPoint, config::OrganizeConfig};
 use abscissa_core::{
     application::{self, AppCell},
-    config::{self, CfgCell}, trace, Application, FrameworkError, StandardPaths,
+    config::{self, CfgCell},
+    trace, Application, FrameworkError, StandardPaths,
 };
-
-
 
 /// Application state
 pub static ORGANIZE_APP: AppCell<OrganizeApp> = AppCell::new();

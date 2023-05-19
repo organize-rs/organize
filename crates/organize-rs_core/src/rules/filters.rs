@@ -842,20 +842,20 @@ impl OrganizeFilter {
             } => Box::new(self.filter_by_name(arguments.clone(), *case_sensitive)),
             OrganizeFilter::Empty => Box::new(self.filter_empty()),
             OrganizeFilter::Duplicate {
-                detect_original_by,
-                reverse,
+                detect_original_by: _,
+                reverse: _,
             } => todo!(),
             OrganizeFilter::Exif => todo!(),
-            OrganizeFilter::Filecontent { regex } => todo!(),
-            OrganizeFilter::Mimetype { mimetype } => todo!(),
-            OrganizeFilter::Regex { expr } => todo!(),
-            OrganizeFilter::Created { date, mode } => todo!(),
+            OrganizeFilter::Filecontent { regex: _ } => todo!(),
+            OrganizeFilter::Mimetype { mimetype: _ } => todo!(),
+            OrganizeFilter::Regex { expr: _ } => todo!(),
+            OrganizeFilter::Created { date: _, mode: _ } => todo!(),
             #[cfg(target_os = "osx")]
             OrganizeFilter::Added { date, mode } => todo!(),
             #[cfg(target_os = "osx")]
             OrganizeFilter::LastUsed { date, mode } => todo!(),
-            OrganizeFilter::LastModified { date, mode } => todo!(),
-            OrganizeFilter::Size { upper, lower } => todo!(),
+            OrganizeFilter::LastModified { date: _, mode: _ } => todo!(),
+            OrganizeFilter::Size { upper: _, lower: _ } => todo!(),
         }
     }
 

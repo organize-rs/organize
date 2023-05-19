@@ -2,10 +2,9 @@ pub mod error;
 pub mod rules;
 
 use crate::error::OrganizeResult;
-use crate::rules::filters::OrganizeFilter;
-use itertools::Itertools;
+
 use std::path::Path;
-use std::{error::Error, fs::File};
+
 use walkdir::{DirEntry, WalkDir};
 
 #[derive(Debug)]
@@ -27,5 +26,4 @@ impl FilterWalker {
 
         Ok(files)
     }
-
 }
