@@ -28,7 +28,7 @@ This is a Rust implementation of the same concept.
 
   `organize filter --recursive --max-depth 2 extension --locations C:\organize --locations D:\folders --targets files --exts rs --exts toml`
 
-- Filter `files` and `folders`, which are empty, recursive, maximum `4` levels deep, ignore `git` in path names
+- Filter `files` and `folders`, which are empty (`0 bytes` or `no files` in directory), recursive, maximum `4` levels deep, ignore `git` in path names
 
   `organize filter --recursive --max-depth 4 empty --locations "C:\Users\dailyuse\dev-src\organize\" --targets both --ignore-path git`
 
