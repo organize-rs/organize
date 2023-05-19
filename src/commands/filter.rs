@@ -33,6 +33,12 @@ pub struct FilterCmd {
     #[arg(short, long, global = true)]
     locations: Vec<String>,
 
+    #[arg(long, global = true)]
+    ignore_name: Option<Vec<String>>,
+
+    #[arg(long, global = true)]
+    ignore_path: Option<Vec<String>>,
+
     /// Targets to operate on
     #[arg(short, long, global = true, default_value_t = OrganizeTargets::Files, value_enum)]
     targets: OrganizeTargets,
@@ -59,6 +65,26 @@ impl Runnable for FilterCmd {
                     OrganizeTargets::Files => FileType::is_file(file_type),
                     OrganizeTargets::Both => true,
                 }
+            })
+            .filter(|f| {
+                self.ignore_name.as_ref().map_or(true, |ignore| {
+                    let file_name = &f
+                        .file_name()
+                        .to_str()
+                        .expect("filename should be convertable to a String")
+                        .to_string();
+                    !ignore.iter().any(|pat| file_name.contains(pat))
+                })
+            })
+            .filter(|f| {
+                self.ignore_path.as_ref().map_or(true, |ignore| {
+                    let file_name = &f
+                        .path()
+                        .to_str()
+                        .expect("filename should be convertable to a String")
+                        .to_string();
+                    !ignore.iter().any(|pat| file_name.contains(pat))
+                })
             })
             .collect_vec();
 

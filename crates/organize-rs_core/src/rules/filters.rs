@@ -840,11 +840,11 @@ impl OrganizeFilter {
                 arguments,
                 case_insensitive: case_sensitive,
             } => Box::new(self.filter_by_name(arguments.clone(), *case_sensitive)),
+            OrganizeFilter::Empty => Box::new(self.filter_empty()),
             OrganizeFilter::Duplicate {
                 detect_original_by,
                 reverse,
             } => todo!(),
-            OrganizeFilter::Empty => todo!(),
             OrganizeFilter::Exif => todo!(),
             OrganizeFilter::Filecontent { regex } => todo!(),
             OrganizeFilter::Mimetype { mimetype } => todo!(),
@@ -906,7 +906,7 @@ impl OrganizeFilter {
     /// [`Empty`]: OrganizeFilter::Empty
     #[must_use]
     pub fn is_empty(&self) -> bool {
-        matches!(self, Self::Empty)
+        matches!(self, Self::Empty { .. })
     }
 
     /// Returns `true` if the organize filter is [`Exif`].
@@ -1066,10 +1066,10 @@ impl OrganizeFilter {
     }
 
     fn filter_by_extension(&self, exts: Vec<String>) -> impl FnMut(&DirEntry) -> bool {
-        move |file: &DirEntry| -> bool {
+        move |entry: &DirEntry| -> bool {
             let mut exts = exts.clone().into_iter();
-            let file = file.clone();
-            let file_path = file.into_path();
+            let entry = entry.clone();
+            let file_path = entry.into_path();
             if let Some(extension) = file_path.extension() {
                 let extension_str = extension.to_string_lossy();
                 exts.any(|f| f == extension_str)
@@ -1084,9 +1084,9 @@ impl OrganizeFilter {
         arguments: NameFilterArgs,
         case_insensitive: bool,
     ) -> impl FnMut(&DirEntry) -> bool {
-        move |file: &DirEntry| -> bool {
-            let file = file.clone();
-            let file_path = file.into_path();
+        move |entry: &DirEntry| -> bool {
+            let entry = entry.clone();
+            let file_path = entry.into_path();
             let file_stem = file_path.file_stem();
             if let Some(file_name) = file_path.file_name() {
                 let mut file_name_str = file_name.to_string_lossy().into_owned();
@@ -1129,6 +1129,28 @@ impl OrganizeFilter {
                         }
                     }
                     NameFilterArgs { .. } => false,
+                }
+            } else {
+                false
+            }
+        }
+    }
+
+    fn filter_empty(&self) -> impl FnMut(&DirEntry) -> bool {
+        move |file: &DirEntry| -> bool {
+            let file = file;
+
+            if let Ok(metadata) = file.metadata() {
+                if file.path().is_file() {
+                    metadata.len() == 0
+                } else if file.path().is_dir() {
+                    if let Ok(iter) = file.path().read_dir() {
+                        iter.count() == 0
+                    } else {
+                        false
+                    }
+                } else {
+                    false
                 }
             } else {
                 false

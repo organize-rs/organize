@@ -28,10 +28,4 @@ impl FilterWalker {
         Ok(files)
     }
 
-    //     pub fn apply_filter<I>(files: I, filter: impl FnMut(&DirEntry) -> bool)
-    //     where
-    //         I: IntoIterator,
-    //     {
-    //         files.filter_ok(filter)
-    //     }
 }
