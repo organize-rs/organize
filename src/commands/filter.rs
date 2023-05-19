@@ -33,9 +33,11 @@ pub struct FilterCmd {
     #[arg(short, long, global = true)]
     locations: Vec<String>,
 
+    /// Words in file names to be ignored
     #[arg(long, global = true)]
     ignore_name: Option<Vec<String>>,
 
+    /// Words in Paths to be ignored
     #[arg(long, global = true)]
     ignore_path: Option<Vec<String>>,
 
