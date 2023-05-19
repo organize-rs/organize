@@ -42,15 +42,15 @@ This is a Rust implementation of the same concept.
 
 ### Main
 
-<img src=https://github.com/organize-rs/organize/blob/main/docs/screenshots/main.png>
+![organize main menu](https://github.com/organize-rs/organize/blob/main/docs/screenshots/main.png?raw=true)
 
 ### Filters
 
-<img src=https://github.com/organize-rs/organize/blob/main/docs/screenshots/filters.png>
+![organize filters](https://github.com/organize-rs/organize/blob/main/docs/screenshots/filters.png?raw=true)
 
 ### Actions
 
-<img src=https://github.com/organize-rs/organize/blob/main/docs/screenshots/actions.png>
+![organize actions](https://github.com/organize-rs/organize/blob/main/docs/screenshots/actions.png?raw=true)
 
 ## Goals
 
