@@ -1,7 +1,7 @@
 //! `docs` subcommand
 
 use abscissa_core::{Command, Runnable};
-use clap::{Parser, Args};
+use clap::{Args};
 
 /// Opens the documentation.
 #[derive(Command, Debug, Args)]

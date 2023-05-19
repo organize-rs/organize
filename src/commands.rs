@@ -16,12 +16,12 @@ use crate::{
     commands::{action::ActionCmd, completions::CompletionsCmd, docs::DocsCmd, filter::FilterCmd},
     config::OrganizeConfig,
 };
-use abscissa_core::{config::Override, Command, Configurable, FrameworkError, Runnable};
+use abscissa_core::{Command, Configurable, FrameworkError, Runnable};
 use clap::{self, Subcommand};
-use directories::BaseDirs;
-use once_cell::sync::Lazy;
-use organize_rs_core::rules::{OrganizeLocation, OrganizeTargets};
-use std::{fs::create_dir_all, path::PathBuf};
+
+
+
+use std::{path::PathBuf};
 
 /// Organize Configuration Filename
 // pub static CONFIG_FILE: Lazy<PathBuf> = Lazy::new(|| {

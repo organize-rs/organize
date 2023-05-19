@@ -1,15 +1,14 @@
 //! Organize Abscissa Application
 
-use std::fs::File;
 
-use crate::{commands::EntryPoint, config::OrganizeConfig, error::ErrorKind};
+
+use crate::{commands::EntryPoint, config::OrganizeConfig};
 use abscissa_core::{
     application::{self, AppCell},
-    config::{self, CfgCell},
-    status_err, trace, Application, Configurable, FrameworkError, StandardPaths,
+    config::{self, CfgCell}, trace, Application, FrameworkError, StandardPaths,
 };
 
-use serde_yaml;
+
 
 /// Application state
 pub static ORGANIZE_APP: AppCell<OrganizeApp> = AppCell::new();
@@ -116,7 +115,7 @@ impl Application for OrganizeApp {
     }
 
     /// Get tracing configuration from command-line options
-    fn tracing_config(&self, command: &EntryPoint) -> trace::Config {
+    fn tracing_config(&self, _command: &EntryPoint) -> trace::Config {
         // if command.verbose {
         //     trace::Config::verbose()
         // } else {

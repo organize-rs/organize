@@ -1,21 +1,20 @@
 //! Filters that organize can apply
 
-use std::{borrow::BorrowMut, fs::FileType};
+use std::{fs::FileType};
 
-use abscissa_core::{Application, Command, Runnable};
-use clap::{Args, Parser};
+use abscissa_core::{Command, Runnable};
+use clap::{Args};
 use itertools::Itertools;
 use organize_rs_core::{
-    error::OrganizeResult,
     rules::{
         filters::{FilterRecursive, OrganizeFilter},
         OrganizeTargets,
     },
     FilterWalker,
 };
-use walkdir::DirEntry;
 
-use crate::application::ORGANIZE_APP;
+
+
 
 /// `filter` subcommand
 ///
@@ -90,7 +89,7 @@ impl Runnable for FilterCmd {
             })
             .collect_vec();
 
-        let filtered = viable_locations
+        let _filtered = viable_locations
             .into_iter()
             .filter(filter)
             .inspect(|dir_entry| println!("{}", dir_entry.path().display()))
