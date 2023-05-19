@@ -36,6 +36,19 @@ This is a Rust implementation of the same concept.
 
   `organize filter --recursive --max-depth 4 empty --locations "C:\Users\dailyuse\dev-src\organize\" --targets both --ignore-name git`
 
+## Media
+
+**Be aware: This is WIP. Not all functionality is implemented, (yet).**
+
+### Main
+<img src=./docs/screenshots/main.png>
+
+### Filters
+<img src=./docs/screenshots/filters.png>
+
+### Actions
+<img src=./docs/screenshots/actions.png>
+
 ## Goals
 
 For now the first goal for this Rust version of `organize` is to have feature parity with its Python equivalent.
