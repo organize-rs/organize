@@ -41,13 +41,16 @@ This is a Rust implementation of the same concept.
 **Be aware: This is WIP. Not all functionality is implemented, (yet).**
 
 ### Main
-<img src=./docs/screenshots/main.png>
+
+<img src=https://github.com/organize-rs/organize/blob/main/docs/screenshots/main.png>
 
 ### Filters
-<img src=./docs/screenshots/filters.png>
+
+<img src=https://github.com/organize-rs/organize/blob/main/docs/screenshots/filters.png>
 
 ### Actions
-<img src=./docs/screenshots/actions.png>
+
+<img src=https://github.com/organize-rs/organize/blob/main/docs/screenshots/actions.png>
 
 ## Goals
 
