@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.2.3 (2023-05-19)
+## 0.2.4 (2023-05-20)
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 7 commits contributed to the release over the course of 1 calendar day.
+ - 1 day passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,8 +23,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Implement `created` filter ([`f07ab6a`](https://github.com/organize-rs/organize/commit/f07ab6a4bd9be7674dad416f7b74e9b9196b3dca))
+    - Remove human-panic dependency ([`9382256`](https://github.com/organize-rs/organize/commit/938225668c8879192a8e81a4872797907e3b4641))
+    - Research dependencies ([`9f12de9`](https://github.com/organize-rs/organize/commit/9f12de940ba56278c3eec43449dd5663f284e1e4))
+    - Cargo fix & cargo fmt ([`ee231a6`](https://github.com/organize-rs/organize/commit/ee231a69fcd825e6121c380f408c21ff2bf6c425))
+    - Cargo fix ([`0695061`](https://github.com/organize-rs/organize/commit/06950617d566bd19764a3f4b403a92f787b2536d))
+    - Add doc comments for ignore args ([`626a2ac`](https://github.com/organize-rs/organize/commit/626a2ac78814a6fb4f654f22bb27e422aa136fcf))
     - Implement `empty` filter and global ignore for file names and directory paths ([`d51a81a`](https://github.com/organize-rs/organize/commit/d51a81a593cb37c54c0c91edfac60a5eb8de7c89))
 </details>
+
+## 0.2.3 (2023-05-19)
 
 ## 0.2.2 (2023-05-19)
 

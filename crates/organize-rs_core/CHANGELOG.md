@@ -5,13 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.1.3 (2023-05-19)
+## 0.1.4 (2023-05-20)
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 24 commits contributed to the release over the course of 3 calendar days.
+ - 30 commits contributed to the release over the course of 4 calendar days.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Implement `last_accessed` and `last_modified` filters ([`4410c3f`](https://github.com/organize-rs/organize/commit/4410c3f8a45909c69a3fdca63ad8f6845b601dc3))
+    - Implement `created` filter ([`f07ab6a`](https://github.com/organize-rs/organize/commit/f07ab6a4bd9be7674dad416f7b74e9b9196b3dca))
+    - Remove human-panic dependency ([`9382256`](https://github.com/organize-rs/organize/commit/938225668c8879192a8e81a4872797907e3b4641))
+    - Remove unused import ([`9f56d4c`](https://github.com/organize-rs/organize/commit/9f56d4ce1211abaf96f720c9874b1bba1915d755))
+    - Cargo fix & cargo fmt ([`ee231a6`](https://github.com/organize-rs/organize/commit/ee231a69fcd825e6121c380f408c21ff2bf6c425))
+    - Adjusting changelogs prior to release of organize-rs_core v0.1.3, organize-rs v0.2.3 ([`c4d5428`](https://github.com/organize-rs/organize/commit/c4d5428c29ca7bf24746abf8ff45c74a4838159d))
     - Adjusting changelogs prior to release of organize-rs_core v0.1.2, organize-rs v0.2.2 ([`2ebfdd7`](https://github.com/organize-rs/organize/commit/2ebfdd7fe2d386f54104f1a0a0d0230fd793f271))
     - Implement `empty` filter and global ignore for file names and directory paths ([`d51a81a`](https://github.com/organize-rs/organize/commit/d51a81a593cb37c54c0c91edfac60a5eb8de7c89))
     - Adjusting changelogs prior to release of organize-rs_core v0.1.1, organize-rs v0.2.1 ([`1e0e2dc`](https://github.com/organize-rs/organize/commit/1e0e2dc36593da72422817d50eff61f13444ea32))
@@ -47,6 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Start parsing config ([`0e36272`](https://github.com/organize-rs/organize/commit/0e36272f9e7db8e65daaad39d228d986ab952673))
     - Refactor to workspace and create new core library ([`0de540b`](https://github.com/organize-rs/organize/commit/0de540b0aa0ab07dc4f3b118e6f95b30312ea44e))
 </details>
+
+## 0.1.3 (2023-05-19)
 
 ## 0.1.2 (2023-05-19)
 
