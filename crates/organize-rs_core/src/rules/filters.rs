@@ -1,13 +1,13 @@
 //! FilterSelf::Extension()he config file(s)
 //! and `organize` operates with
 //!
-use std::{iter::Filter, time::Instant};
 
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, Utc};
 #[cfg(feature = "cli")]
 use clap::{Args, Subcommand, ValueEnum};
 
 use displaydoc::Display;
+
 use serde::{Deserialize, Serialize};
 use walkdir::DirEntry;
 
@@ -872,13 +872,18 @@ impl OrganizeFilter {
                 arguments,
                 case_insensitive,
             } => Box::new(self.filter_by_name(arguments.clone(), *case_insensitive)),
-            OrganizeFilter::Empty => Box::new(self.filter_empty()),
-            OrganizeFilter::Created { date, mode } => Box::new(self.filter_created(*date, *mode)),
+            OrganizeFilter::Empty => Box::new(self.filter_by_empty()),
+            OrganizeFilter::Created { date, mode } => {
+                Box::new(self.filter_by_created(*date, *mode))
+            }
             OrganizeFilter::LastModified { date, mode } => {
-                Box::new(self.filter_modified(*date, *mode))
+                Box::new(self.filter_by_last_modified(*date, *mode))
             }
             OrganizeFilter::LastAccessed { date, mode } => {
-                Box::new(self.filter_accessed(*date, *mode))
+                Box::new(self.filter_by_last_accessed(*date, *mode))
+            }
+            OrganizeFilter::Mimetype { mimetype } => {
+                Box::new(self.filter_by_mimetype(mimetype.clone()))
             }
             OrganizeFilter::Duplicate {
                 detect_original_by: _,
@@ -886,7 +891,6 @@ impl OrganizeFilter {
             } => todo!("not implemented (yet)!"),
             OrganizeFilter::Exif => todo!("not implemented (yet)!"),
             OrganizeFilter::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
-            OrganizeFilter::Mimetype { mimetype: _ } => todo!("not implemented (yet)!"),
             OrganizeFilter::Regex { expr: _ } => todo!("not implemented (yet)!"),
             OrganizeFilter::Size { upper: _, lower: _ } => todo!("not implemented (yet)!"),
             #[cfg(target_os = "osx")]
@@ -1181,13 +1185,13 @@ impl OrganizeFilter {
         }
     }
 
-    fn filter_empty(&self) -> impl FnMut(&DirEntry) -> bool {
-        move |file: &DirEntry| -> bool {
-            if let Ok(metadata) = file.metadata() {
-                if file.path().is_file() {
+    fn filter_by_empty(&self) -> impl FnMut(&DirEntry) -> bool {
+        move |entry: &DirEntry| -> bool {
+            if let Ok(metadata) = entry.metadata() {
+                if entry.path().is_file() {
                     metadata.len() == 0
-                } else if file.path().is_dir() {
-                    if let Ok(iter) = file.path().read_dir() {
+                } else if entry.path().is_dir() {
+                    if let Ok(iter) = entry.path().read_dir() {
                         iter.count() == 0
                     } else {
                         false
@@ -1201,27 +1205,35 @@ impl OrganizeFilter {
         }
     }
 
-    fn filter_accessed(&self, date: FilterDate, mode: Interval) -> impl FnMut(&DirEntry) -> bool {
-        move |file: &DirEntry| {
-            let metadata = file.metadata().expect("getting metadata should not fail");
+    fn filter_by_last_accessed(
+        &self,
+        date: FilterDate,
+        mode: Interval,
+    ) -> impl FnMut(&DirEntry) -> bool {
+        move |entry: &DirEntry| {
+            let metadata = entry.metadata().expect("getting metadata should not fail");
             let date_accessed = metadata
                 .accessed()
                 .expect("getting created date should not fail");
             Self::matches_date(date_accessed, date, mode)
         }
     }
-    fn filter_modified(&self, date: FilterDate, mode: Interval) -> impl FnMut(&DirEntry) -> bool {
-        move |file: &DirEntry| {
-            let metadata = file.metadata().expect("getting metadata should not fail");
+    fn filter_by_last_modified(
+        &self,
+        date: FilterDate,
+        mode: Interval,
+    ) -> impl FnMut(&DirEntry) -> bool {
+        move |entry: &DirEntry| {
+            let metadata = entry.metadata().expect("getting metadata should not fail");
             let date_modified = metadata
                 .modified()
                 .expect("getting created date should not fail");
             Self::matches_date(date_modified, date, mode)
         }
     }
-    fn filter_created(&self, date: FilterDate, mode: Interval) -> impl FnMut(&DirEntry) -> bool {
-        move |file: &DirEntry| {
-            let metadata = file.metadata().expect("getting metadata should not fail");
+    fn filter_by_created(&self, date: FilterDate, mode: Interval) -> impl FnMut(&DirEntry) -> bool {
+        move |entry: &DirEntry| {
+            let metadata = entry.metadata().expect("getting metadata should not fail");
             let date_created = metadata
                 .created()
                 .expect("getting created date should not fail");
@@ -1289,6 +1301,33 @@ impl OrganizeFilter {
             (DateUnit::Seconds(s), Interval::OlderThan) if s < seconds_since_created => true,
             (DateUnit::Seconds(s), Interval::NewerThan) if s >= seconds_since_created => true,
             (_, _) => false,
+        }
+    }
+
+    fn filter_by_mimetype(&self, mimetype: Vec<String>) -> impl FnMut(&DirEntry) -> bool {
+        move |entry| {
+            let file_path = entry.clone().into_path();
+            let mimetype = mimetype.clone();
+            let Ok(Some(file_kind)) = infer::get_from_path(&file_path) else {
+                return false
+            };
+
+            let file_mime_type = match file_kind.mime_type().parse::<mime::Mime>() {
+                Ok(it) => it,
+                Err(err) => {
+                    eprintln!(
+                        "couldn't determine mimetype of {}: {err}",
+                        file_path.display()
+                    );
+                    return false;
+                }
+            };
+
+            mimetype
+                .into_iter()
+                .map(|f| f.parse::<mime::Mime>())
+                .filter_map(|r| r.map_err(|err| println!("{err}")).ok())
+                .any(|f| f == file_mime_type)
         }
     }
 }

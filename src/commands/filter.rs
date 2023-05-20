@@ -56,32 +56,23 @@ impl Runnable for FilterCmd {
             .map(|path| FilterWalker::entries(path, self.recursive.max_depth()))
             .flatten_ok()
             .filter_map(std::result::Result::ok)
-            .filter(|f| {
-                let file_type = &f.file_type();
-                match self.targets {
-                    OrganizeTargets::Dirs => FileType::is_dir(file_type),
-                    OrganizeTargets::Files => FileType::is_file(file_type),
-                    OrganizeTargets::Both => true,
-                }
+            .filter(|f| match self.targets {
+                OrganizeTargets::Dirs => FileType::is_dir(&f.file_type()),
+                OrganizeTargets::Files => FileType::is_file(&f.file_type()),
+                OrganizeTargets::Both => true,
             })
             .filter(|f| {
                 self.ignore_name.as_ref().map_or(true, |ignore| {
-                    let file_name = &f
-                        .file_name()
-                        .to_str()
-                        .expect("filename should be convertable to a String")
-                        .to_string();
-                    !ignore.iter().any(|pat| file_name.contains(pat))
+                    let Some(file_name) = f.file_name().to_str() else { return true };
+                    let file_name_str = file_name.to_string();
+                    !ignore.iter().any(|pat| file_name_str.contains(pat))
                 })
             })
             .filter(|f| {
                 self.ignore_path.as_ref().map_or(true, |ignore| {
-                    let file_name = &f
-                        .path()
-                        .to_str()
-                        .expect("filename should be convertable to a String")
-                        .to_string();
-                    !ignore.iter().any(|pat| file_name.contains(pat))
+                    let Some(path) = f.path().to_str() else { return true };
+                    let path_str = path.to_string();
+                    !ignore.iter().any(|pat| path_str.contains(pat))
                 })
             })
             .collect_vec();

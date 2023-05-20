@@ -1,13 +1,13 @@
 [package]
 name = "organize-rs_core"
-version = "0.1.4"
-edition.workspace = true
-authors.workspace = true
-repository.workspace = true
-license.workspace = true
-categories.workspace = true
-keywords.workspace = true
-description.workspace = true
+version = "0.1.4-dev"
+edition = { workspace = true }
+authors = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+keywords = { workspace = true }
+description = { workspace = true }
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
@@ -15,19 +15,21 @@ default = []
 cli = ["dep:clap", "dep:indicatif"]
 
 [dependencies]
-czkawka_core.workspace = true
+# czkawka_core = { workspace = true }
+infer = { workspace = true }
+mime = { workspace = true }
 clap = { workspace = true, optional = true }
-directories.workspace = true
-serde.workspace = true
-serde_json.workspace = true
-thiserror.workspace = true
-once_cell.workspace = true
-duct.workspace = true
-chrono.workspace = true
-regex.workspace = true
+directories = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+once_cell = { workspace = true }
+duct = { workspace = true }
+chrono = { workspace = true }
+regex = { workspace = true }
 indicatif = { workspace = true, optional = true }
-walkdir.workspace = true
-serde_yaml.workspace = true
-toml.workspace = true
-itertools.workspace = true
-displaydoc.workspace = true
+walkdir = { workspace = true }
+serde_yaml = { workspace = true }
+toml = { workspace = true }
+itertools = { workspace = true }
+displaydoc = { workspace = true }

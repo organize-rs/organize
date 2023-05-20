@@ -9,15 +9,15 @@ description = "organize - a file management automation tool"
 
 [package]
 name = "organize-rs"
-version = "0.2.4"
-edition.workspace = true
-description.workspace = true
-authors.workspace = true
+version = "0.2.4-dev"
+edition = { workspace = true }
+description = { workspace = true }
+authors = { workspace = true }
 documentation = "https://docs.rs/organize-rs"
-repository.workspace = true
-license.workspace = true
-categories.workspace = true
-keywords.workspace = true
+repository = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+keywords = { workspace = true }
 
 [workspace]
 members = ["crates/organize-rs_core", "crates/organize-rs_testing", "xtask"]
@@ -27,7 +27,7 @@ default = []
 research_organize = []
 
 [workspace.dependencies]
-organize-rs_core = { version = "0.1.1", path = "crates/organize-rs_core", features = [
+organize-rs_core = { version = "0.1.4-dev", path = "crates/organize-rs_core", features = [
     "cli",
 ] }
 organize-rs_testing = { path = "crates/organize-rs_testing" }
@@ -45,52 +45,37 @@ chrono = { version = "0.4.24", default-features = false, features = [
     "std",
     "time",
 ] }
-regex = "1.8.1"
-# + Lazy-regex?
-# https://crates.io/crates/lazy-regex
 
-indicatif = "0.17.3"
 walkdir = "2.3.3"
+regex = "1.8.1"
 serde_yaml = "0.9.21"
 toml = "0.7.4"
 abscissa_core = "0.7.0"
-rhai = { version = "1.14.0", features = ["serde"] }
-czkawka_core = "4.1.0"
 itertools = "0.10.5"
 displaydoc = "0.2.4"
 clap_complete = "4.3.0"
+indicatif = "0.17.3"
+rayon = "1.7.0"
 
 # dev dependencies
 tempfile = "3.5.0"
 aho-corasick = "1.0.1"
 
+# infer file and MIME type by magic number
+infer = "0.13.0"
+mime = "0.3.17"
+
+# TODO: Needed Dependencies
+# rhai = { version = "1.14.0", features = ["serde"] }
+# czkawka_core = "4.1.0"
+# + Lazy-regex?
+# https://crates.io/crates/lazy-regex
+
 # lookup tables for extensions/modes
 # https://crates.io/crates/phf
-
-
-[dependencies]
-organize-rs_core.workspace = true
-rhai.workspace = true
-clap.workspace = true
-directories.workspace = true
-serde.workspace = true
-serde_json.workspace = true
-thiserror.workspace = true
-once_cell.workspace = true
-duct.workspace = true
-chrono.workspace = true
-regex.workspace = true
-indicatif.workspace = true
-walkdir.workspace = true
-serde_yaml.workspace = true
-toml.workspace = true
-abscissa_core.workspace = true
-itertools.workspace = true
-clap_complete.workspace = true
-
 # Hashing
 # Read further: https://nnethercote.github.io/perf-book/hashing.html
-blake3 = { version = "1.3.3", features = ["digest", "rayon"] }
+# blake3 = { version = "1.3.3", features = ["digest", "rayon"] }
 
 # Checksum
 # https://crates.io/crates/crc32fast/1.3.2
@@ -99,19 +84,16 @@ blake3 = { version = "1.3.3", features = ["digest", "rayon"] }
 # https://crates.io/crates/rust-embed/6.6.1
 
 # File size information in a human readable way
-humansize = { version = "2.1.3", features = ["impl_style"] }
-rayon = "1.7.0"
+# humansize = { version = "2.1.3", features = ["impl_style"] }
 
-# infer file and MIME type by magic number
-infer = "0.13.0"
 # detection of a file's MIME type by its extension
-mime_guess = "2.0.4"
+# mime_guess = "2.0.4"
 
 # read/search in pdf files
-pdf = "0.8.1"
+# pdf = "0.8.1"
 
 # global state / thread local state
-state = { version = "0.5.3", features = ["tls"] }
+# state = { version = "0.5.3", features = ["tls"] }
 
 # duplicates
 # videos
@@ -121,10 +103,32 @@ state = { version = "0.5.3", features = ["tls"] }
 # RAW images
 # https://crates.io/crates/rawloader/0.37.1
 
+
+[dependencies]
+organize-rs_core = { workspace = true }
+clap = { workspace = true }
+directories = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+once_cell = { workspace = true }
+duct = { workspace = true }
+chrono = { workspace = true }
+regex = { workspace = true }
+walkdir = { workspace = true }
+serde_yaml = { workspace = true }
+toml = { workspace = true }
+abscissa_core = { workspace = true }
+itertools = { workspace = true }
+clap_complete = { workspace = true }
+indicatif = { workspace = true }
+
+
+
 [dev-dependencies]
 abscissa_core = { workspace = true, features = ["testing"] }
-once_cell.workspace = true
-organize-rs_testing.workspace = true
+once_cell = { workspace = true }
+organize-rs_testing = { workspace = true }
 
 [[bin]]
 name = "organize"
