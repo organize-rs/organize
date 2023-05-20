@@ -31,13 +31,13 @@ organize-rs_core = { version = "0.1.1", path = "crates/organize-rs_core", featur
     "cli",
 ] }
 organize-rs_testing = { path = "crates/organize-rs_testing" }
-clap = { version = "4", features = ["derive", "env", "wrap_help"] }
+clap = { version = "4.3.0", features = ["derive", "env", "wrap_help"] }
 directories = "5.0.1"
-serde = { version = "1", features = ["serde_derive"] }
+serde = { version = "1.0.163", features = ["serde_derive"] }
 serde_json = "1.0.96"
-thiserror = "1"
+thiserror = "1.0.40"
 anyhow = "1.0.71"
-once_cell = "1"
+once_cell = "1.17.1"
 duct = "0.13.6"
 chrono = { version = "0.4.24", default-features = false, features = [
     "serde",
@@ -58,7 +58,7 @@ rhai = { version = "1.14.0", features = ["serde"] }
 czkawka_core = "4.1.0"
 itertools = "0.10.5"
 displaydoc = "0.2.4"
-clap_complete = "4.2.3"
+clap_complete = "4.3.0"
 
 # dev dependencies
 tempfile = "3.5.0"
