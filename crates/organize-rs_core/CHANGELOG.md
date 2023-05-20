@@ -5,14 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.1.4 (2023-05-20)
+## 0.1.5 (2023-05-20)
+
+### New Features
+
+ - <csr-id-345d8885d1ffe9bcfdc42c62fccbdc59a457ed0a/> Implement `mimetype` filter
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 30 commits contributed to the release over the course of 4 calendar days.
- - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 32 commits contributed to the release over the course of 5 calendar days.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -22,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Implement `mimetype` filter ([`345d888`](https://github.com/organize-rs/organize/commit/345d8885d1ffe9bcfdc42c62fccbdc59a457ed0a))
+    - Adjusting changelogs prior to release of organize-rs_core v0.1.4, organize-rs v0.2.4 ([`b00bbe0`](https://github.com/organize-rs/organize/commit/b00bbe03cc7b50a08dcb2e6c98eb41a3a586f488))
     - Implement `last_accessed` and `last_modified` filters ([`4410c3f`](https://github.com/organize-rs/organize/commit/4410c3f8a45909c69a3fdca63ad8f6845b601dc3))
     - Implement `created` filter ([`f07ab6a`](https://github.com/organize-rs/organize/commit/f07ab6a4bd9be7674dad416f7b74e9b9196b3dca))
     - Remove human-panic dependency ([`9382256`](https://github.com/organize-rs/organize/commit/938225668c8879192a8e81a4872797907e3b4641))
@@ -53,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Start parsing config ([`0e36272`](https://github.com/organize-rs/organize/commit/0e36272f9e7db8e65daaad39d228d986ab952673))
     - Refactor to workspace and create new core library ([`0de540b`](https://github.com/organize-rs/organize/commit/0de540b0aa0ab07dc4f3b118e6f95b30312ea44e))
 </details>
+
+## 0.1.4 (2023-05-20)
 
 ## 0.1.3 (2023-05-19)
 

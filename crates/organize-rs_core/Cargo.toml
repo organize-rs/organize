@@ -1,6 +1,6 @@
 [package]
 name = "organize-rs_core"
-version = "0.1.4-dev"
+version = "0.1.5"
 edition = { workspace = true }
 authors = { workspace = true }
 repository = { workspace = true }
