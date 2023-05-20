@@ -1,6 +1,9 @@
 //! FilterSelf::Extension()he config file(s)
 //! and `organize` operates with
 //!
+use std::{iter::Filter, time::Instant};
+
+use chrono::{DateTime, Duration, Utc};
 #[cfg(feature = "cli")]
 use clap::{Args, Subcommand, ValueEnum};
 
@@ -11,20 +14,20 @@ use walkdir::DirEntry;
 /// Comparison conditions for dates
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
-pub enum OlderNewer {
+pub enum Interval {
     /// older
-    Older,
+    OlderThan,
     /// newer
-    Newer,
+    NewerThan,
 }
 
-impl OlderNewer {
+impl Interval {
     /// Returns `true` if the older newer is [`Older`].
     ///
     /// [`Older`]: OlderNewer::Older
     #[must_use]
     pub fn is_older(&self) -> bool {
-        matches!(self, Self::Older)
+        matches!(self, Self::OlderThan)
     }
 
     /// Returns `true` if the older newer is [`Newer`].
@@ -32,13 +35,13 @@ impl OlderNewer {
     /// [`Newer`]: OlderNewer::Newer
     #[must_use]
     pub fn is_newer(&self) -> bool {
-        matches!(self, Self::Newer)
+        matches!(self, Self::NewerThan)
     }
 }
 
-impl Default for OlderNewer {
+impl Default for Interval {
     fn default() -> Self {
-        Self::Older
+        Self::OlderThan
     }
 }
 
@@ -291,63 +294,95 @@ pub struct NameFilterArgs {
     ends_with: Option<String>,
 }
 
-// #[derive(Debug, Clone, Deserialize, Serialize, Display)]
-// pub enum FilterDate {
-//     /// specify number of years
-//     #[serde(rename = "years")]
-//     Years(u16),
-//     /// specify number of months
-//     #[serde(rename = "months")]
-//     Months(u64),
-//     /// specify number of weeks
-//     #[serde(rename = "weeks")]
-//     Weeks(f64),
-//     /// specify number of days
-//     #[serde(rename = "days")]
-//     Days(f64),
-//     /// specify number of hours
-//     #[serde(rename = "hours")]
-//     Hours(f64),
-//     /// specify number of minutes
-//     #[serde(rename = "minutes")]
-//     Minutes(f64),
-//     /// specify number of seconds
-//     #[serde(rename = "seconds")]
-//     Seconds(f64),
-// }
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+pub enum DateUnit {
+    /// specify number of years
+    #[serde(rename = "years")]
+    Years(u64),
+    /// specify number of months
+    #[serde(rename = "months")]
+    Months(u64),
+    /// specify number of weeks
+    #[serde(rename = "weeks")]
+    Weeks(u64),
+    /// specify number of days
+    #[serde(rename = "days")]
+    Days(u64),
+    /// specify number of hours
+    #[serde(rename = "hours")]
+    Hours(u64),
+    /// specify number of minutes
+    #[serde(rename = "minutes")]
+    Minutes(u64),
+    /// specify number of seconds
+    #[serde(rename = "seconds")]
+    Seconds(u64),
+}
+
+impl From<FilterDate> for DateUnit {
+    fn from(value: FilterDate) -> Self {
+        match value {
+            FilterDate {
+                years: Some(years), ..
+            } => DateUnit::Years(years),
+            FilterDate {
+                months: Some(months),
+                ..
+            } => DateUnit::Months(months),
+            FilterDate {
+                weeks: Some(weeks), ..
+            } => DateUnit::Weeks(weeks),
+            FilterDate {
+                days: Some(days), ..
+            } => DateUnit::Days(days),
+            FilterDate {
+                hours: Some(hours), ..
+            } => DateUnit::Hours(hours),
+            FilterDate {
+                minutes: Some(minutes),
+                ..
+            } => DateUnit::Minutes(minutes),
+            FilterDate {
+                seconds: Some(seconds),
+                ..
+            } => DateUnit::Seconds(seconds),
+            FilterDate { .. } => unreachable!(),
+        }
+    }
+}
 
 #[cfg_attr(feature = "cli", derive(Args))]
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 #[cfg_attr(feature = "cli", group(required = true, multiple = false))]
 pub struct FilterDate {
     /// specify number of years
     #[serde(rename = "years")]
     #[cfg_attr(feature = "cli", arg(long))]
-    years: u64,
+    years: Option<u64>,
     /// specify number of months
     #[serde(rename = "months")]
     #[cfg_attr(feature = "cli", arg(long))]
-    months: u64,
+    months: Option<u64>,
     /// specify number of weeks
     #[serde(rename = "weeks")]
     #[cfg_attr(feature = "cli", arg(long))]
-    weeks: f64,
+    weeks: Option<u64>,
     /// specify number of days
     #[serde(rename = "days")]
     #[cfg_attr(feature = "cli", arg(long))]
-    days: f64,
+    days: Option<u64>,
     /// specify number of hours
     #[serde(rename = "hours")]
     #[cfg_attr(feature = "cli", arg(long))]
-    hours: f64,
+    hours: Option<u64>,
     /// specify number of minutes
     #[serde(rename = "minutes")]
     #[cfg_attr(feature = "cli", arg(long))]
-    minutes: f64,
+    minutes: Option<u64>,
     /// specify number of seconds
     #[serde(rename = "seconds")]
     #[cfg_attr(feature = "cli", arg(long))]
-    seconds: f64,
+    seconds: Option<u64>,
 }
 
 /// [`OrganizeFilter`] contains filter variants that organize can
@@ -380,7 +415,7 @@ pub enum OrganizeFilter {
         #[cfg_attr(feature = "cli", command(flatten))]
         date: FilterDate,
         #[cfg_attr(feature = "cli", arg(long))]
-        mode: OlderNewer,
+        mode: Interval,
     },
     /// Matches files by the time the file was added to a folder
     ///
@@ -407,7 +442,7 @@ pub enum OrganizeFilter {
         #[cfg_attr(feature = "cli", command(flatten))]
         date: FilterDate,
         #[cfg_attr(feature = "cli", arg(long))]
-        mode: OlderNewer,
+        mode: Interval,
     },
     /// Matches files by the time the file was last used
     ///
@@ -434,7 +469,7 @@ pub enum OrganizeFilter {
         #[cfg_attr(feature = "cli", command(flatten))]
         date: FilterDate,
         #[cfg_attr(feature = "cli", arg(long))]
-        mode: OlderNewer,
+        mode: Interval,
     },
     /// Matches files by last modified date
     ///
@@ -461,7 +496,7 @@ pub enum OrganizeFilter {
         #[cfg_attr(feature = "cli", command(flatten))]
         date: FilterDate,
         #[cfg_attr(feature = "cli", arg(long))]
-        mode: OlderNewer,
+        mode: Interval,
     },
     /// A fast duplicate file finder
     ///
@@ -836,8 +871,8 @@ impl OrganizeFilter {
             OrganizeFilter::Extension { exts } => Box::new(self.filter_by_extension(exts.clone())),
             OrganizeFilter::Name {
                 arguments,
-                case_insensitive: case_sensitive,
-            } => Box::new(self.filter_by_name(arguments.clone(), *case_sensitive)),
+                case_insensitive,
+            } => Box::new(self.filter_by_name(arguments.clone(), *case_insensitive)),
             OrganizeFilter::Empty => Box::new(self.filter_empty()),
             OrganizeFilter::Duplicate {
                 detect_original_by: _,
@@ -847,7 +882,7 @@ impl OrganizeFilter {
             OrganizeFilter::Filecontent { regex: _ } => todo!(),
             OrganizeFilter::Mimetype { mimetype: _ } => todo!(),
             OrganizeFilter::Regex { expr: _ } => todo!(),
-            OrganizeFilter::Created { date: _, mode: _ } => todo!(),
+            OrganizeFilter::Created { date, mode } => Box::new(self.filter_created(*date, *mode)),
             #[cfg(target_os = "osx")]
             OrganizeFilter::Added { date, mode } => todo!(),
             #[cfg(target_os = "osx")]
@@ -1094,23 +1129,31 @@ impl OrganizeFilter {
                 }
 
                 match &arguments {
-                    NameFilterArgs { starts_with, .. } if arguments.starts_with.is_some() => {
-                        let mut sw = starts_with.clone().expect("should contain value");
+                    NameFilterArgs {
+                        starts_with: Some(sw),
+                        ..
+                    } => {
+                        let mut sw = sw.clone();
                         if case_insensitive {
                             sw = sw.to_lowercase();
                         }
 
                         file_name_str.starts_with(&sw)
                     }
-                    NameFilterArgs { contains, .. } if arguments.contains.is_some() => {
-                        let mut c = contains.clone().expect("should contain value");
+                    NameFilterArgs {
+                        contains: Some(c), ..
+                    } => {
+                        let mut c = c.clone();
                         if case_insensitive {
                             c = c.to_lowercase();
                         }
                         file_name_str.contains(&c)
                     }
-                    NameFilterArgs { ends_with, .. } if arguments.ends_with.is_some() => {
-                        let mut ew = ends_with.clone().expect("should contain value");
+                    NameFilterArgs {
+                        ends_with: Some(ew),
+                        ..
+                    } => {
+                        let mut ew = ew.clone();
                         if case_insensitive {
                             ew = ew.to_lowercase();
                         }
@@ -1136,8 +1179,6 @@ impl OrganizeFilter {
 
     fn filter_empty(&self) -> impl FnMut(&DirEntry) -> bool {
         move |file: &DirEntry| -> bool {
-            let file = file;
-
             if let Ok(metadata) = file.metadata() {
                 if file.path().is_file() {
                     metadata.len() == 0
@@ -1153,6 +1194,79 @@ impl OrganizeFilter {
             } else {
                 false
             }
+        }
+    }
+
+    fn filter_created(&self, date: FilterDate, mode: Interval) -> impl FnMut(&DirEntry) -> bool {
+        move |file: &DirEntry| {
+            let metadata = file.metadata().expect("getting metadata should not fail");
+            let date_created = metadata
+                .created()
+                .expect("getting created date should not fail");
+            Self::matches_date(date_created, date, mode)
+        }
+    }
+
+    fn matches_date(item_date: std::time::SystemTime, date: FilterDate, mode: Interval) -> bool {
+        let datetime_file: DateTime<Utc> = chrono::DateTime::from(item_date);
+        let now = chrono::offset::Utc::now();
+
+        let seconds_since_created = u64::try_from((now - datetime_file).num_seconds())
+            .expect("subtraction of two datetimes can't be negative");
+
+        let unit = DateUnit::from(date);
+        match (unit, mode) {
+            (DateUnit::Years(y), Interval::OlderThan)
+                if y * 52 * 7 * 24 * 60 * 60 < seconds_since_created =>
+            {
+                true
+            }
+            (DateUnit::Years(y), Interval::NewerThan)
+                if y * 52 * 7 * 24 * 60 * 60 >= seconds_since_created =>
+            {
+                true
+            }
+            (DateUnit::Months(m), Interval::OlderThan)
+                if m * 4 * 7 * 24 * 60 * 60 < seconds_since_created =>
+            {
+                true
+            }
+            (DateUnit::Months(m), Interval::NewerThan)
+                if m * 4 * 7 * 24 * 60 * 60 >= seconds_since_created =>
+            {
+                true
+            }
+            (DateUnit::Weeks(w), Interval::OlderThan)
+                if w * 7 * 24 * 60 * 60 < seconds_since_created =>
+            {
+                true
+            }
+            (DateUnit::Weeks(w), Interval::NewerThan)
+                if w * 7 * 24 * 60 * 60 >= seconds_since_created =>
+            {
+                true
+            }
+            (DateUnit::Days(d), Interval::OlderThan)
+                if d * 24 * 60 * 60 < seconds_since_created =>
+            {
+                true
+            }
+            (DateUnit::Days(d), Interval::NewerThan)
+                if d * 24 * 60 * 60 >= seconds_since_created =>
+            {
+                true
+            }
+            (DateUnit::Hours(h), Interval::OlderThan) if h * 60 * 60 < seconds_since_created => {
+                true
+            }
+            (DateUnit::Hours(h), Interval::NewerThan) if h * 60 * 60 >= seconds_since_created => {
+                true
+            }
+            (DateUnit::Minutes(m), Interval::OlderThan) if m * 60 < seconds_since_created => true,
+            (DateUnit::Minutes(m), Interval::NewerThan) if m * 60 >= seconds_since_created => true,
+            (DateUnit::Seconds(s), Interval::OlderThan) if s < seconds_since_created => true,
+            (DateUnit::Seconds(s), Interval::NewerThan) if s >= seconds_since_created => true,
+            (_, _) => false,
         }
     }
 }
