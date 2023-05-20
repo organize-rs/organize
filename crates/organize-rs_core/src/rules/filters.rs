@@ -103,7 +103,7 @@ impl DetectDuplicateBy {
     }
 }
 
-/// Comparison conditions for the size of files
+/// Comparison conditions for the size of a location
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum SizeConditions {
     GreaterThan(u64),
@@ -113,7 +113,7 @@ pub enum SizeConditions {
     EqualTo(u64),
 }
 
-/// Comparison conditions for the size of files
+/// Comparison conditions for the size of a location
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum SizeConditionsRaw {
@@ -386,15 +386,15 @@ pub struct FilterDate {
 }
 
 /// [`OrganizeFilter`] contains filter variants that organize can
-/// use to apply to files/folders.
+/// use to apply to locations.
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeFilter {
-    /// Matches files / folders by created date
+    /// Matches locations by created date
     ///
     /// # Result
     ///
-    /// The datetime the file / folder was created.
+    /// The datetime the location was created.
     ///
     /// # Example
     ///
@@ -417,7 +417,7 @@ pub enum OrganizeFilter {
         #[cfg_attr(feature = "cli", arg(long))]
         mode: Interval,
     },
-    /// Matches files by the time the file was added to a folder
+    /// Matches locations by the time the file was added to a folder
     ///
     /// # Result
     ///
@@ -444,38 +444,37 @@ pub enum OrganizeFilter {
         #[cfg_attr(feature = "cli", arg(long))]
         mode: Interval,
     },
-    /// Matches files by the time the file was last used
+    /// Matches locations by the time the file was last accessed
     ///
     /// # Result
     ///
-    /// The datetime the files / folders were added.
+    /// The datetime the location / folders were accessed.
     ///
     /// # Example
     ///
-    /// Show the date the file was added to the folder
+    /// Show the date the location last accessed
     ///
     /// ```yaml
     /// rules:
-    ///    - name: Show the date the file was added to the folder
+    ///    - name: Show the date the location was last accessed
     ///      locations: "~/Desktop"
     ///      filters:
-    ///        - date_lastused
+    ///        - last_accessed
     ///      actions:
-    ///        - echo: "Date last used: {date_lastused.strftime('%Y-%m-%d')}"
+    ///        - echo: "Date last used: {last_accessed.strftime('%Y-%m-%d')}"
     /// ```
-    #[cfg(target_os = "osx")]
-    #[serde(rename = "date_lastused")]
-    LastUsed {
+    #[serde(rename = "last_accessed")]
+    LastAccessed {
         #[cfg_attr(feature = "cli", command(flatten))]
         date: FilterDate,
         #[cfg_attr(feature = "cli", arg(long))]
         mode: Interval,
     },
-    /// Matches files by last modified date
+    /// Matches locations by last modified date
     ///
     /// # Result
     ///
-    /// The datetime the files / folders was last modified.
+    /// The datetime the location / folders was last modified.
     ///
     /// # Example
     ///
@@ -500,8 +499,8 @@ pub enum OrganizeFilter {
     },
     /// A fast duplicate file finder
     ///
-    /// This filter compares files byte by byte and finds identical
-    /// files with potentially different filenames.
+    /// This filter compares locations byte by byte and finds identical
+    /// locations with potentially different filenames.
     ///
     /// You can reverse the sorting method by setting `reverse`.
     ///
@@ -516,12 +515,12 @@ pub enum OrganizeFilter {
     ///
     /// # Example
     ///
-    /// Show all duplicate files in your desktop and download folder
+    /// Show all duplicate locations in your desktop and download folder
     /// (and their subfolders)
     ///
     /// ```yaml
     /// rules:
-    ///   - name: Show all duplicate files in your desktop and download folder (and their subfolders)
+    ///   - name: Show all duplicate locations in your desktop and download folder (and their subfolders)
     ///     locations:
     ///       - ~/Desktop
     ///       - ~/Downloads
@@ -538,7 +537,7 @@ pub enum OrganizeFilter {
         #[cfg_attr(feature = "cli", arg(long))]
         reverse: bool,
     },
-    /// Finds empty dirs and files
+    /// Finds empty locations
     ///
     /// # Example
     ///
@@ -674,11 +673,11 @@ pub enum OrganizeFilter {
     ///
     /// # Example
     ///
-    /// All files with a tag 'Invoice' (any color) or with a green tag
+    /// All locations with a tag 'Invoice' (any color) or with a green tag
     ///
     /// ```yaml
     /// rules:
-    ///   - name: "All files with a tag 'Invoice' (any color) or with a green tag"
+    ///   - name: "All locations with a tag 'Invoice' (any color) or with a green tag"
     ///     locations: "~/Downloads"
     ///     filters:
     ///       - macos_tags:
@@ -722,11 +721,11 @@ pub enum OrganizeFilter {
         #[cfg_attr(feature = "cli", arg(long))]
         mimetype: Vec<String>,
     },
-    /// Match files and folders by name
+    /// Match locations by name
     ///
     /// # Example
     ///
-    /// Match all files starting with 'A' or 'B' containing '5' or
+    /// Match all locations starting with 'A' or 'B' containing '5' or
     /// '6' and ending with '_end'.
     ///
     /// ```yaml
@@ -783,7 +782,7 @@ pub enum OrganizeFilter {
         #[cfg_attr(feature = "cli", arg(long))]
         expr: String,
     },
-    /// Matches files and folders by size
+    /// Matches locations by size
     ///
     /// Accepts file size conditions, e.g: ">= 500 MB", "< 20k", ">0", "= 10 KiB".
     ///
@@ -874,21 +873,26 @@ impl OrganizeFilter {
                 case_insensitive,
             } => Box::new(self.filter_by_name(arguments.clone(), *case_insensitive)),
             OrganizeFilter::Empty => Box::new(self.filter_empty()),
+            OrganizeFilter::Created { date, mode } => Box::new(self.filter_created(*date, *mode)),
+            OrganizeFilter::LastModified { date, mode } => {
+                Box::new(self.filter_modified(*date, *mode))
+            }
+            OrganizeFilter::LastAccessed { date, mode } => {
+                Box::new(self.filter_accessed(*date, *mode))
+            }
             OrganizeFilter::Duplicate {
                 detect_original_by: _,
                 reverse: _,
-            } => todo!(),
-            OrganizeFilter::Exif => todo!(),
-            OrganizeFilter::Filecontent { regex: _ } => todo!(),
-            OrganizeFilter::Mimetype { mimetype: _ } => todo!(),
-            OrganizeFilter::Regex { expr: _ } => todo!(),
-            OrganizeFilter::Created { date, mode } => Box::new(self.filter_created(*date, *mode)),
+            } => todo!("not implemented (yet)!"),
+            OrganizeFilter::Exif => todo!("not implemented (yet)!"),
+            OrganizeFilter::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
+            OrganizeFilter::Mimetype { mimetype: _ } => todo!("not implemented (yet)!"),
+            OrganizeFilter::Regex { expr: _ } => todo!("not implemented (yet)!"),
+            OrganizeFilter::Size { upper: _, lower: _ } => todo!("not implemented (yet)!"),
             #[cfg(target_os = "osx")]
-            OrganizeFilter::Added { date, mode } => todo!(),
+            OrganizeFilter::Added { date, mode } => todo!("not implemented (yet)!"),
             #[cfg(target_os = "osx")]
-            OrganizeFilter::LastUsed { date, mode } => todo!(),
-            OrganizeFilter::LastModified { date: _, mode: _ } => todo!(),
-            OrganizeFilter::Size { upper: _, lower: _ } => panic!(),
+            OrganizeFilter::LastUsed { date, mode } => todo!("not implemented (yet)!"),
         }
     }
 
@@ -1197,6 +1201,24 @@ impl OrganizeFilter {
         }
     }
 
+    fn filter_accessed(&self, date: FilterDate, mode: Interval) -> impl FnMut(&DirEntry) -> bool {
+        move |file: &DirEntry| {
+            let metadata = file.metadata().expect("getting metadata should not fail");
+            let date_accessed = metadata
+                .accessed()
+                .expect("getting created date should not fail");
+            Self::matches_date(date_accessed, date, mode)
+        }
+    }
+    fn filter_modified(&self, date: FilterDate, mode: Interval) -> impl FnMut(&DirEntry) -> bool {
+        move |file: &DirEntry| {
+            let metadata = file.metadata().expect("getting metadata should not fail");
+            let date_modified = metadata
+                .modified()
+                .expect("getting created date should not fail");
+            Self::matches_date(date_modified, date, mode)
+        }
+    }
     fn filter_created(&self, date: FilterDate, mode: Interval) -> impl FnMut(&DirEntry) -> bool {
         move |file: &DirEntry| {
             let metadata = file.metadata().expect("getting metadata should not fail");

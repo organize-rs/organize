@@ -640,32 +640,32 @@ pub enum OrganizeAction {
 impl OrganizeAction {
     pub fn run(&self) {
         match self {
-            OrganizeAction::None => todo!(),
-            OrganizeAction::Confirm { text: _, vars: _ } => todo!(),
+            OrganizeAction::None => todo!("not implemented (yet)!"),
+            OrganizeAction::Confirm { text: _, vars: _ } => todo!("not implemented (yet)!"),
             OrganizeAction::Copy {
                 src: _,
                 dst: _,
                 on_conflict: _,
                 rename_template: _,
                 filesystem: _,
-            } => todo!(),
-            OrganizeAction::Delete { src: _ } => todo!(),
-            OrganizeAction::Echo { msg: _ } => todo!(),
+            } => todo!("not implemented (yet)!"),
+            OrganizeAction::Delete { src: _ } => todo!("not implemented (yet)!"),
+            OrganizeAction::Echo { msg: _ } => todo!("not implemented (yet)!"),
             OrganizeAction::Move {
                 src: _,
                 dst: _,
                 on_conflict: _,
                 rename_template: _,
                 filesystem: _,
-            } => todo!(),
+            } => todo!("not implemented (yet)!"),
             OrganizeAction::Rename {
                 src: _,
                 name: _,
                 on_conflict: _,
                 rename_template: _,
-            } => todo!(),
-            OrganizeAction::Symlink { src: _, dst: _ } => todo!(),
-            OrganizeAction::Trash { src: _ } => todo!(),
+            } => todo!("not implemented (yet)!"),
+            OrganizeAction::Symlink { src: _, dst: _ } => todo!("not implemented (yet)!"),
+            OrganizeAction::Trash { src: _ } => todo!("not implemented (yet)!"),
             OrganizeAction::Write {
                 txt: _,
                 file: _,
@@ -673,8 +673,8 @@ impl OrganizeAction {
                 newline: _,
                 clear_before_first_write: _,
                 filesystem: _,
-            } => todo!(),
-            OrganizeAction::Shell => todo!(),
+            } => todo!("not implemented (yet)!"),
+            OrganizeAction::Shell => todo!("not implemented (yet)!"),
         }
     }
 
