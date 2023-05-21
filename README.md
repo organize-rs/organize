@@ -28,7 +28,7 @@ This is a Rust implementation of the same concept.
 
   - `..11MB` => smaller than
   - `15MB..` => bigger than
-  - `10KB..20MiB` => bigger than 10 MB, but smaller than 20 MB
+  - `10KB..20MiB` => bigger than 10 KB, but smaller than 20 MiB
 
   **NOTE**: You can use `decimal` (metric) and `binary` (IEC) multiple-byte units. E.g., `KiB` or `KB`, `GB` or `GiB`. They will be **converted** accordingly and are **case-insensitive**.
 
