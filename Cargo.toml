@@ -9,7 +9,7 @@ description = "organize - a file management automation tool"
 
 [package]
 name = "organize-rs"
-version = "0.2.5"
+version = "0.2.6"
 edition = { workspace = true }
 description = { workspace = true }
 authors = { workspace = true }
@@ -27,7 +27,7 @@ default = []
 research_organize = []
 
 [workspace.dependencies]
-organize-rs_core = { version = "0", path = "crates/organize-rs_core", features = [
+organize-rs_core = { version = "0.1.6", path = "crates/organize-rs_core", features = [
     "cli",
 ] }
 organize-rs_testing = { path = "crates/organize-rs_testing" }
