@@ -746,7 +746,7 @@ dependencies = [
 
 [[package]]
 name = "organize-rs_core"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "byte-unit",
  "chrono",

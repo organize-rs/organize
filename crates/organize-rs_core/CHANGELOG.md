@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.6 (2023-05-21)
+
+### New Features
+
+ - <csr-id-da1d07a58a6ccafc1f930132eb0cb4c182af9569/> Implement `size` filter
+ - <csr-id-0cf330e125e4154f71cef3c990ab574928cf49d1/> Implement parser for byte size conditions for `size` filter
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 3 commits contributed to the release.
+ - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Merge branch 'develop' ([`7bf59e8`](https://github.com/organize-rs/organize/commit/7bf59e8bfb8da7033192034153a9216a2db185c4))
+    - Implement `size` filter ([`da1d07a`](https://github.com/organize-rs/organize/commit/da1d07a58a6ccafc1f930132eb0cb4c182af9569))
+    - Implement parser for byte size conditions for `size` filter ([`0cf330e`](https://github.com/organize-rs/organize/commit/0cf330e125e4154f71cef3c990ab574928cf49d1))
+</details>
+
 ## 0.1.5 (2023-05-20)
 
 ### New Features
@@ -15,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 32 commits contributed to the release over the course of 5 calendar days.
+ - 33 commits contributed to the release over the course of 5 calendar days.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -26,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release organize-rs_core v0.1.5, organize-rs v0.2.5 ([`6de8935`](https://github.com/organize-rs/organize/commit/6de893599162bbbb838c7c5f5fd3a81536cb9b30))
     - Implement `mimetype` filter ([`345d888`](https://github.com/organize-rs/organize/commit/345d8885d1ffe9bcfdc42c62fccbdc59a457ed0a))
     - Adjusting changelogs prior to release of organize-rs_core v0.1.4, organize-rs v0.2.4 ([`b00bbe0`](https://github.com/organize-rs/organize/commit/b00bbe03cc7b50a08dcb2e6c98eb41a3a586f488))
     - Implement `last_accessed` and `last_modified` filters ([`4410c3f`](https://github.com/organize-rs/organize/commit/4410c3f8a45909c69a3fdca63ad8f6845b601dc3))
