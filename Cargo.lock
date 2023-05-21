@@ -169,6 +169,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c6ed94e98ecff0c12dd1b04c15ec0d7d9458ca8fe806cea6f12954efe74c63b"
 
 [[package]]
+name = "byte-unit"
+version = "4.0.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da78b32057b8fdfc352504708feeba7216dcd65a2c9ab02978cbd288d1279b6c"
+dependencies = [
+ "serde",
+ "utf8-width",
+]
+
+[[package]]
 name = "byteorder"
 version = "1.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -731,12 +741,14 @@ dependencies = [
  "thiserror",
  "toml 0.7.4",
  "walkdir",
+ "winnow",
 ]
 
 [[package]]
 name = "organize-rs_core"
 version = "0.1.5"
 dependencies = [
+ "byte-unit",
  "chrono",
  "clap",
  "directories",
@@ -754,6 +766,7 @@ dependencies = [
  "thiserror",
  "toml 0.7.4",
  "walkdir",
+ "winnow",
 ]
 
 [[package]]
@@ -1265,6 +1278,12 @@ name = "unsafe-libyaml"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1865806a559042e51ab5414598446a5871b561d21b6764f2eabb0dd481d880a6"
+
+[[package]]
+name = "utf8-width"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5190c9442dcdaf0ddd50f37420417d219ae5261bbf5db120d0f9bab996c9cba1"
 
 [[package]]
 name = "utf8parse"

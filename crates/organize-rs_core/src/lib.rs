@@ -1,4 +1,5 @@
 pub mod error;
+pub mod parsers;
 pub mod rules;
 
 use crate::error::OrganizeResult;

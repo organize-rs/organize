@@ -836,10 +836,12 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "size")]
     Size {
-        #[cfg_attr(feature = "cli", command(flatten))]
-        upper: SizeFilterUpperArgs,
-        #[cfg_attr(feature = "cli", command(flatten))]
-        lower: SizeFilterLowerArgs,
+        // #[cfg_attr(feature = "cli", command(flatten))]
+        // upper: SizeFilterUpperArgs,
+        // #[cfg_attr(feature = "cli", command(flatten))]
+        // lower: SizeFilterLowerArgs,
+        #[cfg_attr(feature = "cli", arg(long))]
+        condition: String,
     },
 }
 
@@ -853,6 +855,8 @@ pub struct SizeFilterLowerArgs {
     lower_value: Option<u64>,
     #[cfg_attr(feature = "cli", arg(long))]
     lower: Option<SizeConditionsRaw>,
+    #[cfg_attr(feature = "cli", arg(long))]
+    unit: Option<String>,
 }
 #[cfg_attr(feature = "cli", derive(Args))]
 #[derive(Display, Debug, Clone, Deserialize, Serialize)]
@@ -862,6 +866,8 @@ pub struct SizeFilterUpperArgs {
     upper_value: Option<u64>,
     #[cfg_attr(feature = "cli", arg(long))]
     upper: Option<SizeConditionsRaw>,
+    #[cfg_attr(feature = "cli", arg(long))]
+    unit: Option<String>,
 }
 
 impl OrganizeFilter {
@@ -885,14 +891,14 @@ impl OrganizeFilter {
             OrganizeFilter::Mimetype { mimetype } => {
                 Box::new(self.filter_by_mimetype(mimetype.clone()))
             }
+            OrganizeFilter::Size { condition } => todo!("not implemented (yet)!"),
+            OrganizeFilter::Regex { expr: _ } => todo!("not implemented (yet)!"),
+            OrganizeFilter::Exif => todo!("not implemented (yet)!"),
+            OrganizeFilter::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
             OrganizeFilter::Duplicate {
                 detect_original_by: _,
                 reverse: _,
             } => todo!("not implemented (yet)!"),
-            OrganizeFilter::Exif => todo!("not implemented (yet)!"),
-            OrganizeFilter::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
-            OrganizeFilter::Regex { expr: _ } => todo!("not implemented (yet)!"),
-            OrganizeFilter::Size { upper: _, lower: _ } => todo!("not implemented (yet)!"),
             #[cfg(target_os = "osx")]
             OrganizeFilter::Added { date, mode } => todo!("not implemented (yet)!"),
             #[cfg(target_os = "osx")]

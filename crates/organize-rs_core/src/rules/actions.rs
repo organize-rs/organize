@@ -96,6 +96,7 @@ impl Default for MacOsTagColours {
     }
 }
 
+// TODO: Add move to Folder?
 /// Actions for conflict resolution
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
@@ -104,12 +105,22 @@ pub enum OnConflict {
     Skip,
     /// Overwrite the item
     Overwrite,
+    /// Overwrite the item if it is empty
+    OverwriteEmpty,
     /// Move the item to trash
     Trash,
     /// Rename the newly created item
     RenameNew,
     /// Rename the initial item
     RenameExisting,
+    /// Keep the newest item
+    KeepNewer,
+    /// Keep the oldest item
+    KeepOlder,
+    /// Keep the biggest item
+    Biggest,
+    /// Keep the smallest item
+    Smallest,
 }
 
 impl OnConflict {
