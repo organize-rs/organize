@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.2.0 (2023-05-21)
+
+### New Features (BREAKING)
+
+ - <csr-id-13f7560c1deb053fb74880247d01b60be6ef0ca1/> implement range syntax also for date related filters
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Implement range syntax also for date related filters ([`13f7560`](https://github.com/organize-rs/organize/commit/13f7560c1deb053fb74880247d01b60be6ef0ca1))
+</details>
+
 ## 0.1.6 (2023-05-21)
 
 ### New Features
@@ -16,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 4 commits contributed to the release.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -27,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release organize-rs_core v0.1.6 ([`fc39cd1`](https://github.com/organize-rs/organize/commit/fc39cd180ae6c20023e3a821f2156eaf953a8729))
     - Merge branch 'develop' ([`7bf59e8`](https://github.com/organize-rs/organize/commit/7bf59e8bfb8da7033192034153a9216a2db185c4))
     - Implement `size` filter ([`da1d07a`](https://github.com/organize-rs/organize/commit/da1d07a58a6ccafc1f930132eb0cb4c182af9569))
     - Implement parser for byte size conditions for `size` filter ([`0cf330e`](https://github.com/organize-rs/organize/commit/0cf330e125e4154f71cef3c990ab574928cf49d1))
