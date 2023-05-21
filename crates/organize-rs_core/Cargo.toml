@@ -10,6 +10,15 @@ keywords = { workspace = true }
 description = { workspace = true }
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[example]]
+name = "size_parser"
+path = "examples/size_parser.rs"
+test = true
+bench = true
+doc = true
+harness = true
+edition = "2021"
+
 [features]
 default = []
 cli = ["dep:clap", "dep:indicatif"]
@@ -33,3 +42,5 @@ serde_yaml = { workspace = true }
 toml = { workspace = true }
 itertools = { workspace = true }
 displaydoc = { workspace = true }
+winnow = { workspace = true }
+byte-unit = { workspace = true }

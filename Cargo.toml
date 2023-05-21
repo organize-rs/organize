@@ -27,7 +27,7 @@ default = []
 research_organize = []
 
 [workspace.dependencies]
-organize-rs_core = { version = "0.1.4-dev", path = "crates/organize-rs_core", features = [
+organize-rs_core = { version = "0", path = "crates/organize-rs_core", features = [
     "cli",
 ] }
 organize-rs_testing = { path = "crates/organize-rs_testing" }
@@ -56,6 +56,10 @@ displaydoc = "0.2.4"
 clap_complete = "4.3.0"
 indicatif = "0.17.3"
 rayon = "1.7.0"
+
+# parsing
+winnow = "0.4.6"
+byte-unit = "4.0.19"
 
 # dev dependencies
 tempfile = "3.5.0"
@@ -122,8 +126,7 @@ abscissa_core = { workspace = true }
 itertools = { workspace = true }
 clap_complete = { workspace = true }
 indicatif = { workspace = true }
-
-
+winnow = { workspace = true }
 
 [dev-dependencies]
 abscissa_core = { workspace = true, features = ["testing"] }

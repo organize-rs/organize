@@ -2,6 +2,8 @@
 //! and `organize` operates with
 //!
 
+use std::{fs::metadata, str::FromStr};
+
 use chrono::{DateTime, Utc};
 #[cfg(feature = "cli")]
 use clap::{Args, Subcommand, ValueEnum};
@@ -10,6 +12,8 @@ use displaydoc::Display;
 
 use serde::{Deserialize, Serialize};
 use walkdir::DirEntry;
+
+use crate::parsers::SizeRange;
 
 /// Comparison conditions for dates
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
@@ -836,10 +840,12 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "size")]
     Size {
-        #[cfg_attr(feature = "cli", command(flatten))]
-        upper: SizeFilterUpperArgs,
-        #[cfg_attr(feature = "cli", command(flatten))]
-        lower: SizeFilterLowerArgs,
+        // #[cfg_attr(feature = "cli", command(flatten))]
+        // upper: SizeFilterUpperArgs,
+        // #[cfg_attr(feature = "cli", command(flatten))]
+        // lower: SizeFilterLowerArgs,
+        #[cfg_attr(feature = "cli", arg(long))]
+        condition: String,
     },
 }
 
@@ -853,6 +859,8 @@ pub struct SizeFilterLowerArgs {
     lower_value: Option<u64>,
     #[cfg_attr(feature = "cli", arg(long))]
     lower: Option<SizeConditionsRaw>,
+    #[cfg_attr(feature = "cli", arg(long))]
+    unit: Option<String>,
 }
 #[cfg_attr(feature = "cli", derive(Args))]
 #[derive(Display, Debug, Clone, Deserialize, Serialize)]
@@ -862,6 +870,8 @@ pub struct SizeFilterUpperArgs {
     upper_value: Option<u64>,
     #[cfg_attr(feature = "cli", arg(long))]
     upper: Option<SizeConditionsRaw>,
+    #[cfg_attr(feature = "cli", arg(long))]
+    unit: Option<String>,
 }
 
 impl OrganizeFilter {
@@ -885,14 +895,14 @@ impl OrganizeFilter {
             OrganizeFilter::Mimetype { mimetype } => {
                 Box::new(self.filter_by_mimetype(mimetype.clone()))
             }
+            OrganizeFilter::Size { condition } => Box::new(self.filter_by_size(condition.clone())),
+            OrganizeFilter::Regex { expr: _ } => todo!("not implemented (yet)!"),
+            OrganizeFilter::Exif => todo!("not implemented (yet)!"),
+            OrganizeFilter::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
             OrganizeFilter::Duplicate {
                 detect_original_by: _,
                 reverse: _,
             } => todo!("not implemented (yet)!"),
-            OrganizeFilter::Exif => todo!("not implemented (yet)!"),
-            OrganizeFilter::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
-            OrganizeFilter::Regex { expr: _ } => todo!("not implemented (yet)!"),
-            OrganizeFilter::Size { upper: _, lower: _ } => todo!("not implemented (yet)!"),
             #[cfg(target_os = "osx")]
             OrganizeFilter::Added { date, mode } => todo!("not implemented (yet)!"),
             #[cfg(target_os = "osx")]
@@ -1328,6 +1338,19 @@ impl OrganizeFilter {
                 .map(|f| f.parse::<mime::Mime>())
                 .filter_map(|r| r.map_err(|err| println!("{err}")).ok())
                 .any(|f| f == file_mime_type)
+        }
+    }
+
+    fn filter_by_size(&self, condition: String) -> impl FnMut(&DirEntry) -> bool {
+        move |entry| {
+            let range = SizeRange::from_str(condition.as_str())
+                .expect("should be able to parse size condition from user input.");
+
+            if let Ok(metadata) = entry.metadata() {
+                range.in_range(metadata.len() as f64)
+            } else {
+                false
+            }
         }
     }
 }
