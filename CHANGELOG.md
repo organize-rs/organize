@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.2.6 (2023-05-21)
+
+### Chore
+
+ - <csr-id-d2b33280185f68daaff2671d1a4470d9041f3bcb/> add description to lib.rs
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add description to lib.rs ([`d2b3328`](https://github.com/organize-rs/organize/commit/d2b33280185f68daaff2671d1a4470d9041f3bcb))
+</details>
+
 ## 0.2.5 (2023-05-20)
 
 ### New Features
