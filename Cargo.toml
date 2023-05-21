@@ -63,11 +63,16 @@ byte-unit = "4.0.19"
 
 # dev dependencies
 tempfile = "3.5.0"
-aho-corasick = "1.0.1"
+aho-corasick = "1.0"
 
 # infer file and MIME type by magic number
-infer = "0.13.0"
-mime = "0.3.17"
+infer = "0.13"
+mime = "0.3"
+
+rstest = "0.17"
+quickcheck = "1"
+quickcheck_macros = "1"
+pretty_assertions = "1"
 
 # TODO: Needed Dependencies
 # rhai = { version = "1.14.0", features = ["serde"] }

@@ -22,7 +22,7 @@ This is a Rust implementation of the same concept.
 
 - Filter `files`, which are `smaller than` 20KB in one location:
 
-  `organize filter size -l C:\Users\dailyuse\dev-src\organize\docs\screenshots --targets files --condition ..20KB`
+  `organize filter size -l C:\Users\dailyuse\dev-src\organize\docs\screenshots -t files --condition ..20KB`
 
   This filter uses the `range` syntax (always inclusive) of Rust:
 
@@ -34,27 +34,27 @@ This is a Rust implementation of the same concept.
 
 - Filter `files` by their mimetype:
 
-  `organize filter mimetype -l C:\organize\docs\screenshots --targets files --mimetype image/jpeg`
+  `organize filter mimetype -l C:\organize\docs\screenshots -t files --mimetype image/jpeg`
 
-- Filter `files` by their creation date (newer than 5 days), ignore files that have `toml` in their name (extension included).
+- Filter `files` by their creation date (created in the last 5 days), ignore paths that have `target\` in their name, recursive, maximum `4` levels deep.
 
-  `organize filter created -l C:\organize\ --days 5 --mode newer-than --targets files --ignore-name toml`
+  `organize filter -r -m 4 created -l . -t files --ignore-path target\ --range ..5d`
 
 - Filter `files`, which file stem ends with `go`, recursive, maximum `2` levels deep:
 
-  `organize filter --recursive --max-depth 2 name --locations "C:\organize\" --targets files --ends-with "go"`
+  `organize filter -r -m 2 name -l "C:\organize\" -t files --ends-with "go"`
 
 - Filter `files` in `two locations`, which extensions match `rs` or `toml`, recursive, maximum `2` levels deep
 
-  `organize filter --recursive --max-depth 2 extension --locations C:\organize --locations D:\folders --targets files --exts rs --exts toml`
+  `organize filter -r -m 2 extension -l C:\organize -l D:\folders -t files --exts rs --exts toml`
 
 - Filter `files` and `folders`, which are empty (`0 bytes` or `no files` in directory), recursive, maximum `4` levels deep, ignore `git` in path names
 
-  `organize filter --recursive --max-depth 4 empty --locations "C:\organize\" --targets both --ignore-path git`
+  `organize filter -r -m 4 empty -l "C:\organize\" -t both --ignore-path git`
 
 - Filter `files` and `folders`, which are empty (`0 bytes` or `no files` in directory), recursive, maximum `4` levels deep, ignore `git` only in file names
 
-  `organize filter --recursive --max-depth 4 empty --locations "C:\organize\" --targets both --ignore-name git`
+  `organize filter -r -m 4 empty -l "C:\organize\" -t both --ignore-name git`
 
 ## Media
 

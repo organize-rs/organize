@@ -1,0 +1,1333 @@
+pub mod organize_rs_core
+pub mod organize_rs_core::error
+pub enum organize_rs_core::error::OrganizeError
+pub organize_rs_core::error::OrganizeError::ExtensionNotExtractable(std::path::PathBuf)
+impl core::error::Error for organize_rs_core::error::OrganizeError
+impl core::fmt::Display for organize_rs_core::error::OrganizeError
+pub fn organize_rs_core::error::OrganizeError::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::clone::Clone for organize_rs_core::error::OrganizeError
+pub fn organize_rs_core::error::OrganizeError::clone(&self) -> organize_rs_core::error::OrganizeError
+impl core::fmt::Debug for organize_rs_core::error::OrganizeError
+pub fn organize_rs_core::error::OrganizeError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Send for organize_rs_core::error::OrganizeError
+impl core::marker::Sync for organize_rs_core::error::OrganizeError
+impl core::marker::Unpin for organize_rs_core::error::OrganizeError
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::error::OrganizeError
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::error::OrganizeError
+impl<E> core::any::Provider for organize_rs_core::error::OrganizeError where E: core::error::Error + core::marker::Sized
+pub fn organize_rs_core::error::OrganizeError::provide<'a>(&'a self, demand: &mut core::any::Demand<'a>)
+impl<T, U> core::convert::Into<U> for organize_rs_core::error::OrganizeError where U: core::convert::From<T>
+pub fn organize_rs_core::error::OrganizeError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::error::OrganizeError where U: core::convert::Into<T>
+pub type organize_rs_core::error::OrganizeError::Error = core::convert::Infallible
+pub fn organize_rs_core::error::OrganizeError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::error::OrganizeError where U: core::convert::TryFrom<T>
+pub type organize_rs_core::error::OrganizeError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::error::OrganizeError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::error::OrganizeError where T: core::clone::Clone
+pub type organize_rs_core::error::OrganizeError::Owned = T
+pub fn organize_rs_core::error::OrganizeError::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::error::OrganizeError::to_owned(&self) -> T
+impl<T> alloc::string::ToString for organize_rs_core::error::OrganizeError where T: core::fmt::Display + core::marker::Sized
+pub fn organize_rs_core::error::OrganizeError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for organize_rs_core::error::OrganizeError where T: 'static + core::marker::Sized
+pub fn organize_rs_core::error::OrganizeError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::error::OrganizeError where T: core::marker::Sized
+pub fn organize_rs_core::error::OrganizeError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::error::OrganizeError where T: core::marker::Sized
+pub fn organize_rs_core::error::OrganizeError::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::error::OrganizeError
+pub fn organize_rs_core::error::OrganizeError::from(t: T) -> T
+pub type organize_rs_core::error::OrganizeResult<T> = core::result::Result<T, alloc::boxed::Box<dyn core::error::Error>>
+pub mod organize_rs_core::parsers
+pub enum organize_rs_core::parsers::BoundarySide
+pub organize_rs_core::parsers::BoundarySide::Left
+pub organize_rs_core::parsers::BoundarySide::Right
+impl core::clone::Clone for organize_rs_core::parsers::BoundarySide
+pub fn organize_rs_core::parsers::BoundarySide::clone(&self) -> organize_rs_core::parsers::BoundarySide
+impl core::cmp::Eq for organize_rs_core::parsers::BoundarySide
+impl core::cmp::PartialEq<organize_rs_core::parsers::BoundarySide> for organize_rs_core::parsers::BoundarySide
+pub fn organize_rs_core::parsers::BoundarySide::eq(&self, other: &organize_rs_core::parsers::BoundarySide) -> bool
+impl core::fmt::Debug for organize_rs_core::parsers::BoundarySide
+pub fn organize_rs_core::parsers::BoundarySide::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for organize_rs_core::parsers::BoundarySide
+impl core::marker::StructuralEq for organize_rs_core::parsers::BoundarySide
+impl core::marker::StructuralPartialEq for organize_rs_core::parsers::BoundarySide
+impl core::marker::Send for organize_rs_core::parsers::BoundarySide
+impl core::marker::Sync for organize_rs_core::parsers::BoundarySide
+impl core::marker::Unpin for organize_rs_core::parsers::BoundarySide
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::parsers::BoundarySide
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::parsers::BoundarySide
+impl<Q, K> indexmap::equivalent::Equivalent<K> for organize_rs_core::parsers::BoundarySide where Q: core::cmp::Eq + core::marker::Sized, K: core::borrow::Borrow<Q> + core::marker::Sized
+pub fn organize_rs_core::parsers::BoundarySide::equivalent(&self, key: &K) -> bool
+impl<T, U> core::convert::Into<U> for organize_rs_core::parsers::BoundarySide where U: core::convert::From<T>
+pub fn organize_rs_core::parsers::BoundarySide::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::parsers::BoundarySide where U: core::convert::Into<T>
+pub type organize_rs_core::parsers::BoundarySide::Error = core::convert::Infallible
+pub fn organize_rs_core::parsers::BoundarySide::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::parsers::BoundarySide where U: core::convert::TryFrom<T>
+pub type organize_rs_core::parsers::BoundarySide::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::parsers::BoundarySide::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::parsers::BoundarySide where T: core::clone::Clone
+pub type organize_rs_core::parsers::BoundarySide::Owned = T
+pub fn organize_rs_core::parsers::BoundarySide::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::parsers::BoundarySide::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::parsers::BoundarySide where T: 'static + core::marker::Sized
+pub fn organize_rs_core::parsers::BoundarySide::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::parsers::BoundarySide where T: core::marker::Sized
+pub fn organize_rs_core::parsers::BoundarySide::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::parsers::BoundarySide where T: core::marker::Sized
+pub fn organize_rs_core::parsers::BoundarySide::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::parsers::BoundarySide
+pub fn organize_rs_core::parsers::BoundarySide::from(t: T) -> T
+pub struct organize_rs_core::parsers::Condition<T>(_, _)
+impl<T> organize_rs_core::parsers::Condition<T>
+pub fn organize_rs_core::parsers::Condition::set_condition(&mut self, condition: organize_rs_core::parsers::SingleSizeCondition<T>)
+impl<T: core::clone::Clone> core::clone::Clone for organize_rs_core::parsers::Condition<T>
+pub fn organize_rs_core::parsers::Condition::clone(&self) -> organize_rs_core::parsers::Condition<T>
+impl<T: core::fmt::Debug> core::fmt::Debug for organize_rs_core::parsers::Condition<T>
+pub fn organize_rs_core::parsers::Condition::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl<T: core::marker::Copy> core::marker::Copy for organize_rs_core::parsers::Condition<T>
+impl<T> core::marker::Send for organize_rs_core::parsers::Condition<T> where T: core::marker::Send
+impl<T> core::marker::Sync for organize_rs_core::parsers::Condition<T> where T: core::marker::Sync
+impl<T> core::marker::Unpin for organize_rs_core::parsers::Condition<T> where T: core::marker::Unpin
+impl<T> core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::parsers::Condition<T> where T: core::panic::unwind_safe::RefUnwindSafe
+impl<T> core::panic::unwind_safe::UnwindSafe for organize_rs_core::parsers::Condition<T> where T: core::panic::unwind_safe::UnwindSafe
+impl<T, U> core::convert::Into<U> for organize_rs_core::parsers::Condition<T> where U: core::convert::From<T>
+pub fn organize_rs_core::parsers::Condition::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::parsers::Condition<T> where U: core::convert::Into<T>
+pub type organize_rs_core::parsers::Condition::Error = core::convert::Infallible
+pub fn organize_rs_core::parsers::Condition::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::parsers::Condition<T> where U: core::convert::TryFrom<T>
+pub type organize_rs_core::parsers::Condition::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::parsers::Condition::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::parsers::Condition<T> where T: core::clone::Clone
+pub type organize_rs_core::parsers::Condition::Owned = T
+pub fn organize_rs_core::parsers::Condition::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::parsers::Condition::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::parsers::Condition<T> where T: 'static + core::marker::Sized
+pub fn organize_rs_core::parsers::Condition::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::parsers::Condition<T> where T: core::marker::Sized
+pub fn organize_rs_core::parsers::Condition::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::parsers::Condition<T> where T: core::marker::Sized
+pub fn organize_rs_core::parsers::Condition::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::parsers::Condition<T>
+pub fn organize_rs_core::parsers::Condition::from(t: T) -> T
+pub struct organize_rs_core::parsers::PeriodRange(_)
+impl organize_rs_core::parsers::PeriodRange
+pub fn organize_rs_core::parsers::PeriodRange::in_range(&self, value: f64) -> bool
+impl core::str::traits::FromStr for organize_rs_core::parsers::PeriodRange
+pub type organize_rs_core::parsers::PeriodRange::Err = winnow::error::Error<alloc::string::String>
+pub fn organize_rs_core::parsers::PeriodRange::from_str(input: &str) -> core::result::Result<Self, Self::Err>
+impl core::clone::Clone for organize_rs_core::parsers::PeriodRange
+pub fn organize_rs_core::parsers::PeriodRange::clone(&self) -> organize_rs_core::parsers::PeriodRange
+impl core::cmp::PartialEq<organize_rs_core::parsers::PeriodRange> for organize_rs_core::parsers::PeriodRange
+pub fn organize_rs_core::parsers::PeriodRange::eq(&self, other: &organize_rs_core::parsers::PeriodRange) -> bool
+impl core::fmt::Debug for organize_rs_core::parsers::PeriodRange
+pub fn organize_rs_core::parsers::PeriodRange::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for organize_rs_core::parsers::PeriodRange
+impl serde::ser::Serialize for organize_rs_core::parsers::PeriodRange
+pub fn organize_rs_core::parsers::PeriodRange::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::parsers::PeriodRange
+pub fn organize_rs_core::parsers::PeriodRange::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::parsers::PeriodRange
+impl core::marker::Sync for organize_rs_core::parsers::PeriodRange
+impl core::marker::Unpin for organize_rs_core::parsers::PeriodRange
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::parsers::PeriodRange
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::parsers::PeriodRange
+impl<T, U> core::convert::Into<U> for organize_rs_core::parsers::PeriodRange where U: core::convert::From<T>
+pub fn organize_rs_core::parsers::PeriodRange::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::parsers::PeriodRange where U: core::convert::Into<T>
+pub type organize_rs_core::parsers::PeriodRange::Error = core::convert::Infallible
+pub fn organize_rs_core::parsers::PeriodRange::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::parsers::PeriodRange where U: core::convert::TryFrom<T>
+pub type organize_rs_core::parsers::PeriodRange::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::parsers::PeriodRange::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::parsers::PeriodRange where T: core::clone::Clone
+pub type organize_rs_core::parsers::PeriodRange::Owned = T
+pub fn organize_rs_core::parsers::PeriodRange::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::parsers::PeriodRange::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::parsers::PeriodRange where T: 'static + core::marker::Sized
+pub fn organize_rs_core::parsers::PeriodRange::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::parsers::PeriodRange where T: core::marker::Sized
+pub fn organize_rs_core::parsers::PeriodRange::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::parsers::PeriodRange where T: core::marker::Sized
+pub fn organize_rs_core::parsers::PeriodRange::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::parsers::PeriodRange
+pub fn organize_rs_core::parsers::PeriodRange::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::parsers::PeriodRange where T: for<'de> serde::de::Deserialize<'de>
+pub struct organize_rs_core::parsers::SingleSizeCondition<T>
+impl<T: core::clone::Clone> core::clone::Clone for organize_rs_core::parsers::SingleSizeCondition<T>
+pub fn organize_rs_core::parsers::SingleSizeCondition::clone(&self) -> organize_rs_core::parsers::SingleSizeCondition<T>
+impl<T: core::cmp::Eq> core::cmp::Eq for organize_rs_core::parsers::SingleSizeCondition<T>
+impl<T: core::cmp::PartialEq> core::cmp::PartialEq<organize_rs_core::parsers::SingleSizeCondition<T>> for organize_rs_core::parsers::SingleSizeCondition<T>
+pub fn organize_rs_core::parsers::SingleSizeCondition::eq(&self, other: &organize_rs_core::parsers::SingleSizeCondition<T>) -> bool
+impl<T: core::fmt::Debug> core::fmt::Debug for organize_rs_core::parsers::SingleSizeCondition<T>
+pub fn organize_rs_core::parsers::SingleSizeCondition::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl<T: core::marker::Copy> core::marker::Copy for organize_rs_core::parsers::SingleSizeCondition<T>
+impl<T> core::marker::StructuralEq for organize_rs_core::parsers::SingleSizeCondition<T>
+impl<T> core::marker::StructuralPartialEq for organize_rs_core::parsers::SingleSizeCondition<T>
+impl<T> core::marker::Send for organize_rs_core::parsers::SingleSizeCondition<T> where T: core::marker::Send
+impl<T> core::marker::Sync for organize_rs_core::parsers::SingleSizeCondition<T> where T: core::marker::Sync
+impl<T> core::marker::Unpin for organize_rs_core::parsers::SingleSizeCondition<T> where T: core::marker::Unpin
+impl<T> core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::parsers::SingleSizeCondition<T> where T: core::panic::unwind_safe::RefUnwindSafe
+impl<T> core::panic::unwind_safe::UnwindSafe for organize_rs_core::parsers::SingleSizeCondition<T> where T: core::panic::unwind_safe::UnwindSafe
+impl<Q, K> indexmap::equivalent::Equivalent<K> for organize_rs_core::parsers::SingleSizeCondition<T> where Q: core::cmp::Eq + core::marker::Sized, K: core::borrow::Borrow<Q> + core::marker::Sized
+pub fn organize_rs_core::parsers::SingleSizeCondition::equivalent(&self, key: &K) -> bool
+impl<T, U> core::convert::Into<U> for organize_rs_core::parsers::SingleSizeCondition<T> where U: core::convert::From<T>
+pub fn organize_rs_core::parsers::SingleSizeCondition::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::parsers::SingleSizeCondition<T> where U: core::convert::Into<T>
+pub type organize_rs_core::parsers::SingleSizeCondition::Error = core::convert::Infallible
+pub fn organize_rs_core::parsers::SingleSizeCondition::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::parsers::SingleSizeCondition<T> where U: core::convert::TryFrom<T>
+pub type organize_rs_core::parsers::SingleSizeCondition::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::parsers::SingleSizeCondition::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::parsers::SingleSizeCondition<T> where T: core::clone::Clone
+pub type organize_rs_core::parsers::SingleSizeCondition::Owned = T
+pub fn organize_rs_core::parsers::SingleSizeCondition::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::parsers::SingleSizeCondition::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::parsers::SingleSizeCondition<T> where T: 'static + core::marker::Sized
+pub fn organize_rs_core::parsers::SingleSizeCondition::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::parsers::SingleSizeCondition<T> where T: core::marker::Sized
+pub fn organize_rs_core::parsers::SingleSizeCondition::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::parsers::SingleSizeCondition<T> where T: core::marker::Sized
+pub fn organize_rs_core::parsers::SingleSizeCondition::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::parsers::SingleSizeCondition<T>
+pub fn organize_rs_core::parsers::SingleSizeCondition::from(t: T) -> T
+pub struct organize_rs_core::parsers::SizeRange(_)
+impl organize_rs_core::parsers::SizeRange
+pub fn organize_rs_core::parsers::SizeRange::in_range(&self, size: f64) -> bool
+impl core::str::traits::FromStr for organize_rs_core::parsers::SizeRange
+pub type organize_rs_core::parsers::SizeRange::Err = winnow::error::Error<alloc::string::String>
+pub fn organize_rs_core::parsers::SizeRange::from_str(input: &str) -> core::result::Result<Self, Self::Err>
+impl core::clone::Clone for organize_rs_core::parsers::SizeRange
+pub fn organize_rs_core::parsers::SizeRange::clone(&self) -> organize_rs_core::parsers::SizeRange
+impl core::cmp::PartialEq<organize_rs_core::parsers::SizeRange> for organize_rs_core::parsers::SizeRange
+pub fn organize_rs_core::parsers::SizeRange::eq(&self, other: &organize_rs_core::parsers::SizeRange) -> bool
+impl core::fmt::Debug for organize_rs_core::parsers::SizeRange
+pub fn organize_rs_core::parsers::SizeRange::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for organize_rs_core::parsers::SizeRange
+impl serde::ser::Serialize for organize_rs_core::parsers::SizeRange
+pub fn organize_rs_core::parsers::SizeRange::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::parsers::SizeRange
+pub fn organize_rs_core::parsers::SizeRange::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::parsers::SizeRange
+impl core::marker::Sync for organize_rs_core::parsers::SizeRange
+impl core::marker::Unpin for organize_rs_core::parsers::SizeRange
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::parsers::SizeRange
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::parsers::SizeRange
+impl<T, U> core::convert::Into<U> for organize_rs_core::parsers::SizeRange where U: core::convert::From<T>
+pub fn organize_rs_core::parsers::SizeRange::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::parsers::SizeRange where U: core::convert::Into<T>
+pub type organize_rs_core::parsers::SizeRange::Error = core::convert::Infallible
+pub fn organize_rs_core::parsers::SizeRange::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::parsers::SizeRange where U: core::convert::TryFrom<T>
+pub type organize_rs_core::parsers::SizeRange::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::parsers::SizeRange::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::parsers::SizeRange where T: core::clone::Clone
+pub type organize_rs_core::parsers::SizeRange::Owned = T
+pub fn organize_rs_core::parsers::SizeRange::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::parsers::SizeRange::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::parsers::SizeRange where T: 'static + core::marker::Sized
+pub fn organize_rs_core::parsers::SizeRange::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::parsers::SizeRange where T: core::marker::Sized
+pub fn organize_rs_core::parsers::SizeRange::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::parsers::SizeRange where T: core::marker::Sized
+pub fn organize_rs_core::parsers::SizeRange::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::parsers::SizeRange
+pub fn organize_rs_core::parsers::SizeRange::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::parsers::SizeRange where T: for<'de> serde::de::Deserialize<'de>
+pub fn organize_rs_core::parsers::parse_boundary(input: &str) -> winnow::error::IResult<&str, &str>
+pub fn organize_rs_core::parsers::parse_digits(input: &str) -> winnow::error::IResult<&str, f64>
+pub fn organize_rs_core::parsers::parse_eq_operators(input: &str) -> winnow::error::IResult<&str, &str>
+pub fn organize_rs_core::parsers::parse_garbage(input: &str) -> winnow::error::IResult<&str, &str>
+pub fn organize_rs_core::parsers::parse_left_boundary(input: &str) -> winnow::error::IResult<&str, (f64, &str, &str)>
+pub fn organize_rs_core::parsers::parse_right_boundary(input: &str) -> winnow::error::IResult<&str, (&str, f64, &str)>
+pub fn organize_rs_core::parsers::parse_units(input: &str) -> winnow::error::IResult<&str, &str>
+pub fn organize_rs_core::parsers::parse_whole_condition(input: &str) -> winnow::error::IResult<&str, (f64, &str, &str, f64, &str)>
+pub mod organize_rs_core::rules
+pub mod organize_rs_core::rules::actions
+pub enum organize_rs_core::rules::actions::OnConflict
+pub organize_rs_core::rules::actions::OnConflict::Biggest
+pub organize_rs_core::rules::actions::OnConflict::KeepNewer
+pub organize_rs_core::rules::actions::OnConflict::KeepOlder
+pub organize_rs_core::rules::actions::OnConflict::Overwrite
+pub organize_rs_core::rules::actions::OnConflict::OverwriteEmpty
+pub organize_rs_core::rules::actions::OnConflict::RenameExisting
+pub organize_rs_core::rules::actions::OnConflict::RenameNew
+pub organize_rs_core::rules::actions::OnConflict::Skip
+pub organize_rs_core::rules::actions::OnConflict::Smallest
+pub organize_rs_core::rules::actions::OnConflict::Trash
+impl organize_rs_core::rules::actions::OnConflict
+pub fn organize_rs_core::rules::actions::OnConflict::is_overwrite(&self) -> bool
+pub fn organize_rs_core::rules::actions::OnConflict::is_rename_existing(&self) -> bool
+pub fn organize_rs_core::rules::actions::OnConflict::is_rename_new(&self) -> bool
+pub fn organize_rs_core::rules::actions::OnConflict::is_skip(&self) -> bool
+pub fn organize_rs_core::rules::actions::OnConflict::is_trash(&self) -> bool
+impl core::default::Default for organize_rs_core::rules::actions::OnConflict
+pub fn organize_rs_core::rules::actions::OnConflict::default() -> Self
+impl core::fmt::Display for organize_rs_core::rules::actions::OnConflict
+pub fn organize_rs_core::rules::actions::OnConflict::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::clone::Clone for organize_rs_core::rules::actions::OnConflict
+pub fn organize_rs_core::rules::actions::OnConflict::clone(&self) -> organize_rs_core::rules::actions::OnConflict
+impl core::fmt::Debug for organize_rs_core::rules::actions::OnConflict
+pub fn organize_rs_core::rules::actions::OnConflict::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for organize_rs_core::rules::actions::OnConflict
+impl serde::ser::Serialize for organize_rs_core::rules::actions::OnConflict
+pub fn organize_rs_core::rules::actions::OnConflict::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::actions::OnConflict
+pub fn organize_rs_core::rules::actions::OnConflict::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::actions::OnConflict
+impl core::marker::Sync for organize_rs_core::rules::actions::OnConflict
+impl core::marker::Unpin for organize_rs_core::rules::actions::OnConflict
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::actions::OnConflict
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::actions::OnConflict
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::actions::OnConflict where U: core::convert::From<T>
+pub fn organize_rs_core::rules::actions::OnConflict::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::actions::OnConflict where U: core::convert::Into<T>
+pub type organize_rs_core::rules::actions::OnConflict::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::actions::OnConflict::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::actions::OnConflict where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::actions::OnConflict::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::actions::OnConflict::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::actions::OnConflict where T: core::clone::Clone
+pub type organize_rs_core::rules::actions::OnConflict::Owned = T
+pub fn organize_rs_core::rules::actions::OnConflict::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::actions::OnConflict::to_owned(&self) -> T
+impl<T> alloc::string::ToString for organize_rs_core::rules::actions::OnConflict where T: core::fmt::Display + core::marker::Sized
+pub fn organize_rs_core::rules::actions::OnConflict::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for organize_rs_core::rules::actions::OnConflict where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::actions::OnConflict::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::actions::OnConflict where T: core::marker::Sized
+pub fn organize_rs_core::rules::actions::OnConflict::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::actions::OnConflict where T: core::marker::Sized
+pub fn organize_rs_core::rules::actions::OnConflict::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::actions::OnConflict
+pub fn organize_rs_core::rules::actions::OnConflict::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::actions::OnConflict where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::actions::OrganizeAction
+pub organize_rs_core::rules::actions::OrganizeAction::Confirm
+pub organize_rs_core::rules::actions::OrganizeAction::Confirm::text: core::option::Option<alloc::string::String>
+pub organize_rs_core::rules::actions::OrganizeAction::Confirm::vars: core::option::Option<alloc::vec::Vec<alloc::string::String>>
+pub organize_rs_core::rules::actions::OrganizeAction::Copy
+pub organize_rs_core::rules::actions::OrganizeAction::Copy::dst: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Copy::filesystem: core::option::Option<alloc::string::String>
+pub organize_rs_core::rules::actions::OrganizeAction::Copy::on_conflict: organize_rs_core::rules::actions::OnConflict
+pub organize_rs_core::rules::actions::OrganizeAction::Copy::rename_template: alloc::vec::Vec<organize_rs_core::rules::actions::TemplateStrings>
+pub organize_rs_core::rules::actions::OrganizeAction::Copy::src: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Delete
+pub organize_rs_core::rules::actions::OrganizeAction::Delete::src: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Echo
+pub organize_rs_core::rules::actions::OrganizeAction::Echo::msg: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Move
+pub organize_rs_core::rules::actions::OrganizeAction::Move::dst: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Move::filesystem: core::option::Option<alloc::string::String>
+pub organize_rs_core::rules::actions::OrganizeAction::Move::on_conflict: organize_rs_core::rules::actions::OnConflict
+pub organize_rs_core::rules::actions::OrganizeAction::Move::rename_template: alloc::vec::Vec<organize_rs_core::rules::actions::TemplateStrings>
+pub organize_rs_core::rules::actions::OrganizeAction::Move::src: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::None
+pub organize_rs_core::rules::actions::OrganizeAction::Rename
+pub organize_rs_core::rules::actions::OrganizeAction::Rename::name: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Rename::on_conflict: organize_rs_core::rules::actions::OnConflict
+pub organize_rs_core::rules::actions::OrganizeAction::Rename::rename_template: alloc::vec::Vec<organize_rs_core::rules::actions::TemplateStrings>
+pub organize_rs_core::rules::actions::OrganizeAction::Rename::src: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Shell
+pub organize_rs_core::rules::actions::OrganizeAction::Symlink
+pub organize_rs_core::rules::actions::OrganizeAction::Symlink::dst: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Symlink::src: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Trash
+pub organize_rs_core::rules::actions::OrganizeAction::Trash::src: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Write
+pub organize_rs_core::rules::actions::OrganizeAction::Write::clear_before_first_write: core::option::Option<bool>
+pub organize_rs_core::rules::actions::OrganizeAction::Write::file: alloc::string::String
+pub organize_rs_core::rules::actions::OrganizeAction::Write::filesystem: core::option::Option<alloc::string::String>
+pub organize_rs_core::rules::actions::OrganizeAction::Write::mode: organize_rs_core::rules::actions::WriteMode
+pub organize_rs_core::rules::actions::OrganizeAction::Write::newline: core::option::Option<bool>
+pub organize_rs_core::rules::actions::OrganizeAction::Write::txt: alloc::string::String
+impl organize_rs_core::rules::actions::OrganizeAction
+pub fn organize_rs_core::rules::actions::OrganizeAction::as_delete(&self) -> core::option::Option<&alloc::string::String>
+pub fn organize_rs_core::rules::actions::OrganizeAction::as_echo(&self) -> core::option::Option<&alloc::string::String>
+pub fn organize_rs_core::rules::actions::OrganizeAction::as_trash(&self) -> core::option::Option<&alloc::string::String>
+pub fn organize_rs_core::rules::actions::OrganizeAction::is_confirm(&self) -> bool
+pub fn organize_rs_core::rules::actions::OrganizeAction::is_copy(&self) -> bool
+pub fn organize_rs_core::rules::actions::OrganizeAction::is_delete(&self) -> bool
+pub fn organize_rs_core::rules::actions::OrganizeAction::is_echo(&self) -> bool
+pub fn organize_rs_core::rules::actions::OrganizeAction::is_move(&self) -> bool
+pub fn organize_rs_core::rules::actions::OrganizeAction::is_none(&self) -> bool
+pub fn organize_rs_core::rules::actions::OrganizeAction::is_rename(&self) -> bool
+pub fn organize_rs_core::rules::actions::OrganizeAction::is_symlink(&self) -> bool
+pub fn organize_rs_core::rules::actions::OrganizeAction::is_trash(&self) -> bool
+pub fn organize_rs_core::rules::actions::OrganizeAction::is_write(&self) -> bool
+pub fn organize_rs_core::rules::actions::OrganizeAction::run(&self)
+pub fn organize_rs_core::rules::actions::OrganizeAction::try_into_delete(self) -> core::result::Result<alloc::string::String, Self>
+pub fn organize_rs_core::rules::actions::OrganizeAction::try_into_echo(self) -> core::result::Result<alloc::string::String, Self>
+pub fn organize_rs_core::rules::actions::OrganizeAction::try_into_trash(self) -> core::result::Result<alloc::string::String, Self>
+impl core::default::Default for organize_rs_core::rules::actions::OrganizeAction
+pub fn organize_rs_core::rules::actions::OrganizeAction::default() -> Self
+impl core::clone::Clone for organize_rs_core::rules::actions::OrganizeAction
+pub fn organize_rs_core::rules::actions::OrganizeAction::clone(&self) -> organize_rs_core::rules::actions::OrganizeAction
+impl core::fmt::Debug for organize_rs_core::rules::actions::OrganizeAction
+pub fn organize_rs_core::rules::actions::OrganizeAction::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::actions::OrganizeAction
+pub fn organize_rs_core::rules::actions::OrganizeAction::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::actions::OrganizeAction
+pub fn organize_rs_core::rules::actions::OrganizeAction::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::actions::OrganizeAction
+impl core::marker::Sync for organize_rs_core::rules::actions::OrganizeAction
+impl core::marker::Unpin for organize_rs_core::rules::actions::OrganizeAction
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::actions::OrganizeAction
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::actions::OrganizeAction
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::actions::OrganizeAction where U: core::convert::From<T>
+pub fn organize_rs_core::rules::actions::OrganizeAction::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::actions::OrganizeAction where U: core::convert::Into<T>
+pub type organize_rs_core::rules::actions::OrganizeAction::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::actions::OrganizeAction::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::actions::OrganizeAction where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::actions::OrganizeAction::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::actions::OrganizeAction::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::actions::OrganizeAction where T: core::clone::Clone
+pub type organize_rs_core::rules::actions::OrganizeAction::Owned = T
+pub fn organize_rs_core::rules::actions::OrganizeAction::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::actions::OrganizeAction::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::actions::OrganizeAction where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::actions::OrganizeAction::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::actions::OrganizeAction where T: core::marker::Sized
+pub fn organize_rs_core::rules::actions::OrganizeAction::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::actions::OrganizeAction where T: core::marker::Sized
+pub fn organize_rs_core::rules::actions::OrganizeAction::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::actions::OrganizeAction
+pub fn organize_rs_core::rules::actions::OrganizeAction::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::actions::OrganizeAction where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::actions::TemplateStrings
+pub organize_rs_core::rules::actions::TemplateStrings::Counter
+pub organize_rs_core::rules::actions::TemplateStrings::Extension
+pub organize_rs_core::rules::actions::TemplateStrings::Filename
+impl organize_rs_core::rules::actions::TemplateStrings
+pub fn organize_rs_core::rules::actions::TemplateStrings::is_counter(&self) -> bool
+pub fn organize_rs_core::rules::actions::TemplateStrings::is_extension(&self) -> bool
+pub fn organize_rs_core::rules::actions::TemplateStrings::is_filename(&self) -> bool
+impl core::fmt::Display for organize_rs_core::rules::actions::TemplateStrings
+pub fn organize_rs_core::rules::actions::TemplateStrings::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::clone::Clone for organize_rs_core::rules::actions::TemplateStrings
+pub fn organize_rs_core::rules::actions::TemplateStrings::clone(&self) -> organize_rs_core::rules::actions::TemplateStrings
+impl core::fmt::Debug for organize_rs_core::rules::actions::TemplateStrings
+pub fn organize_rs_core::rules::actions::TemplateStrings::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for organize_rs_core::rules::actions::TemplateStrings
+impl serde::ser::Serialize for organize_rs_core::rules::actions::TemplateStrings
+pub fn organize_rs_core::rules::actions::TemplateStrings::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::actions::TemplateStrings
+pub fn organize_rs_core::rules::actions::TemplateStrings::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::actions::TemplateStrings
+impl core::marker::Sync for organize_rs_core::rules::actions::TemplateStrings
+impl core::marker::Unpin for organize_rs_core::rules::actions::TemplateStrings
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::actions::TemplateStrings
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::actions::TemplateStrings
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::actions::TemplateStrings where U: core::convert::From<T>
+pub fn organize_rs_core::rules::actions::TemplateStrings::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::actions::TemplateStrings where U: core::convert::Into<T>
+pub type organize_rs_core::rules::actions::TemplateStrings::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::actions::TemplateStrings::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::actions::TemplateStrings where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::actions::TemplateStrings::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::actions::TemplateStrings::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::actions::TemplateStrings where T: core::clone::Clone
+pub type organize_rs_core::rules::actions::TemplateStrings::Owned = T
+pub fn organize_rs_core::rules::actions::TemplateStrings::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::actions::TemplateStrings::to_owned(&self) -> T
+impl<T> alloc::string::ToString for organize_rs_core::rules::actions::TemplateStrings where T: core::fmt::Display + core::marker::Sized
+pub fn organize_rs_core::rules::actions::TemplateStrings::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for organize_rs_core::rules::actions::TemplateStrings where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::actions::TemplateStrings::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::actions::TemplateStrings where T: core::marker::Sized
+pub fn organize_rs_core::rules::actions::TemplateStrings::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::actions::TemplateStrings where T: core::marker::Sized
+pub fn organize_rs_core::rules::actions::TemplateStrings::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::actions::TemplateStrings
+pub fn organize_rs_core::rules::actions::TemplateStrings::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::actions::TemplateStrings where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::actions::WriteMode
+pub organize_rs_core::rules::actions::WriteMode::Append
+pub organize_rs_core::rules::actions::WriteMode::Overwrite
+pub organize_rs_core::rules::actions::WriteMode::Prepend
+impl organize_rs_core::rules::actions::WriteMode
+pub fn organize_rs_core::rules::actions::WriteMode::is_append(&self) -> bool
+pub fn organize_rs_core::rules::actions::WriteMode::is_overwrite(&self) -> bool
+pub fn organize_rs_core::rules::actions::WriteMode::is_prepend(&self) -> bool
+impl core::default::Default for organize_rs_core::rules::actions::WriteMode
+pub fn organize_rs_core::rules::actions::WriteMode::default() -> Self
+impl core::clone::Clone for organize_rs_core::rules::actions::WriteMode
+pub fn organize_rs_core::rules::actions::WriteMode::clone(&self) -> organize_rs_core::rules::actions::WriteMode
+impl core::fmt::Debug for organize_rs_core::rules::actions::WriteMode
+pub fn organize_rs_core::rules::actions::WriteMode::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::actions::WriteMode
+pub fn organize_rs_core::rules::actions::WriteMode::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::actions::WriteMode
+pub fn organize_rs_core::rules::actions::WriteMode::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::actions::WriteMode
+impl core::marker::Sync for organize_rs_core::rules::actions::WriteMode
+impl core::marker::Unpin for organize_rs_core::rules::actions::WriteMode
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::actions::WriteMode
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::actions::WriteMode
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::actions::WriteMode where U: core::convert::From<T>
+pub fn organize_rs_core::rules::actions::WriteMode::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::actions::WriteMode where U: core::convert::Into<T>
+pub type organize_rs_core::rules::actions::WriteMode::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::actions::WriteMode::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::actions::WriteMode where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::actions::WriteMode::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::actions::WriteMode::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::actions::WriteMode where T: core::clone::Clone
+pub type organize_rs_core::rules::actions::WriteMode::Owned = T
+pub fn organize_rs_core::rules::actions::WriteMode::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::actions::WriteMode::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::actions::WriteMode where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::actions::WriteMode::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::actions::WriteMode where T: core::marker::Sized
+pub fn organize_rs_core::rules::actions::WriteMode::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::actions::WriteMode where T: core::marker::Sized
+pub fn organize_rs_core::rules::actions::WriteMode::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::actions::WriteMode
+pub fn organize_rs_core::rules::actions::WriteMode::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::actions::WriteMode where T: for<'de> serde::de::Deserialize<'de>
+pub mod organize_rs_core::rules::aliases
+pub enum organize_rs_core::rules::aliases::ItemKind
+pub organize_rs_core::rules::aliases::ItemKind::Extension
+pub organize_rs_core::rules::aliases::ItemKind::Folder
+impl organize_rs_core::rules::aliases::ItemKind
+pub fn organize_rs_core::rules::aliases::ItemKind::is_extension(&self) -> bool
+pub fn organize_rs_core::rules::aliases::ItemKind::is_folder(&self) -> bool
+impl core::default::Default for organize_rs_core::rules::aliases::ItemKind
+pub fn organize_rs_core::rules::aliases::ItemKind::default() -> Self
+impl core::clone::Clone for organize_rs_core::rules::aliases::ItemKind
+pub fn organize_rs_core::rules::aliases::ItemKind::clone(&self) -> organize_rs_core::rules::aliases::ItemKind
+impl core::fmt::Debug for organize_rs_core::rules::aliases::ItemKind
+pub fn organize_rs_core::rules::aliases::ItemKind::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::aliases::ItemKind
+pub fn organize_rs_core::rules::aliases::ItemKind::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::aliases::ItemKind
+pub fn organize_rs_core::rules::aliases::ItemKind::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::aliases::ItemKind
+impl core::marker::Sync for organize_rs_core::rules::aliases::ItemKind
+impl core::marker::Unpin for organize_rs_core::rules::aliases::ItemKind
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::aliases::ItemKind
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::aliases::ItemKind
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::aliases::ItemKind where U: core::convert::From<T>
+pub fn organize_rs_core::rules::aliases::ItemKind::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::aliases::ItemKind where U: core::convert::Into<T>
+pub type organize_rs_core::rules::aliases::ItemKind::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::aliases::ItemKind::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::aliases::ItemKind where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::aliases::ItemKind::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::aliases::ItemKind::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::aliases::ItemKind where T: core::clone::Clone
+pub type organize_rs_core::rules::aliases::ItemKind::Owned = T
+pub fn organize_rs_core::rules::aliases::ItemKind::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::aliases::ItemKind::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::aliases::ItemKind where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::aliases::ItemKind::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::aliases::ItemKind where T: core::marker::Sized
+pub fn organize_rs_core::rules::aliases::ItemKind::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::aliases::ItemKind where T: core::marker::Sized
+pub fn organize_rs_core::rules::aliases::ItemKind::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::aliases::ItemKind
+pub fn organize_rs_core::rules::aliases::ItemKind::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::aliases::ItemKind where T: for<'de> serde::de::Deserialize<'de>
+pub struct organize_rs_core::rules::aliases::Alias(_)
+impl core::clone::Clone for organize_rs_core::rules::aliases::Alias
+pub fn organize_rs_core::rules::aliases::Alias::clone(&self) -> organize_rs_core::rules::aliases::Alias
+impl core::fmt::Debug for organize_rs_core::rules::aliases::Alias
+pub fn organize_rs_core::rules::aliases::Alias::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::aliases::Alias
+pub fn organize_rs_core::rules::aliases::Alias::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::aliases::Alias
+pub fn organize_rs_core::rules::aliases::Alias::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::aliases::Alias
+impl core::marker::Sync for organize_rs_core::rules::aliases::Alias
+impl core::marker::Unpin for organize_rs_core::rules::aliases::Alias
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::aliases::Alias
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::aliases::Alias
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::aliases::Alias where U: core::convert::From<T>
+pub fn organize_rs_core::rules::aliases::Alias::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::aliases::Alias where U: core::convert::Into<T>
+pub type organize_rs_core::rules::aliases::Alias::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::aliases::Alias::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::aliases::Alias where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::aliases::Alias::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::aliases::Alias::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::aliases::Alias where T: core::clone::Clone
+pub type organize_rs_core::rules::aliases::Alias::Owned = T
+pub fn organize_rs_core::rules::aliases::Alias::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::aliases::Alias::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::aliases::Alias where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::aliases::Alias::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::aliases::Alias where T: core::marker::Sized
+pub fn organize_rs_core::rules::aliases::Alias::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::aliases::Alias where T: core::marker::Sized
+pub fn organize_rs_core::rules::aliases::Alias::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::aliases::Alias
+pub fn organize_rs_core::rules::aliases::Alias::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::aliases::Alias where T: for<'de> serde::de::Deserialize<'de>
+pub struct organize_rs_core::rules::aliases::Reference
+impl organize_rs_core::rules::aliases::Reference
+pub fn organize_rs_core::rules::aliases::Reference::folders(&self) -> &[alloc::string::String]
+pub fn organize_rs_core::rules::aliases::Reference::is_empty(&self) -> bool
+pub fn organize_rs_core::rules::aliases::Reference::len(&self) -> usize
+pub fn organize_rs_core::rules::aliases::Reference::name(&self) -> &str
+impl core::clone::Clone for organize_rs_core::rules::aliases::Reference
+pub fn organize_rs_core::rules::aliases::Reference::clone(&self) -> organize_rs_core::rules::aliases::Reference
+impl core::fmt::Debug for organize_rs_core::rules::aliases::Reference
+pub fn organize_rs_core::rules::aliases::Reference::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::aliases::Reference
+pub fn organize_rs_core::rules::aliases::Reference::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::aliases::Reference
+pub fn organize_rs_core::rules::aliases::Reference::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::aliases::Reference
+impl core::marker::Sync for organize_rs_core::rules::aliases::Reference
+impl core::marker::Unpin for organize_rs_core::rules::aliases::Reference
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::aliases::Reference
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::aliases::Reference
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::aliases::Reference where U: core::convert::From<T>
+pub fn organize_rs_core::rules::aliases::Reference::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::aliases::Reference where U: core::convert::Into<T>
+pub type organize_rs_core::rules::aliases::Reference::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::aliases::Reference::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::aliases::Reference where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::aliases::Reference::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::aliases::Reference::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::aliases::Reference where T: core::clone::Clone
+pub type organize_rs_core::rules::aliases::Reference::Owned = T
+pub fn organize_rs_core::rules::aliases::Reference::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::aliases::Reference::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::aliases::Reference where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::aliases::Reference::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::aliases::Reference where T: core::marker::Sized
+pub fn organize_rs_core::rules::aliases::Reference::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::aliases::Reference where T: core::marker::Sized
+pub fn organize_rs_core::rules::aliases::Reference::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::aliases::Reference
+pub fn organize_rs_core::rules::aliases::Reference::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::aliases::Reference where T: for<'de> serde::de::Deserialize<'de>
+pub mod organize_rs_core::rules::filters
+pub enum organize_rs_core::rules::filters::DateUnit
+pub organize_rs_core::rules::filters::DateUnit::Days(f64)
+pub organize_rs_core::rules::filters::DateUnit::Hours(f64)
+pub organize_rs_core::rules::filters::DateUnit::Minutes(f64)
+pub organize_rs_core::rules::filters::DateUnit::Months(f64)
+pub organize_rs_core::rules::filters::DateUnit::Seconds(f64)
+pub organize_rs_core::rules::filters::DateUnit::Weeks(f64)
+pub organize_rs_core::rules::filters::DateUnit::Years(f64)
+impl organize_rs_core::rules::filters::DateUnit
+pub fn organize_rs_core::rules::filters::DateUnit::into_seconds(&self) -> f64
+impl core::convert::From<(f64, &str)> for organize_rs_core::rules::filters::DateUnit
+pub fn organize_rs_core::rules::filters::DateUnit::from(value: (f64, &str)) -> Self
+impl core::fmt::Display for organize_rs_core::rules::filters::DateUnit
+pub fn organize_rs_core::rules::filters::DateUnit::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::clone::Clone for organize_rs_core::rules::filters::DateUnit
+pub fn organize_rs_core::rules::filters::DateUnit::clone(&self) -> organize_rs_core::rules::filters::DateUnit
+impl core::fmt::Debug for organize_rs_core::rules::filters::DateUnit
+pub fn organize_rs_core::rules::filters::DateUnit::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::filters::DateUnit
+pub fn organize_rs_core::rules::filters::DateUnit::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::filters::DateUnit
+pub fn organize_rs_core::rules::filters::DateUnit::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::filters::DateUnit
+impl core::marker::Sync for organize_rs_core::rules::filters::DateUnit
+impl core::marker::Unpin for organize_rs_core::rules::filters::DateUnit
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::filters::DateUnit
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::filters::DateUnit
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::filters::DateUnit where U: core::convert::From<T>
+pub fn organize_rs_core::rules::filters::DateUnit::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::filters::DateUnit where U: core::convert::Into<T>
+pub type organize_rs_core::rules::filters::DateUnit::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::filters::DateUnit::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::filters::DateUnit where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::filters::DateUnit::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::filters::DateUnit::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::filters::DateUnit where T: core::clone::Clone
+pub type organize_rs_core::rules::filters::DateUnit::Owned = T
+pub fn organize_rs_core::rules::filters::DateUnit::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::filters::DateUnit::to_owned(&self) -> T
+impl<T> alloc::string::ToString for organize_rs_core::rules::filters::DateUnit where T: core::fmt::Display + core::marker::Sized
+pub fn organize_rs_core::rules::filters::DateUnit::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for organize_rs_core::rules::filters::DateUnit where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::filters::DateUnit::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::filters::DateUnit where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::DateUnit::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::filters::DateUnit where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::DateUnit::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::filters::DateUnit
+pub fn organize_rs_core::rules::filters::DateUnit::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::filters::DateUnit where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::filters::DetectDuplicateBy
+pub organize_rs_core::rules::filters::DetectDuplicateBy::Created
+pub organize_rs_core::rules::filters::DetectDuplicateBy::FirstSeen
+pub organize_rs_core::rules::filters::DetectDuplicateBy::LastModified
+pub organize_rs_core::rules::filters::DetectDuplicateBy::Name
+impl organize_rs_core::rules::filters::DetectDuplicateBy
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::is_created(&self) -> bool
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::is_first_seen(&self) -> bool
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::is_last_modified(&self) -> bool
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::is_name(&self) -> bool
+impl core::default::Default for organize_rs_core::rules::filters::DetectDuplicateBy
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::default() -> Self
+impl core::clone::Clone for organize_rs_core::rules::filters::DetectDuplicateBy
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::clone(&self) -> organize_rs_core::rules::filters::DetectDuplicateBy
+impl core::fmt::Debug for organize_rs_core::rules::filters::DetectDuplicateBy
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for organize_rs_core::rules::filters::DetectDuplicateBy
+impl serde::ser::Serialize for organize_rs_core::rules::filters::DetectDuplicateBy
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::filters::DetectDuplicateBy
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::filters::DetectDuplicateBy
+impl core::marker::Sync for organize_rs_core::rules::filters::DetectDuplicateBy
+impl core::marker::Unpin for organize_rs_core::rules::filters::DetectDuplicateBy
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::filters::DetectDuplicateBy
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::filters::DetectDuplicateBy
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::filters::DetectDuplicateBy where U: core::convert::From<T>
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::filters::DetectDuplicateBy where U: core::convert::Into<T>
+pub type organize_rs_core::rules::filters::DetectDuplicateBy::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::filters::DetectDuplicateBy where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::filters::DetectDuplicateBy::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::filters::DetectDuplicateBy where T: core::clone::Clone
+pub type organize_rs_core::rules::filters::DetectDuplicateBy::Owned = T
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::filters::DetectDuplicateBy where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::filters::DetectDuplicateBy where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::filters::DetectDuplicateBy where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::filters::DetectDuplicateBy
+pub fn organize_rs_core::rules::filters::DetectDuplicateBy::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::filters::DetectDuplicateBy where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::filters::Interval
+pub organize_rs_core::rules::filters::Interval::NewerThan
+pub organize_rs_core::rules::filters::Interval::OlderThan
+impl organize_rs_core::rules::filters::Interval
+pub fn organize_rs_core::rules::filters::Interval::is_newer(&self) -> bool
+pub fn organize_rs_core::rules::filters::Interval::is_older(&self) -> bool
+impl core::default::Default for organize_rs_core::rules::filters::Interval
+pub fn organize_rs_core::rules::filters::Interval::default() -> Self
+impl core::fmt::Display for organize_rs_core::rules::filters::Interval
+pub fn organize_rs_core::rules::filters::Interval::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::clone::Clone for organize_rs_core::rules::filters::Interval
+pub fn organize_rs_core::rules::filters::Interval::clone(&self) -> organize_rs_core::rules::filters::Interval
+impl core::fmt::Debug for organize_rs_core::rules::filters::Interval
+pub fn organize_rs_core::rules::filters::Interval::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for organize_rs_core::rules::filters::Interval
+impl serde::ser::Serialize for organize_rs_core::rules::filters::Interval
+pub fn organize_rs_core::rules::filters::Interval::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::filters::Interval
+pub fn organize_rs_core::rules::filters::Interval::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::filters::Interval
+impl core::marker::Sync for organize_rs_core::rules::filters::Interval
+impl core::marker::Unpin for organize_rs_core::rules::filters::Interval
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::filters::Interval
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::filters::Interval
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::filters::Interval where U: core::convert::From<T>
+pub fn organize_rs_core::rules::filters::Interval::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::filters::Interval where U: core::convert::Into<T>
+pub type organize_rs_core::rules::filters::Interval::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::filters::Interval::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::filters::Interval where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::filters::Interval::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::filters::Interval::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::filters::Interval where T: core::clone::Clone
+pub type organize_rs_core::rules::filters::Interval::Owned = T
+pub fn organize_rs_core::rules::filters::Interval::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::filters::Interval::to_owned(&self) -> T
+impl<T> alloc::string::ToString for organize_rs_core::rules::filters::Interval where T: core::fmt::Display + core::marker::Sized
+pub fn organize_rs_core::rules::filters::Interval::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for organize_rs_core::rules::filters::Interval where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::filters::Interval::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::filters::Interval where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::Interval::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::filters::Interval where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::Interval::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::filters::Interval
+pub fn organize_rs_core::rules::filters::Interval::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::filters::Interval where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::filters::OrganizeFilter
+pub organize_rs_core::rules::filters::OrganizeFilter::Created
+pub organize_rs_core::rules::filters::OrganizeFilter::Created::range: organize_rs_core::parsers::PeriodRange
+pub organize_rs_core::rules::filters::OrganizeFilter::Duplicate
+pub organize_rs_core::rules::filters::OrganizeFilter::Duplicate::detect_original_by: core::option::Option<organize_rs_core::rules::filters::DetectDuplicateBy>
+pub organize_rs_core::rules::filters::OrganizeFilter::Duplicate::reverse: bool
+pub organize_rs_core::rules::filters::OrganizeFilter::Empty
+pub organize_rs_core::rules::filters::OrganizeFilter::Exif
+pub organize_rs_core::rules::filters::OrganizeFilter::Extension
+pub organize_rs_core::rules::filters::OrganizeFilter::Extension::exts: alloc::vec::Vec<alloc::string::String>
+pub organize_rs_core::rules::filters::OrganizeFilter::Filecontent
+pub organize_rs_core::rules::filters::OrganizeFilter::Filecontent::regex: alloc::string::String
+pub organize_rs_core::rules::filters::OrganizeFilter::LastAccessed
+pub organize_rs_core::rules::filters::OrganizeFilter::LastAccessed::range: organize_rs_core::parsers::PeriodRange
+pub organize_rs_core::rules::filters::OrganizeFilter::LastModified
+pub organize_rs_core::rules::filters::OrganizeFilter::LastModified::range: organize_rs_core::parsers::PeriodRange
+pub organize_rs_core::rules::filters::OrganizeFilter::Mimetype
+pub organize_rs_core::rules::filters::OrganizeFilter::Mimetype::mimetype: alloc::vec::Vec<alloc::string::String>
+pub organize_rs_core::rules::filters::OrganizeFilter::Name
+pub organize_rs_core::rules::filters::OrganizeFilter::Name::arguments: organize_rs_core::rules::filters::NameFilterArgs
+pub organize_rs_core::rules::filters::OrganizeFilter::Name::case_insensitive: bool
+pub organize_rs_core::rules::filters::OrganizeFilter::Regex
+pub organize_rs_core::rules::filters::OrganizeFilter::Regex::expr: alloc::string::String
+pub organize_rs_core::rules::filters::OrganizeFilter::Size
+pub organize_rs_core::rules::filters::OrganizeFilter::Size::range: organize_rs_core::parsers::SizeRange
+impl organize_rs_core::rules::filters::OrganizeFilter
+pub fn organize_rs_core::rules::filters::OrganizeFilter::as_extension(&self) -> core::option::Option<&alloc::vec::Vec<alloc::string::String>>
+pub fn organize_rs_core::rules::filters::OrganizeFilter::as_filecontent(&self) -> core::option::Option<&alloc::string::String>
+pub fn organize_rs_core::rules::filters::OrganizeFilter::as_mimetype(&self) -> core::option::Option<&alloc::vec::Vec<alloc::string::String>>
+pub fn organize_rs_core::rules::filters::OrganizeFilter::as_regex(&self) -> core::option::Option<&alloc::string::String>
+pub fn organize_rs_core::rules::filters::OrganizeFilter::get_filter(&self) -> alloc::boxed::Box<dyn core::ops::function::FnMut(&walkdir::dent::DirEntry) -> bool>
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_date_created(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_date_last_modified(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_duplicate(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_empty(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_exif(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_extension(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_filecontent(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_mimetype(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_name(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_regex(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::is_size(&self) -> bool
+pub fn organize_rs_core::rules::filters::OrganizeFilter::try_into_extension(self) -> core::result::Result<alloc::vec::Vec<alloc::string::String>, Self>
+pub fn organize_rs_core::rules::filters::OrganizeFilter::try_into_filecontent(self) -> core::result::Result<alloc::string::String, Self>
+pub fn organize_rs_core::rules::filters::OrganizeFilter::try_into_mimetype(self) -> core::result::Result<alloc::vec::Vec<alloc::string::String>, Self>
+pub fn organize_rs_core::rules::filters::OrganizeFilter::try_into_regex(self) -> core::result::Result<alloc::string::String, Self>
+impl core::clone::Clone for organize_rs_core::rules::filters::OrganizeFilter
+pub fn organize_rs_core::rules::filters::OrganizeFilter::clone(&self) -> organize_rs_core::rules::filters::OrganizeFilter
+impl core::fmt::Debug for organize_rs_core::rules::filters::OrganizeFilter
+pub fn organize_rs_core::rules::filters::OrganizeFilter::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::filters::OrganizeFilter
+pub fn organize_rs_core::rules::filters::OrganizeFilter::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::filters::OrganizeFilter
+pub fn organize_rs_core::rules::filters::OrganizeFilter::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::filters::OrganizeFilter
+impl core::marker::Sync for organize_rs_core::rules::filters::OrganizeFilter
+impl core::marker::Unpin for organize_rs_core::rules::filters::OrganizeFilter
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::filters::OrganizeFilter
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::filters::OrganizeFilter
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::filters::OrganizeFilter where U: core::convert::From<T>
+pub fn organize_rs_core::rules::filters::OrganizeFilter::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::filters::OrganizeFilter where U: core::convert::Into<T>
+pub type organize_rs_core::rules::filters::OrganizeFilter::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::filters::OrganizeFilter::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::filters::OrganizeFilter where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::filters::OrganizeFilter::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::filters::OrganizeFilter::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::filters::OrganizeFilter where T: core::clone::Clone
+pub type organize_rs_core::rules::filters::OrganizeFilter::Owned = T
+pub fn organize_rs_core::rules::filters::OrganizeFilter::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::filters::OrganizeFilter::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::filters::OrganizeFilter where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::filters::OrganizeFilter::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::filters::OrganizeFilter where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::OrganizeFilter::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::filters::OrganizeFilter where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::OrganizeFilter::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::filters::OrganizeFilter
+pub fn organize_rs_core::rules::filters::OrganizeFilter::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::filters::OrganizeFilter where T: for<'de> serde::de::Deserialize<'de>
+pub struct organize_rs_core::rules::filters::FilterDate
+impl core::clone::Clone for organize_rs_core::rules::filters::FilterDate
+pub fn organize_rs_core::rules::filters::FilterDate::clone(&self) -> organize_rs_core::rules::filters::FilterDate
+impl core::fmt::Debug for organize_rs_core::rules::filters::FilterDate
+pub fn organize_rs_core::rules::filters::FilterDate::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for organize_rs_core::rules::filters::FilterDate
+impl serde::ser::Serialize for organize_rs_core::rules::filters::FilterDate
+pub fn organize_rs_core::rules::filters::FilterDate::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::filters::FilterDate
+pub fn organize_rs_core::rules::filters::FilterDate::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::filters::FilterDate
+impl core::marker::Sync for organize_rs_core::rules::filters::FilterDate
+impl core::marker::Unpin for organize_rs_core::rules::filters::FilterDate
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::filters::FilterDate
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::filters::FilterDate
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::filters::FilterDate where U: core::convert::From<T>
+pub fn organize_rs_core::rules::filters::FilterDate::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::filters::FilterDate where U: core::convert::Into<T>
+pub type organize_rs_core::rules::filters::FilterDate::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::filters::FilterDate::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::filters::FilterDate where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::filters::FilterDate::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::filters::FilterDate::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::filters::FilterDate where T: core::clone::Clone
+pub type organize_rs_core::rules::filters::FilterDate::Owned = T
+pub fn organize_rs_core::rules::filters::FilterDate::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::filters::FilterDate::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::filters::FilterDate where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::filters::FilterDate::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::filters::FilterDate where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::FilterDate::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::filters::FilterDate where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::FilterDate::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::filters::FilterDate
+pub fn organize_rs_core::rules::filters::FilterDate::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::filters::FilterDate where T: for<'de> serde::de::Deserialize<'de>
+pub struct organize_rs_core::rules::filters::FilterRecursive
+impl organize_rs_core::rules::filters::FilterRecursive
+pub fn organize_rs_core::rules::filters::FilterRecursive::max_depth(&self) -> u64
+pub fn organize_rs_core::rules::filters::FilterRecursive::recursive(&self) -> bool
+impl core::clone::Clone for organize_rs_core::rules::filters::FilterRecursive
+pub fn organize_rs_core::rules::filters::FilterRecursive::clone(&self) -> organize_rs_core::rules::filters::FilterRecursive
+impl core::fmt::Debug for organize_rs_core::rules::filters::FilterRecursive
+pub fn organize_rs_core::rules::filters::FilterRecursive::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::filters::FilterRecursive
+pub fn organize_rs_core::rules::filters::FilterRecursive::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::filters::FilterRecursive
+pub fn organize_rs_core::rules::filters::FilterRecursive::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::filters::FilterRecursive
+impl core::marker::Sync for organize_rs_core::rules::filters::FilterRecursive
+impl core::marker::Unpin for organize_rs_core::rules::filters::FilterRecursive
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::filters::FilterRecursive
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::filters::FilterRecursive
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::filters::FilterRecursive where U: core::convert::From<T>
+pub fn organize_rs_core::rules::filters::FilterRecursive::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::filters::FilterRecursive where U: core::convert::Into<T>
+pub type organize_rs_core::rules::filters::FilterRecursive::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::filters::FilterRecursive::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::filters::FilterRecursive where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::filters::FilterRecursive::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::filters::FilterRecursive::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::filters::FilterRecursive where T: core::clone::Clone
+pub type organize_rs_core::rules::filters::FilterRecursive::Owned = T
+pub fn organize_rs_core::rules::filters::FilterRecursive::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::filters::FilterRecursive::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::filters::FilterRecursive where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::filters::FilterRecursive::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::filters::FilterRecursive where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::FilterRecursive::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::filters::FilterRecursive where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::FilterRecursive::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::filters::FilterRecursive
+pub fn organize_rs_core::rules::filters::FilterRecursive::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::filters::FilterRecursive where T: for<'de> serde::de::Deserialize<'de>
+pub struct organize_rs_core::rules::filters::NameFilterArgs
+impl core::clone::Clone for organize_rs_core::rules::filters::NameFilterArgs
+pub fn organize_rs_core::rules::filters::NameFilterArgs::clone(&self) -> organize_rs_core::rules::filters::NameFilterArgs
+impl core::fmt::Debug for organize_rs_core::rules::filters::NameFilterArgs
+pub fn organize_rs_core::rules::filters::NameFilterArgs::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::filters::NameFilterArgs
+pub fn organize_rs_core::rules::filters::NameFilterArgs::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::filters::NameFilterArgs
+pub fn organize_rs_core::rules::filters::NameFilterArgs::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::filters::NameFilterArgs
+impl core::marker::Sync for organize_rs_core::rules::filters::NameFilterArgs
+impl core::marker::Unpin for organize_rs_core::rules::filters::NameFilterArgs
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::filters::NameFilterArgs
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::filters::NameFilterArgs
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::filters::NameFilterArgs where U: core::convert::From<T>
+pub fn organize_rs_core::rules::filters::NameFilterArgs::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::filters::NameFilterArgs where U: core::convert::Into<T>
+pub type organize_rs_core::rules::filters::NameFilterArgs::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::filters::NameFilterArgs::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::filters::NameFilterArgs where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::filters::NameFilterArgs::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::filters::NameFilterArgs::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::filters::NameFilterArgs where T: core::clone::Clone
+pub type organize_rs_core::rules::filters::NameFilterArgs::Owned = T
+pub fn organize_rs_core::rules::filters::NameFilterArgs::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::filters::NameFilterArgs::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::filters::NameFilterArgs where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::filters::NameFilterArgs::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::filters::NameFilterArgs where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::NameFilterArgs::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::filters::NameFilterArgs where T: core::marker::Sized
+pub fn organize_rs_core::rules::filters::NameFilterArgs::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::filters::NameFilterArgs
+pub fn organize_rs_core::rules::filters::NameFilterArgs::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::filters::NameFilterArgs where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::ApplyOrNegateFilter
+pub organize_rs_core::rules::ApplyOrNegateFilter::Apply(organize_rs_core::rules::filters::OrganizeFilter)
+pub organize_rs_core::rules::ApplyOrNegateFilter::Negate(organize_rs_core::rules::filters::OrganizeFilter)
+impl organize_rs_core::rules::ApplyOrNegateFilter
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::as_apply(&self) -> core::option::Option<&organize_rs_core::rules::filters::OrganizeFilter>
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::as_negate(&self) -> core::option::Option<&organize_rs_core::rules::filters::OrganizeFilter>
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::is_apply(&self) -> bool
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::is_negate(&self) -> bool
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::try_into_apply(self) -> core::result::Result<organize_rs_core::rules::filters::OrganizeFilter, Self>
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::try_into_negate(self) -> core::result::Result<organize_rs_core::rules::filters::OrganizeFilter, Self>
+impl core::fmt::Display for organize_rs_core::rules::ApplyOrNegateFilter
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::clone::Clone for organize_rs_core::rules::ApplyOrNegateFilter
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::clone(&self) -> organize_rs_core::rules::ApplyOrNegateFilter
+impl core::fmt::Debug for organize_rs_core::rules::ApplyOrNegateFilter
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::ApplyOrNegateFilter
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::ApplyOrNegateFilter
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::ApplyOrNegateFilter
+impl core::marker::Sync for organize_rs_core::rules::ApplyOrNegateFilter
+impl core::marker::Unpin for organize_rs_core::rules::ApplyOrNegateFilter
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::ApplyOrNegateFilter
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::ApplyOrNegateFilter
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::ApplyOrNegateFilter where U: core::convert::From<T>
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::ApplyOrNegateFilter where U: core::convert::Into<T>
+pub type organize_rs_core::rules::ApplyOrNegateFilter::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::ApplyOrNegateFilter where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::ApplyOrNegateFilter::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::ApplyOrNegateFilter where T: core::clone::Clone
+pub type organize_rs_core::rules::ApplyOrNegateFilter::Owned = T
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::to_owned(&self) -> T
+impl<T> alloc::string::ToString for organize_rs_core::rules::ApplyOrNegateFilter where T: core::fmt::Display + core::marker::Sized
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for organize_rs_core::rules::ApplyOrNegateFilter where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::ApplyOrNegateFilter where T: core::marker::Sized
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::ApplyOrNegateFilter where T: core::marker::Sized
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::ApplyOrNegateFilter
+pub fn organize_rs_core::rules::ApplyOrNegateFilter::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::ApplyOrNegateFilter where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::OrganizeFilterMode
+pub organize_rs_core::rules::OrganizeFilterMode::All
+pub organize_rs_core::rules::OrganizeFilterMode::Any
+pub organize_rs_core::rules::OrganizeFilterMode::None
+impl organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::is_all(&self) -> bool
+pub fn organize_rs_core::rules::OrganizeFilterMode::is_any(&self) -> bool
+pub fn organize_rs_core::rules::OrganizeFilterMode::is_none(&self) -> bool
+impl core::default::Default for organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::default() -> Self
+impl core::fmt::Display for organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::clone::Clone for organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::clone(&self) -> organize_rs_core::rules::OrganizeFilterMode
+impl core::cmp::Eq for organize_rs_core::rules::OrganizeFilterMode
+impl core::cmp::Ord for organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::cmp(&self, other: &organize_rs_core::rules::OrganizeFilterMode) -> core::cmp::Ordering
+impl core::cmp::PartialEq<organize_rs_core::rules::OrganizeFilterMode> for organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::eq(&self, other: &organize_rs_core::rules::OrganizeFilterMode) -> bool
+impl core::cmp::PartialOrd<organize_rs_core::rules::OrganizeFilterMode> for organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::partial_cmp(&self, other: &organize_rs_core::rules::OrganizeFilterMode) -> core::option::Option<core::cmp::Ordering>
+impl core::fmt::Debug for organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for organize_rs_core::rules::OrganizeFilterMode
+impl core::marker::StructuralEq for organize_rs_core::rules::OrganizeFilterMode
+impl core::marker::StructuralPartialEq for organize_rs_core::rules::OrganizeFilterMode
+impl serde::ser::Serialize for organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::OrganizeFilterMode
+impl core::marker::Sync for organize_rs_core::rules::OrganizeFilterMode
+impl core::marker::Unpin for organize_rs_core::rules::OrganizeFilterMode
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::OrganizeFilterMode
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::OrganizeFilterMode
+impl<Q, K> indexmap::equivalent::Equivalent<K> for organize_rs_core::rules::OrganizeFilterMode where Q: core::cmp::Eq + core::marker::Sized, K: core::borrow::Borrow<Q> + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeFilterMode::equivalent(&self, key: &K) -> bool
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::OrganizeFilterMode where U: core::convert::From<T>
+pub fn organize_rs_core::rules::OrganizeFilterMode::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::OrganizeFilterMode where U: core::convert::Into<T>
+pub type organize_rs_core::rules::OrganizeFilterMode::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::OrganizeFilterMode::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::OrganizeFilterMode where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::OrganizeFilterMode::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::OrganizeFilterMode::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::OrganizeFilterMode where T: core::clone::Clone
+pub type organize_rs_core::rules::OrganizeFilterMode::Owned = T
+pub fn organize_rs_core::rules::OrganizeFilterMode::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::OrganizeFilterMode::to_owned(&self) -> T
+impl<T> alloc::string::ToString for organize_rs_core::rules::OrganizeFilterMode where T: core::fmt::Display + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeFilterMode::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for organize_rs_core::rules::OrganizeFilterMode where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeFilterMode::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::OrganizeFilterMode where T: core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeFilterMode::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::OrganizeFilterMode where T: core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeFilterMode::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeFilterMode::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::OrganizeFilterMode where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::OrganizeTag
+pub organize_rs_core::rules::OrganizeTag::Always
+pub organize_rs_core::rules::OrganizeTag::Custom(alloc::string::String)
+pub organize_rs_core::rules::OrganizeTag::Never
+impl organize_rs_core::rules::OrganizeTag
+pub fn organize_rs_core::rules::OrganizeTag::as_custom(&self) -> core::option::Option<&alloc::string::String>
+pub fn organize_rs_core::rules::OrganizeTag::is_always(&self) -> bool
+pub fn organize_rs_core::rules::OrganizeTag::is_custom(&self) -> bool
+pub fn organize_rs_core::rules::OrganizeTag::is_never(&self) -> bool
+pub fn organize_rs_core::rules::OrganizeTag::try_into_custom(self) -> core::result::Result<alloc::string::String, Self>
+impl core::fmt::Display for organize_rs_core::rules::OrganizeTag
+pub fn organize_rs_core::rules::OrganizeTag::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::clone::Clone for organize_rs_core::rules::OrganizeTag
+pub fn organize_rs_core::rules::OrganizeTag::clone(&self) -> organize_rs_core::rules::OrganizeTag
+impl core::cmp::Eq for organize_rs_core::rules::OrganizeTag
+impl core::cmp::Ord for organize_rs_core::rules::OrganizeTag
+pub fn organize_rs_core::rules::OrganizeTag::cmp(&self, other: &organize_rs_core::rules::OrganizeTag) -> core::cmp::Ordering
+impl core::cmp::PartialEq<organize_rs_core::rules::OrganizeTag> for organize_rs_core::rules::OrganizeTag
+pub fn organize_rs_core::rules::OrganizeTag::eq(&self, other: &organize_rs_core::rules::OrganizeTag) -> bool
+impl core::cmp::PartialOrd<organize_rs_core::rules::OrganizeTag> for organize_rs_core::rules::OrganizeTag
+pub fn organize_rs_core::rules::OrganizeTag::partial_cmp(&self, other: &organize_rs_core::rules::OrganizeTag) -> core::option::Option<core::cmp::Ordering>
+impl core::fmt::Debug for organize_rs_core::rules::OrganizeTag
+pub fn organize_rs_core::rules::OrganizeTag::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralEq for organize_rs_core::rules::OrganizeTag
+impl core::marker::StructuralPartialEq for organize_rs_core::rules::OrganizeTag
+impl serde::ser::Serialize for organize_rs_core::rules::OrganizeTag
+pub fn organize_rs_core::rules::OrganizeTag::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::OrganizeTag
+pub fn organize_rs_core::rules::OrganizeTag::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::OrganizeTag
+impl core::marker::Sync for organize_rs_core::rules::OrganizeTag
+impl core::marker::Unpin for organize_rs_core::rules::OrganizeTag
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::OrganizeTag
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::OrganizeTag
+impl<Q, K> indexmap::equivalent::Equivalent<K> for organize_rs_core::rules::OrganizeTag where Q: core::cmp::Eq + core::marker::Sized, K: core::borrow::Borrow<Q> + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeTag::equivalent(&self, key: &K) -> bool
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::OrganizeTag where U: core::convert::From<T>
+pub fn organize_rs_core::rules::OrganizeTag::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::OrganizeTag where U: core::convert::Into<T>
+pub type organize_rs_core::rules::OrganizeTag::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::OrganizeTag::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::OrganizeTag where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::OrganizeTag::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::OrganizeTag::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::OrganizeTag where T: core::clone::Clone
+pub type organize_rs_core::rules::OrganizeTag::Owned = T
+pub fn organize_rs_core::rules::OrganizeTag::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::OrganizeTag::to_owned(&self) -> T
+impl<T> alloc::string::ToString for organize_rs_core::rules::OrganizeTag where T: core::fmt::Display + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeTag::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for organize_rs_core::rules::OrganizeTag where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeTag::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::OrganizeTag where T: core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeTag::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::OrganizeTag where T: core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeTag::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::OrganizeTag
+pub fn organize_rs_core::rules::OrganizeTag::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::OrganizeTag where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::OrganizeTargets
+pub organize_rs_core::rules::OrganizeTargets::Both
+pub organize_rs_core::rules::OrganizeTargets::Dirs
+pub organize_rs_core::rules::OrganizeTargets::Files
+impl organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::is_dirs(&self) -> bool
+pub fn organize_rs_core::rules::OrganizeTargets::is_files(&self) -> bool
+impl core::default::Default for organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::default() -> Self
+impl core::fmt::Display for organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::clone::Clone for organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::clone(&self) -> organize_rs_core::rules::OrganizeTargets
+impl core::cmp::Eq for organize_rs_core::rules::OrganizeTargets
+impl core::cmp::Ord for organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::cmp(&self, other: &organize_rs_core::rules::OrganizeTargets) -> core::cmp::Ordering
+impl core::cmp::PartialEq<organize_rs_core::rules::OrganizeTargets> for organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::eq(&self, other: &organize_rs_core::rules::OrganizeTargets) -> bool
+impl core::cmp::PartialOrd<organize_rs_core::rules::OrganizeTargets> for organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::partial_cmp(&self, other: &organize_rs_core::rules::OrganizeTargets) -> core::option::Option<core::cmp::Ordering>
+impl core::fmt::Debug for organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for organize_rs_core::rules::OrganizeTargets
+impl core::marker::StructuralEq for organize_rs_core::rules::OrganizeTargets
+impl core::marker::StructuralPartialEq for organize_rs_core::rules::OrganizeTargets
+impl serde::ser::Serialize for organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::OrganizeTargets
+impl core::marker::Sync for organize_rs_core::rules::OrganizeTargets
+impl core::marker::Unpin for organize_rs_core::rules::OrganizeTargets
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::OrganizeTargets
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::OrganizeTargets
+impl<Q, K> indexmap::equivalent::Equivalent<K> for organize_rs_core::rules::OrganizeTargets where Q: core::cmp::Eq + core::marker::Sized, K: core::borrow::Borrow<Q> + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeTargets::equivalent(&self, key: &K) -> bool
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::OrganizeTargets where U: core::convert::From<T>
+pub fn organize_rs_core::rules::OrganizeTargets::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::OrganizeTargets where U: core::convert::Into<T>
+pub type organize_rs_core::rules::OrganizeTargets::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::OrganizeTargets::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::OrganizeTargets where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::OrganizeTargets::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::OrganizeTargets::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::OrganizeTargets where T: core::clone::Clone
+pub type organize_rs_core::rules::OrganizeTargets::Owned = T
+pub fn organize_rs_core::rules::OrganizeTargets::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::OrganizeTargets::to_owned(&self) -> T
+impl<T> alloc::string::ToString for organize_rs_core::rules::OrganizeTargets where T: core::fmt::Display + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeTargets::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for organize_rs_core::rules::OrganizeTargets where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeTargets::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::OrganizeTargets where T: core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeTargets::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::OrganizeTargets where T: core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeTargets::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::OrganizeTargets
+pub fn organize_rs_core::rules::OrganizeTargets::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::OrganizeTargets where T: for<'de> serde::de::Deserialize<'de>
+pub enum organize_rs_core::rules::Recurse
+pub organize_rs_core::rules::Recurse::Flat
+pub organize_rs_core::rules::Recurse::Recursive
+impl organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::is_flat(&self) -> bool
+pub fn organize_rs_core::rules::Recurse::is_recursive(&self) -> bool
+impl core::default::Default for organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::default() -> Self
+impl core::fmt::Display for organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::clone::Clone for organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::clone(&self) -> organize_rs_core::rules::Recurse
+impl core::cmp::Eq for organize_rs_core::rules::Recurse
+impl core::cmp::Ord for organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::cmp(&self, other: &organize_rs_core::rules::Recurse) -> core::cmp::Ordering
+impl core::cmp::PartialEq<organize_rs_core::rules::Recurse> for organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::eq(&self, other: &organize_rs_core::rules::Recurse) -> bool
+impl core::cmp::PartialOrd<organize_rs_core::rules::Recurse> for organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::partial_cmp(&self, other: &organize_rs_core::rules::Recurse) -> core::option::Option<core::cmp::Ordering>
+impl core::fmt::Debug for organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Copy for organize_rs_core::rules::Recurse
+impl core::marker::StructuralEq for organize_rs_core::rules::Recurse
+impl core::marker::StructuralPartialEq for organize_rs_core::rules::Recurse
+impl serde::ser::Serialize for organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::Recurse
+impl core::marker::Sync for organize_rs_core::rules::Recurse
+impl core::marker::Unpin for organize_rs_core::rules::Recurse
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::Recurse
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::Recurse
+impl<Q, K> indexmap::equivalent::Equivalent<K> for organize_rs_core::rules::Recurse where Q: core::cmp::Eq + core::marker::Sized, K: core::borrow::Borrow<Q> + core::marker::Sized
+pub fn organize_rs_core::rules::Recurse::equivalent(&self, key: &K) -> bool
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::Recurse where U: core::convert::From<T>
+pub fn organize_rs_core::rules::Recurse::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::Recurse where U: core::convert::Into<T>
+pub type organize_rs_core::rules::Recurse::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::Recurse::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::Recurse where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::Recurse::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::Recurse::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::Recurse where T: core::clone::Clone
+pub type organize_rs_core::rules::Recurse::Owned = T
+pub fn organize_rs_core::rules::Recurse::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::Recurse::to_owned(&self) -> T
+impl<T> alloc::string::ToString for organize_rs_core::rules::Recurse where T: core::fmt::Display + core::marker::Sized
+pub fn organize_rs_core::rules::Recurse::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for organize_rs_core::rules::Recurse where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::Recurse::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::Recurse where T: core::marker::Sized
+pub fn organize_rs_core::rules::Recurse::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::Recurse where T: core::marker::Sized
+pub fn organize_rs_core::rules::Recurse::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::Recurse::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::Recurse where T: for<'de> serde::de::Deserialize<'de>
+pub struct organize_rs_core::rules::OrganizeLocation
+impl core::clone::Clone for organize_rs_core::rules::OrganizeLocation
+pub fn organize_rs_core::rules::OrganizeLocation::clone(&self) -> organize_rs_core::rules::OrganizeLocation
+impl core::fmt::Debug for organize_rs_core::rules::OrganizeLocation
+pub fn organize_rs_core::rules::OrganizeLocation::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::OrganizeLocation
+pub fn organize_rs_core::rules::OrganizeLocation::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::OrganizeLocation
+pub fn organize_rs_core::rules::OrganizeLocation::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::OrganizeLocation
+impl core::marker::Sync for organize_rs_core::rules::OrganizeLocation
+impl core::marker::Unpin for organize_rs_core::rules::OrganizeLocation
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::OrganizeLocation
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::OrganizeLocation
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::OrganizeLocation where U: core::convert::From<T>
+pub fn organize_rs_core::rules::OrganizeLocation::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::OrganizeLocation where U: core::convert::Into<T>
+pub type organize_rs_core::rules::OrganizeLocation::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::OrganizeLocation::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::OrganizeLocation where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::OrganizeLocation::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::OrganizeLocation::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::OrganizeLocation where T: core::clone::Clone
+pub type organize_rs_core::rules::OrganizeLocation::Owned = T
+pub fn organize_rs_core::rules::OrganizeLocation::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::OrganizeLocation::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::OrganizeLocation where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeLocation::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::OrganizeLocation where T: core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeLocation::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::OrganizeLocation where T: core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeLocation::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::OrganizeLocation
+pub fn organize_rs_core::rules::OrganizeLocation::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::OrganizeLocation where T: for<'de> serde::de::Deserialize<'de>
+pub struct organize_rs_core::rules::OrganizeRule
+impl organize_rs_core::rules::OrganizeRule
+pub fn organize_rs_core::rules::OrganizeRule::actions(&self) -> &[organize_rs_core::rules::actions::OrganizeAction]
+pub fn organize_rs_core::rules::OrganizeRule::enabled(&self) -> bool
+pub fn organize_rs_core::rules::OrganizeRule::filter_mode(&self) -> &organize_rs_core::rules::OrganizeFilterMode
+pub fn organize_rs_core::rules::OrganizeRule::filters(&self) -> &[organize_rs_core::rules::ApplyOrNegateFilter]
+pub fn organize_rs_core::rules::OrganizeRule::locations(&self) -> &[organize_rs_core::rules::OrganizeLocation]
+pub fn organize_rs_core::rules::OrganizeRule::name(&self) -> &str
+pub fn organize_rs_core::rules::OrganizeRule::subfolders(&self) -> &organize_rs_core::rules::Recurse
+pub fn organize_rs_core::rules::OrganizeRule::tags(&self) -> &[organize_rs_core::rules::OrganizeTag]
+pub fn organize_rs_core::rules::OrganizeRule::targets(&self) -> &organize_rs_core::rules::OrganizeTargets
+impl core::clone::Clone for organize_rs_core::rules::OrganizeRule
+pub fn organize_rs_core::rules::OrganizeRule::clone(&self) -> organize_rs_core::rules::OrganizeRule
+impl core::fmt::Debug for organize_rs_core::rules::OrganizeRule
+pub fn organize_rs_core::rules::OrganizeRule::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl serde::ser::Serialize for organize_rs_core::rules::OrganizeRule
+pub fn organize_rs_core::rules::OrganizeRule::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for organize_rs_core::rules::OrganizeRule
+pub fn organize_rs_core::rules::OrganizeRule::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Send for organize_rs_core::rules::OrganizeRule
+impl core::marker::Sync for organize_rs_core::rules::OrganizeRule
+impl core::marker::Unpin for organize_rs_core::rules::OrganizeRule
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::rules::OrganizeRule
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::rules::OrganizeRule
+impl<T, U> core::convert::Into<U> for organize_rs_core::rules::OrganizeRule where U: core::convert::From<T>
+pub fn organize_rs_core::rules::OrganizeRule::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::rules::OrganizeRule where U: core::convert::Into<T>
+pub type organize_rs_core::rules::OrganizeRule::Error = core::convert::Infallible
+pub fn organize_rs_core::rules::OrganizeRule::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::rules::OrganizeRule where U: core::convert::TryFrom<T>
+pub type organize_rs_core::rules::OrganizeRule::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::rules::OrganizeRule::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for organize_rs_core::rules::OrganizeRule where T: core::clone::Clone
+pub type organize_rs_core::rules::OrganizeRule::Owned = T
+pub fn organize_rs_core::rules::OrganizeRule::clone_into(&self, target: &mut T)
+pub fn organize_rs_core::rules::OrganizeRule::to_owned(&self) -> T
+impl<T> core::any::Any for organize_rs_core::rules::OrganizeRule where T: 'static + core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeRule::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::rules::OrganizeRule where T: core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeRule::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::rules::OrganizeRule where T: core::marker::Sized
+pub fn organize_rs_core::rules::OrganizeRule::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::rules::OrganizeRule
+pub fn organize_rs_core::rules::OrganizeRule::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for organize_rs_core::rules::OrganizeRule where T: for<'de> serde::de::Deserialize<'de>
+pub struct organize_rs_core::FilterWalker
+impl organize_rs_core::FilterWalker
+pub fn organize_rs_core::FilterWalker::entries<A>(path: A, max_depth: u64) -> organize_rs_core::error::OrganizeResult<alloc::vec::Vec<walkdir::dent::DirEntry>> where A: core::convert::AsRef<std::path::Path>
+impl core::fmt::Debug for organize_rs_core::FilterWalker
+pub fn organize_rs_core::FilterWalker::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Send for organize_rs_core::FilterWalker
+impl core::marker::Sync for organize_rs_core::FilterWalker
+impl core::marker::Unpin for organize_rs_core::FilterWalker
+impl core::panic::unwind_safe::RefUnwindSafe for organize_rs_core::FilterWalker
+impl core::panic::unwind_safe::UnwindSafe for organize_rs_core::FilterWalker
+impl<T, U> core::convert::Into<U> for organize_rs_core::FilterWalker where U: core::convert::From<T>
+pub fn organize_rs_core::FilterWalker::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for organize_rs_core::FilterWalker where U: core::convert::Into<T>
+pub type organize_rs_core::FilterWalker::Error = core::convert::Infallible
+pub fn organize_rs_core::FilterWalker::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for organize_rs_core::FilterWalker where U: core::convert::TryFrom<T>
+pub type organize_rs_core::FilterWalker::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn organize_rs_core::FilterWalker::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> core::any::Any for organize_rs_core::FilterWalker where T: 'static + core::marker::Sized
+pub fn organize_rs_core::FilterWalker::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for organize_rs_core::FilterWalker where T: core::marker::Sized
+pub fn organize_rs_core::FilterWalker::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for organize_rs_core::FilterWalker where T: core::marker::Sized
+pub fn organize_rs_core::FilterWalker::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for organize_rs_core::FilterWalker
+pub fn organize_rs_core::FilterWalker::from(t: T) -> T

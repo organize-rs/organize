@@ -1,8 +1,4 @@
-//! FilterSelf::Extension()he config file(s)
-//! and `organize` operates with
-//!
-
-use std::{fs::metadata, str::FromStr};
+//! Filters that `organize` operates with
 
 use chrono::{DateTime, Utc};
 #[cfg(feature = "cli")]
@@ -13,7 +9,7 @@ use displaydoc::Display;
 use serde::{Deserialize, Serialize};
 use walkdir::DirEntry;
 
-use crate::parsers::SizeRange;
+use crate::parsers::{PeriodRange, SizeRange};
 
 /// Comparison conditions for dates
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
@@ -107,149 +103,6 @@ impl DetectDuplicateBy {
     }
 }
 
-/// Comparison conditions for the size of a location
-#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
-pub enum SizeConditions {
-    GreaterThan(u64),
-    GreaterOrEqual(u64),
-    SmallerThan(u64),
-    SmallerOrEqual(u64),
-    EqualTo(u64),
-}
-
-/// Comparison conditions for the size of a location
-#[cfg_attr(feature = "cli", derive(ValueEnum))]
-#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
-pub enum SizeConditionsRaw {
-    GreaterThan,
-    GreaterOrEqual,
-    SmallerThan,
-    SmallerOrEqual,
-    EqualTo,
-}
-
-impl SizeConditions {
-    /// Returns `true` if the size conditions is [`GreaterThan`].
-    ///
-    /// [`GreaterThan`]: SizeConditions::GreaterThan
-    #[must_use]
-    pub fn is_greater_than(&self) -> bool {
-        matches!(self, Self::GreaterThan(..))
-    }
-
-    pub fn as_greater_than(&self) -> Option<&u64> {
-        if let Self::GreaterThan(v) = self {
-            Some(v)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_greater_than(self) -> Result<u64, Self> {
-        if let Self::GreaterThan(v) = self {
-            Ok(v)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the size conditions is [`GreaterOrEqual`].
-    ///
-    /// [`GreaterOrEqual`]: SizeConditions::GreaterOrEqual
-    #[must_use]
-    pub fn is_greater_or_equal(&self) -> bool {
-        matches!(self, Self::GreaterOrEqual(..))
-    }
-
-    pub fn as_greater_or_equal(&self) -> Option<&u64> {
-        if let Self::GreaterOrEqual(v) = self {
-            Some(v)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_greater_or_equal(self) -> Result<u64, Self> {
-        if let Self::GreaterOrEqual(v) = self {
-            Ok(v)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the size conditions is [`SmallerThan`].
-    ///
-    /// [`SmallerThan`]: SizeConditions::SmallerThan
-    #[must_use]
-    pub fn is_smaller_than(&self) -> bool {
-        matches!(self, Self::SmallerThan(..))
-    }
-
-    pub fn as_smaller_than(&self) -> Option<&u64> {
-        if let Self::SmallerThan(v) = self {
-            Some(v)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_smaller_than(self) -> Result<u64, Self> {
-        if let Self::SmallerThan(v) = self {
-            Ok(v)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the size conditions is [`SmallerOrEqual`].
-    ///
-    /// [`SmallerOrEqual`]: SizeConditions::SmallerOrEqual
-    #[must_use]
-    pub fn is_smaller_or_equal(&self) -> bool {
-        matches!(self, Self::SmallerOrEqual(..))
-    }
-
-    pub fn as_smaller_or_equal(&self) -> Option<&u64> {
-        if let Self::SmallerOrEqual(v) = self {
-            Some(v)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_smaller_or_equal(self) -> Result<u64, Self> {
-        if let Self::SmallerOrEqual(v) = self {
-            Ok(v)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the size conditions is [`EqualTo`].
-    ///
-    /// [`EqualTo`]: SizeConditions::EqualTo
-    #[must_use]
-    pub fn is_equal_to(&self) -> bool {
-        matches!(self, Self::EqualTo(..))
-    }
-
-    pub fn as_equal_to(&self) -> Option<&u64> {
-        if let Self::EqualTo(v) = self {
-            Some(v)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_equal_to(self) -> Result<u64, Self> {
-        if let Self::EqualTo(v) = self {
-            Ok(v)
-        } else {
-            Err(self)
-        }
-    }
-}
-
 #[cfg_attr(feature = "cli", derive(Args))]
 #[derive(Display, Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "cli", group(required = false, multiple = true))]
@@ -302,91 +155,56 @@ pub struct NameFilterArgs {
 pub enum DateUnit {
     /// specify number of years
     #[serde(rename = "years")]
-    Years(u64),
+    Years(f64),
     /// specify number of months
     #[serde(rename = "months")]
-    Months(u64),
+    Months(f64),
     /// specify number of weeks
     #[serde(rename = "weeks")]
-    Weeks(u64),
+    Weeks(f64),
     /// specify number of days
     #[serde(rename = "days")]
-    Days(u64),
+    Days(f64),
     /// specify number of hours
     #[serde(rename = "hours")]
-    Hours(u64),
+    Hours(f64),
     /// specify number of minutes
     #[serde(rename = "minutes")]
-    Minutes(u64),
+    Minutes(f64),
     /// specify number of seconds
     #[serde(rename = "seconds")]
-    Seconds(u64),
+    Seconds(f64),
 }
 
-impl From<FilterDate> for DateUnit {
-    fn from(value: FilterDate) -> Self {
-        match value {
-            FilterDate {
-                years: Some(years), ..
-            } => DateUnit::Years(years),
-            FilterDate {
-                months: Some(months),
-                ..
-            } => DateUnit::Months(months),
-            FilterDate {
-                weeks: Some(weeks), ..
-            } => DateUnit::Weeks(weeks),
-            FilterDate {
-                days: Some(days), ..
-            } => DateUnit::Days(days),
-            FilterDate {
-                hours: Some(hours), ..
-            } => DateUnit::Hours(hours),
-            FilterDate {
-                minutes: Some(minutes),
-                ..
-            } => DateUnit::Minutes(minutes),
-            FilterDate {
-                seconds: Some(seconds),
-                ..
-            } => DateUnit::Seconds(seconds),
-            FilterDate { .. } => unreachable!(),
+impl DateUnit {
+    pub fn into_seconds(&self) -> f64 {
+        match self {
+            DateUnit::Years(y) => *y * 52f64 * 7f64 * 24f64 * 60f64 * 60f64,
+            DateUnit::Months(mo) => *mo * 4f64 * 7f64 * 24f64 * 60f64 * 60f64,
+            DateUnit::Weeks(w) => *w * 7f64 * 24f64 * 60f64 * 60f64,
+            DateUnit::Days(d) => *d * 24f64 * 60f64 * 60f64,
+            DateUnit::Hours(h) => *h * 60f64 * 60f64,
+            DateUnit::Minutes(m) => *m * 60f64,
+            DateUnit::Seconds(s) => *s,
         }
     }
 }
 
-#[cfg_attr(feature = "cli", derive(Args))]
-#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
-#[cfg_attr(feature = "cli", group(required = true, multiple = false))]
-pub struct FilterDate {
-    /// specify number of years
-    #[serde(rename = "years")]
-    #[cfg_attr(feature = "cli", arg(long))]
-    years: Option<u64>,
-    /// specify number of months
-    #[serde(rename = "months")]
-    #[cfg_attr(feature = "cli", arg(long))]
-    months: Option<u64>,
-    /// specify number of weeks
-    #[serde(rename = "weeks")]
-    #[cfg_attr(feature = "cli", arg(long))]
-    weeks: Option<u64>,
-    /// specify number of days
-    #[serde(rename = "days")]
-    #[cfg_attr(feature = "cli", arg(long))]
-    days: Option<u64>,
-    /// specify number of hours
-    #[serde(rename = "hours")]
-    #[cfg_attr(feature = "cli", arg(long))]
-    hours: Option<u64>,
-    /// specify number of minutes
-    #[serde(rename = "minutes")]
-    #[cfg_attr(feature = "cli", arg(long))]
-    minutes: Option<u64>,
-    /// specify number of seconds
-    #[serde(rename = "seconds")]
-    #[cfg_attr(feature = "cli", arg(long))]
-    seconds: Option<u64>,
+impl From<(f64, &str)> for DateUnit {
+    fn from(value: (f64, &str)) -> Self {
+        let (value, unit) = value;
+
+        match unit {
+            "y" => Self::Years(value),
+            "mo" => Self::Months(value),
+            "w" => Self::Weeks(value),
+            "d" => Self::Days(value),
+            "h" => Self::Hours(value),
+            "m" => Self::Minutes(value),
+            "s" => Self::Seconds(value),
+            &_ => panic!("use of a non-standard unit"),
+        }
+    }
 }
 
 /// [`OrganizeFilter`] contains filter variants that organize can
@@ -416,10 +234,15 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "created")]
     Created {
-        #[cfg_attr(feature = "cli", command(flatten))]
-        date: FilterDate,
-        #[cfg_attr(feature = "cli", arg(long))]
-        mode: Interval,
+        /// This filter uses the `range` syntax (always inclusive) of Rust.
+        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
+        /// between 1 to 2 days old. Left and right boundary need to have the same units.
+        /// [possible values: y, mo, w, d, h, m, s]
+        ///
+        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
+        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
+        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
+        range: PeriodRange,
     },
     /// Matches locations by the time the file was added to a folder
     ///
@@ -443,10 +266,15 @@ pub enum OrganizeFilter {
     #[cfg(target_os = "osx")]
     #[serde(rename = "date_added")]
     Added {
-        #[cfg_attr(feature = "cli", command(flatten))]
-        date: FilterDate,
-        #[cfg_attr(feature = "cli", arg(long))]
-        mode: Interval,
+        /// This filter uses the `range` syntax (always inclusive) of Rust.
+        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
+        /// between 1 to 2 days old. Left and right boundary need to have the same units.
+        /// [possible values: y, mo, w, d, h, m, s]
+        ///
+        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
+        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
+        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
+        range: PeriodRange,
     },
     /// Matches locations by the time the file was last accessed
     ///
@@ -469,10 +297,15 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "last_accessed")]
     LastAccessed {
-        #[cfg_attr(feature = "cli", command(flatten))]
-        date: FilterDate,
-        #[cfg_attr(feature = "cli", arg(long))]
-        mode: Interval,
+        /// This filter uses the `range` syntax (always inclusive) of Rust.
+        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
+        /// between 1 to 2 days old. Left and right boundary need to have the same units.
+        /// [possible values: y, mo, w, d, h, m, s]
+        ///
+        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
+        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
+        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
+        range: PeriodRange,
     },
     /// Matches locations by last modified date
     ///
@@ -496,10 +329,15 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "last_modified")]
     LastModified {
-        #[cfg_attr(feature = "cli", command(flatten))]
-        date: FilterDate,
-        #[cfg_attr(feature = "cli", arg(long))]
-        mode: Interval,
+        /// This filter uses the `range` syntax (always inclusive) of Rust.
+        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
+        /// between 1 to 2 days old. Left and right boundary need to have the same units.
+        /// [possible values: y, mo, w, d, h, m, s]
+        ///
+        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
+        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
+        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
+        range: PeriodRange,
     },
     /// A fast duplicate file finder
     ///
@@ -840,38 +678,16 @@ pub enum OrganizeFilter {
     /// ```
     #[serde(rename = "size")]
     Size {
-        // #[cfg_attr(feature = "cli", command(flatten))]
-        // upper: SizeFilterUpperArgs,
-        // #[cfg_attr(feature = "cli", command(flatten))]
-        // lower: SizeFilterLowerArgs,
-        #[cfg_attr(feature = "cli", arg(long))]
-        condition: String,
+        /// This filter uses the `range` syntax (always inclusive) of Rust.
+        /// ..11MB => smaller than; 15MB.. => bigger than; 10KB..20MiB =>
+        /// bigger than 10 KB, but smaller than 20 MiB
+        ///
+        /// **NOTE**: You can use `decimal` (metric) and `binary` (IEC)
+        /// multiple-byte units. E.g., `KiB` or `KB`, `GB` or `GiB`. They
+        /// will be **converted** accordingly and are **case-insensitive**.
+        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(SizeRange)))]
+        range: SizeRange,
     },
-}
-
-// TODO: Grouping CLI or better option?
-// Enum variants would be better as it was intended
-#[cfg_attr(feature = "cli", derive(Args))]
-#[derive(Display, Debug, Clone, Deserialize, Serialize)]
-#[cfg_attr(feature = "cli", group(required = false, multiple = true))]
-pub struct SizeFilterLowerArgs {
-    #[cfg_attr(feature = "cli", arg(long))]
-    lower_value: Option<u64>,
-    #[cfg_attr(feature = "cli", arg(long))]
-    lower: Option<SizeConditionsRaw>,
-    #[cfg_attr(feature = "cli", arg(long))]
-    unit: Option<String>,
-}
-#[cfg_attr(feature = "cli", derive(Args))]
-#[derive(Display, Debug, Clone, Deserialize, Serialize)]
-#[cfg_attr(feature = "cli", group(required = false, multiple = true))]
-pub struct SizeFilterUpperArgs {
-    #[cfg_attr(feature = "cli", arg(long))]
-    upper_value: Option<u64>,
-    #[cfg_attr(feature = "cli", arg(long))]
-    upper: Option<SizeConditionsRaw>,
-    #[cfg_attr(feature = "cli", arg(long))]
-    unit: Option<String>,
 }
 
 impl OrganizeFilter {
@@ -883,19 +699,13 @@ impl OrganizeFilter {
                 case_insensitive,
             } => Box::new(self.filter_by_name(arguments.clone(), *case_insensitive)),
             OrganizeFilter::Empty => Box::new(self.filter_by_empty()),
-            OrganizeFilter::Created { date, mode } => {
-                Box::new(self.filter_by_created(*date, *mode))
-            }
-            OrganizeFilter::LastModified { date, mode } => {
-                Box::new(self.filter_by_last_modified(*date, *mode))
-            }
-            OrganizeFilter::LastAccessed { date, mode } => {
-                Box::new(self.filter_by_last_accessed(*date, *mode))
-            }
+            OrganizeFilter::Created { range } => Box::new(self.filter_by_created(range)),
+            OrganizeFilter::LastModified { range } => Box::new(self.filter_by_last_modified(range)),
+            OrganizeFilter::LastAccessed { range } => Box::new(self.filter_by_last_accessed(range)),
             OrganizeFilter::Mimetype { mimetype } => {
                 Box::new(self.filter_by_mimetype(mimetype.clone()))
             }
-            OrganizeFilter::Size { condition } => Box::new(self.filter_by_size(condition.clone())),
+            OrganizeFilter::Size { range } => Box::new(self.filter_by_size(range)),
             OrganizeFilter::Regex { expr: _ } => todo!("not implemented (yet)!"),
             OrganizeFilter::Exif => todo!("not implemented (yet)!"),
             OrganizeFilter::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
@@ -910,9 +720,9 @@ impl OrganizeFilter {
         }
     }
 
-    /// Returns `true` if the organize filter is [`DateCreated`].
+    /// Returns `true` if the organize filter is [`Created`].
     ///
-    /// [`DateCreated`]: OrganizeFilter::DateCreated
+    /// [`Created`]: OrganizeFilter::Created
     #[must_use]
     pub fn is_date_created(&self) -> bool {
         matches!(self, Self::Created { .. })
@@ -940,8 +750,16 @@ impl OrganizeFilter {
     ///
     /// [`LastModified`]: OrganizeFilter::LastModified
     #[must_use]
-    pub fn is_date_last_modified(&self) -> bool {
+    pub fn is_last_modified(&self) -> bool {
         matches!(self, Self::LastModified { .. })
+    }
+
+    /// Returns `true` if the organize filter is [`LastAccessed`].
+    ///
+    /// [`LastAccessed`]: OrganizeFilter::LastAccessed
+    #[must_use]
+    pub fn is_last_accessed(&self) -> bool {
+        matches!(self, Self::LastAccessed { .. })
     }
 
     /// Returns `true` if the organize filter is [`Duplicate`].
@@ -1215,103 +1033,49 @@ impl OrganizeFilter {
         }
     }
 
-    fn filter_by_last_accessed(
-        &self,
-        date: FilterDate,
-        mode: Interval,
-    ) -> impl FnMut(&DirEntry) -> bool {
+    fn filter_by_last_accessed(&self, range: &PeriodRange) -> impl FnMut(&DirEntry) -> bool {
+        let range = range.clone();
+
         move |entry: &DirEntry| {
             let metadata = entry.metadata().expect("getting metadata should not fail");
             let date_accessed = metadata
                 .accessed()
                 .expect("getting created date should not fail");
-            Self::matches_date(date_accessed, date, mode)
+            Self::matches_date(date_accessed, &range)
         }
     }
-    fn filter_by_last_modified(
-        &self,
-        date: FilterDate,
-        mode: Interval,
-    ) -> impl FnMut(&DirEntry) -> bool {
+    fn filter_by_last_modified(&self, range: &PeriodRange) -> impl FnMut(&DirEntry) -> bool {
+        let range = range.clone();
+
         move |entry: &DirEntry| {
             let metadata = entry.metadata().expect("getting metadata should not fail");
             let date_modified = metadata
                 .modified()
                 .expect("getting created date should not fail");
-            Self::matches_date(date_modified, date, mode)
+            Self::matches_date(date_modified, &range)
         }
     }
-    fn filter_by_created(&self, date: FilterDate, mode: Interval) -> impl FnMut(&DirEntry) -> bool {
+    fn filter_by_created(&self, range: &PeriodRange) -> impl FnMut(&DirEntry) -> bool {
+        let range = range.clone();
+
         move |entry: &DirEntry| {
             let metadata = entry.metadata().expect("getting metadata should not fail");
             let date_created = metadata
                 .created()
                 .expect("getting created date should not fail");
-            Self::matches_date(date_created, date, mode)
+            Self::matches_date(date_created, &range)
         }
     }
 
-    fn matches_date(item_date: std::time::SystemTime, date: FilterDate, mode: Interval) -> bool {
+    fn matches_date(item_date: std::time::SystemTime, range: &PeriodRange) -> bool {
         let datetime_file: DateTime<Utc> = chrono::DateTime::from(item_date);
         let now = chrono::offset::Utc::now();
 
         let seconds_since_created = u64::try_from((now - datetime_file).num_seconds())
-            .expect("subtraction of two datetimes can't be negative");
+            .expect("subtraction of two datetimes can't be negative")
+            as f64;
 
-        let unit = DateUnit::from(date);
-        match (unit, mode) {
-            (DateUnit::Years(y), Interval::OlderThan)
-                if y * 52 * 7 * 24 * 60 * 60 < seconds_since_created =>
-            {
-                true
-            }
-            (DateUnit::Years(y), Interval::NewerThan)
-                if y * 52 * 7 * 24 * 60 * 60 >= seconds_since_created =>
-            {
-                true
-            }
-            (DateUnit::Months(m), Interval::OlderThan)
-                if m * 4 * 7 * 24 * 60 * 60 < seconds_since_created =>
-            {
-                true
-            }
-            (DateUnit::Months(m), Interval::NewerThan)
-                if m * 4 * 7 * 24 * 60 * 60 >= seconds_since_created =>
-            {
-                true
-            }
-            (DateUnit::Weeks(w), Interval::OlderThan)
-                if w * 7 * 24 * 60 * 60 < seconds_since_created =>
-            {
-                true
-            }
-            (DateUnit::Weeks(w), Interval::NewerThan)
-                if w * 7 * 24 * 60 * 60 >= seconds_since_created =>
-            {
-                true
-            }
-            (DateUnit::Days(d), Interval::OlderThan)
-                if d * 24 * 60 * 60 < seconds_since_created =>
-            {
-                true
-            }
-            (DateUnit::Days(d), Interval::NewerThan)
-                if d * 24 * 60 * 60 >= seconds_since_created =>
-            {
-                true
-            }
-            (DateUnit::Hours(h), Interval::OlderThan) if h * 60 * 60 < seconds_since_created => {
-                true
-            }
-            (DateUnit::Hours(h), Interval::NewerThan) if h * 60 * 60 >= seconds_since_created => {
-                true
-            }
-            (DateUnit::Minutes(m), Interval::OlderThan) if m * 60 < seconds_since_created => true,
-            (DateUnit::Minutes(m), Interval::NewerThan) if m * 60 >= seconds_since_created => true,
-            (DateUnit::Seconds(s), Interval::OlderThan) if s < seconds_since_created => true,
-            (DateUnit::Seconds(s), Interval::NewerThan) if s >= seconds_since_created => true,
-            (_, _) => false,
-        }
+        range.in_range(seconds_since_created)
     }
 
     fn filter_by_mimetype(&self, mimetype: Vec<String>) -> impl FnMut(&DirEntry) -> bool {
@@ -1341,11 +1105,10 @@ impl OrganizeFilter {
         }
     }
 
-    fn filter_by_size(&self, condition: String) -> impl FnMut(&DirEntry) -> bool {
-        move |entry| {
-            let range = SizeRange::from_str(condition.as_str())
-                .expect("should be able to parse size condition from user input.");
+    fn filter_by_size(&self, range: &SizeRange) -> impl FnMut(&DirEntry) -> bool {
+        let range = range.clone();
 
+        move |entry| {
             if let Ok(metadata) = entry.metadata() {
                 range.in_range(metadata.len() as f64)
             } else {

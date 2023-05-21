@@ -19,6 +19,15 @@ doc = true
 harness = true
 edition = "2021"
 
+[[example]]
+name = "period_parser"
+path = "examples/period_parser.rs"
+test = true
+bench = true
+doc = true
+harness = true
+edition = "2021"
+
 [features]
 default = []
 cli = ["dep:clap", "dep:indicatif"]
@@ -44,3 +53,13 @@ itertools = { workspace = true }
 displaydoc = { workspace = true }
 winnow = { workspace = true }
 byte-unit = { workspace = true }
+
+[dev-dependencies]
+rustup-toolchain = "0.1.4"
+rustdoc-json = "0.8.5"
+public-api = "0.29.1"
+expect-test = "1.4.1"
+rstest = { workspace = true }
+quickcheck = { workspace = true }
+quickcheck_macros = { workspace = true }
+pretty_assertions = { workspace = true }
