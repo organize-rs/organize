@@ -1,5 +1,11 @@
-//! Organize
+//! organize
+//! The Python [organize](https://organize.readthedocs.io/) is a file management automation tool.
 //!
+//! From their docs:
+//! > Your desktop is a mess? You cannot find anything in your downloads and documents? Sorting and renaming all these files by hand is too tedious? Time to automate it once and benefit from it forever.
+//! > organize is a command line, open-source alternative to apps like Hazel (macOS) or File Juggler (Windows).
+//!  
+//! This is a Rust implementation of the same concept.
 //! Application based on the [Abscissa] framework.
 //!
 //! [Abscissa]: https://github.com/iqlusioninc/abscissa
