@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.3.0 (2023-05-21)
+
+### Feature
+
+- Breaking change: Change syntax for date based filters to use range based syntax 
+
 ## 0.2.6 (2023-05-21)
+
+<csr-id-d2b33280185f68daaff2671d1a4470d9041f3bcb/>
 
 ### Chore
 
