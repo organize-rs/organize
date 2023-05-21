@@ -12,6 +12,12 @@
       - would also make more sense for `conflict handling`, because the files are actually already known to be there
     - or would it make more sense to apply the new `path` for each `location` and then do `conflict handling` before an action is even started?
 
+## Features
+
+- support batch renaming (e.g. rename all images in a directory to image_n where n is a number
+
+- remove some prefix from filenames
+
 ## Filters
 
 ### Filters impl
