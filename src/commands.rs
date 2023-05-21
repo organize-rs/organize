@@ -53,6 +53,8 @@ pub enum OrganizeCmd {
     RunScript(RunScriptCmd),
     /// Run predefined rules from config or scripts
     Run(RunCmd),
+    /// Run a `rhai` script
+    RunScript(RunScriptCmd),
 }
 
 #[allow(clippy::struct_excessive_bools)]

@@ -155,6 +155,7 @@ anyhow = { workspace = true }
 dialoguer = { workspace = true }
 ron = { workspace = true }
 open = { workspace = true }
+rhai = { workspace = true }
 
 
 [dev-dependencies]
