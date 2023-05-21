@@ -1,10 +1,4 @@
-use winnow::{
-    ascii::{self, alpha0},
-    binary::f64,
-    combinator::alt,
-    token::take_while,
-    IResult, Parser,
-};
+use winnow::{ascii::alpha0, combinator::alt, token::take_while, IResult, Parser};
 
 pub fn parse_garbage(input: &str) -> IResult<&str, &str> {
     take_while(1.., " ,").parse_next(input)
@@ -52,10 +46,7 @@ fn main() {
     let input2 = "5GB..";
     let input3 = "..0.5GiB";
 
-    let (remainder, result) = (parse_whole_condition).parse_next(input).unwrap();
-    // let (remainder, result) = (parse_left_boundary).parse_next(input2).unwrap();
-    // let (remainder, result) = (parse_right_boundary).parse_next(input3).unwrap();
-
-    dbg!(remainder);
-    dbg!(result);
+    let (_, _result) = (parse_whole_condition).parse_next(input).unwrap();
+    let (_, _result) = (parse_left_boundary).parse_next(input2).unwrap();
+    let (_, _result) = (parse_right_boundary).parse_next(input3).unwrap();
 }

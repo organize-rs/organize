@@ -54,6 +54,12 @@ pub fn parse_units(input: &str) -> IResult<&str, &str> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct SizeRange(Range<f64>);
 
+impl SizeRange {
+    pub fn in_range(&self, size: f64) -> bool {
+        self.0.contains(&size)
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub enum BoundarySide {
     Left,
