@@ -64,18 +64,19 @@ byte-unit = "4.0.19"
 # dev dependencies
 tempfile = "3.5.0"
 aho-corasick = "1.0"
-
-# infer file and MIME type by magic number
-infer = "0.13"
-mime = "0.3"
-
 rstest = "0.17"
 quickcheck = "1"
 quickcheck_macros = "1"
 pretty_assertions = "1"
 
+# infer file and MIME type by magic number
+infer = "0.13"
+mime = "0.3"
+
+# Scripting
+rhai = { version = "1.14.0", features = ["serde"] }
+
 # TODO: Needed Dependencies
-# rhai = { version = "1.14.0", features = ["serde"] }
 # czkawka_core = "4.1.0"
 # + Lazy-regex?
 # https://crates.io/crates/lazy-regex
@@ -132,6 +133,8 @@ itertools = { workspace = true }
 clap_complete = { workspace = true }
 indicatif = { workspace = true }
 winnow = { workspace = true }
+rhai = { workspace = true }
+
 
 [dev-dependencies]
 abscissa_core = { workspace = true, features = ["testing"] }

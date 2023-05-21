@@ -123,3 +123,7 @@ inv-ft *ARGS:
 # Checks the public api against the latest pubished version
 pa:
 	cargo public-api diff latest
+
+# Run a sample script
+run:
+	cargo run -- run-script --path C:\Users\dailyuse\dev-src\organize\scripts\test.rhai

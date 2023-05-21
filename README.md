@@ -22,7 +22,7 @@ This is a Rust implementation of the same concept.
 
 - Filter `files`, which are `smaller than` 20KB in one location:
 
-  `organize filter size -l C:\Users\dailyuse\dev-src\organize\docs\screenshots -t files --condition ..20KB`
+  `organize filter size -l C:\Users\dailyuse\dev-src\organize\docs\screenshots -t files --range ..20KB`
 
   This filter uses the `range` syntax (always inclusive) of Rust:
 

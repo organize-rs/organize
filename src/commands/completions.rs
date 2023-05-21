@@ -11,7 +11,7 @@ use clap::{Args, CommandFactory, ValueEnum};
 use clap_complete::{generate, shells, Generator};
 
 /// `completions` subcommand
-#[derive(Args, Command, Debug)]
+#[derive(Args, Command, Debug, Clone)]
 pub struct CompletionsCmd {
     /// Shell to generate completions for
     #[arg(value_enum)]

@@ -1,9 +1,10 @@
 //! Organize Subcommands
 
-mod action;
+pub mod action;
 mod completions;
 mod docs;
-mod filter;
+pub mod filter;
+mod run_script;
 
 // Old approach
 // mod edit;
@@ -13,7 +14,10 @@ mod filter;
 // mod sim;
 
 use crate::{
-    commands::{action::ActionCmd, completions::CompletionsCmd, docs::DocsCmd, filter::FilterCmd},
+    commands::{
+        action::ActionCmd, completions::CompletionsCmd, docs::DocsCmd, filter::FilterCmd,
+        run_script::RunScriptCmd,
+    },
     config::OrganizeConfig,
 };
 use abscissa_core::{Command, Configurable, FrameworkError, Runnable};
@@ -48,6 +52,8 @@ pub enum OrganizeCmd {
     Filter(FilterCmd),
     /// Generate Completions for your shell
     Completions(CompletionsCmd),
+    /// Run a `rhai` script
+    RunScript(RunScriptCmd),
 }
 
 #[allow(clippy::struct_excessive_bools)]

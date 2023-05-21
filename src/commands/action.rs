@@ -11,7 +11,7 @@ use organize_rs_core::rules::actions::OrganizeAction;
 /// for a more comprehensive example:
 ///
 /// <https://docs.rs/clap/>
-#[derive(Command, Debug, Args)]
+#[derive(Command, Debug, Args, Clone)]
 pub struct ActionCmd {
     #[clap(subcommand)]
     actions: OrganizeAction,

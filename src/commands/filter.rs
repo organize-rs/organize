@@ -1,6 +1,6 @@
 //! Filters that organize can apply
 
-use std::fs::FileType;
+use std::{fs::FileType, path::PathBuf};
 
 use abscissa_core::{Command, Runnable};
 use clap::Args;
@@ -20,14 +20,14 @@ use organize_rs_core::{
 /// for a more comprehensive example:
 ///
 /// <https://docs.rs/clap/>
-#[derive(Command, Debug, Args)]
+#[derive(Command, Debug, Args, Clone)]
 pub struct FilterCmd {
     #[clap(subcommand)]
     filters: OrganizeFilter,
 
     /// Locations to operate on
     #[arg(short, long, global = true)]
-    locations: Vec<String>,
+    locations: Vec<PathBuf>,
 
     /// Words in file names to be ignored
     #[arg(long, global = true)]
