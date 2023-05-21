@@ -18,7 +18,27 @@ From their docs:
 
 This is a Rust implementation of the same concept.
 
-## Example
+## Examples
+
+- Filter `files`, which are `smaller than` 20KB in one location:
+
+  `organize filter size -l C:\Users\dailyuse\dev-src\organize\docs\screenshots --targets files --condition ..20KB`
+
+  This filter uses the `range` syntax (always inclusive) of Rust:
+
+  - `..11MB` => smaller than
+  - `15MB..` => bigger than
+  - `10KB..20MiB` => bigger than 10 MB, but smaller than 20 MB
+
+  **NOTE**: You can use `decimal` (metric) and `binary` (IEC) multiple-byte units. E.g., `KiB` or `KB`, `GB` or `GiB`. They will be **converted** accordingly and are **case-insensitive**.
+
+- Filter `files` by their mimetype:
+
+  `organize filter mimetype -l C:\organize\docs\screenshots --targets files --mimetype image/jpeg`
+
+- Filter `files` by their creation date (newer than 5 days), ignore files that have `toml` in their name (extension included).
+
+  `organize filter created -l C:\organize\ --days 5 --mode newer-than --targets files --ignore-name toml`
 
 - Filter `files`, which file stem ends with `go`, recursive, maximum `2` levels deep:
 
@@ -30,11 +50,11 @@ This is a Rust implementation of the same concept.
 
 - Filter `files` and `folders`, which are empty (`0 bytes` or `no files` in directory), recursive, maximum `4` levels deep, ignore `git` in path names
 
-  `organize filter --recursive --max-depth 4 empty --locations "C:\Users\dailyuse\dev-src\organize\" --targets both --ignore-path git`
+  `organize filter --recursive --max-depth 4 empty --locations "C:\organize\" --targets both --ignore-path git`
 
 - Filter `files` and `folders`, which are empty (`0 bytes` or `no files` in directory), recursive, maximum `4` levels deep, ignore `git` only in file names
 
-  `organize filter --recursive --max-depth 4 empty --locations "C:\Users\dailyuse\dev-src\organize\" --targets both --ignore-name git`
+  `organize filter --recursive --max-depth 4 empty --locations "C:\organize\" --targets both --ignore-name git`
 
 ## Media
 
