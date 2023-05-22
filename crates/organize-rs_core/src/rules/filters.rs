@@ -693,18 +693,16 @@ pub enum OrganizeFilter {
 impl OrganizeFilter {
     pub fn get_filter(&self) -> Box<dyn FnMut(&DirEntry) -> bool> {
         match self {
-            OrganizeFilter::Extension { exts } => Box::new(self.filter_by_extension(exts.clone())),
+            OrganizeFilter::Extension { exts } => Box::new(self.filter_by_extension(exts)),
             OrganizeFilter::Name {
                 arguments,
                 case_insensitive,
-            } => Box::new(self.filter_by_name(arguments.clone(), *case_insensitive)),
+            } => Box::new(self.filter_by_name(arguments, *case_insensitive)),
             OrganizeFilter::Empty => Box::new(self.filter_by_empty()),
             OrganizeFilter::Created { range } => Box::new(self.filter_by_created(range)),
             OrganizeFilter::LastModified { range } => Box::new(self.filter_by_last_modified(range)),
             OrganizeFilter::LastAccessed { range } => Box::new(self.filter_by_last_accessed(range)),
-            OrganizeFilter::Mimetype { mimetype } => {
-                Box::new(self.filter_by_mimetype(mimetype.clone()))
-            }
+            OrganizeFilter::Mimetype { mimetype } => Box::new(self.filter_by_mimetype(mimetype)),
             OrganizeFilter::Size { range } => Box::new(self.filter_by_size(range)),
             OrganizeFilter::Regex { expr: _ } => todo!("not implemented (yet)!"),
             OrganizeFilter::Exif => todo!("not implemented (yet)!"),
@@ -934,102 +932,106 @@ impl OrganizeFilter {
         }
     }
 
-    fn filter_by_extension(&self, exts: Vec<String>) -> impl FnMut(&DirEntry) -> bool {
+    fn filter_by_extension(&self, exts: &[String]) -> impl FnMut(&DirEntry) -> bool {
+        let exts = exts.to_owned();
         move |entry: &DirEntry| -> bool {
-            let mut exts = exts.clone().into_iter();
             let entry = entry.clone();
             let file_path = entry.into_path();
-            if let Some(extension) = file_path.extension() {
-                let extension_str = extension.to_string_lossy();
-                exts.any(|f| f == extension_str)
-            } else {
-                false
-            }
+            let Some(extension) = file_path.extension() else {
+                return false
+            };
+            let Some(extension_str) = extension.to_str() else {
+                    return false
+                };
+            exts.iter().any(|f| f == extension_str)
         }
     }
 
     fn filter_by_name(
         &self,
-        arguments: NameFilterArgs,
+        arguments: &NameFilterArgs,
         case_insensitive: bool,
     ) -> impl FnMut(&DirEntry) -> bool {
+        let arguments = arguments.clone();
+
         move |entry: &DirEntry| -> bool {
             let entry = entry.clone();
             let file_path = entry.into_path();
-            let file_stem = file_path.file_stem();
-            if let Some(file_name) = file_path.file_name() {
-                let mut file_name_str = file_name.to_string_lossy().into_owned();
-
+            let file_stem = file_path.file_stem().and_then(|f| f.to_str()).map(|f| {
                 if case_insensitive {
-                    file_name_str = file_name_str.to_lowercase();
+                    f.to_lowercase()
+                } else {
+                    f.to_owned()
                 }
+            });
 
-                match &arguments {
-                    NameFilterArgs {
-                        starts_with: Some(sw),
-                        ..
-                    } => {
-                        let mut sw = sw.clone();
-                        if case_insensitive {
-                            sw = sw.to_lowercase();
-                        }
-
-                        file_name_str.starts_with(&sw)
+            let file_name_str = file_path
+                .file_name()
+                .and_then(|f| f.to_str())
+                .map(|f| {
+                    if case_insensitive {
+                        f.to_lowercase()
+                    } else {
+                        f.to_owned()
                     }
-                    NameFilterArgs {
-                        contains: Some(c), ..
-                    } => {
-                        let mut c = c.clone();
-                        if case_insensitive {
-                            c = c.to_lowercase();
-                        }
-                        file_name_str.contains(&c)
-                    }
-                    NameFilterArgs {
-                        ends_with: Some(ew),
-                        ..
-                    } => {
-                        let mut ew = ew.clone();
-                        if case_insensitive {
-                            ew = ew.to_lowercase();
-                        }
-                        if let Some(stem) = file_stem {
-                            let mut new_stem = stem.to_string_lossy().into_owned();
+                })
+                .expect("should be able to unpack file name.");
 
-                            if case_insensitive {
-                                new_stem = new_stem.to_lowercase();
-                            }
-
-                            new_stem.ends_with(&ew)
-                        } else {
-                            file_name_str.ends_with(&ew)
-                        }
+            match &arguments {
+                NameFilterArgs {
+                    starts_with: Some(sw),
+                    ..
+                } => {
+                    let mut sw = sw.clone();
+                    if case_insensitive {
+                        sw = sw.to_lowercase();
                     }
-                    NameFilterArgs { .. } => false,
+
+                    file_name_str.starts_with(&sw)
                 }
-            } else {
-                false
+                NameFilterArgs {
+                    contains: Some(c), ..
+                } => {
+                    let mut c = c.clone();
+                    if case_insensitive {
+                        c = c.to_lowercase();
+                    }
+                    file_name_str.contains(&c)
+                }
+                NameFilterArgs {
+                    ends_with: Some(ew),
+                    ..
+                } => {
+                    let mut ew = ew.clone();
+                    if case_insensitive {
+                        ew = ew.to_lowercase();
+                    }
+
+                    if let Some(stem) = file_stem {
+                        stem.ends_with(&ew)
+                    } else {
+                        file_name_str.ends_with(&ew)
+                    }
+                }
+                NameFilterArgs { .. } => false,
             }
         }
     }
 
     fn filter_by_empty(&self) -> impl FnMut(&DirEntry) -> bool {
         move |entry: &DirEntry| -> bool {
-            if let Ok(metadata) = entry.metadata() {
-                if entry.path().is_file() {
-                    metadata.len() == 0
-                } else if entry.path().is_dir() {
-                    if let Ok(iter) = entry.path().read_dir() {
-                        iter.count() == 0
+            entry
+                .metadata()
+                .map(|e| {
+                    if entry.path().is_file() {
+                        e.len() == 0
+                    } else if entry.path().is_dir() {
+                        entry.path().read_dir().map_or(false, |f| f.count() == 0)
                     } else {
                         false
                     }
-                } else {
-                    false
-                }
-            } else {
-                false
-            }
+                })
+                .unwrap_or(false)
         }
     }
 
@@ -1037,52 +1039,59 @@ impl OrganizeFilter {
         let range = range.clone();
 
         move |entry: &DirEntry| {
-            let metadata = entry.metadata().expect("getting metadata should not fail");
-            let date_accessed = metadata
-                .accessed()
-                .expect("getting created date should not fail");
-            Self::matches_date(date_accessed, &range)
+            entry.metadata().ok().map_or(false, |f| {
+                let Ok(sys_time) = f.accessed() else {
+                        return false
+                    };
+                Self::matches_date(&sys_time, &range)
+            })
         }
     }
     fn filter_by_last_modified(&self, range: &PeriodRange) -> impl FnMut(&DirEntry) -> bool {
         let range = range.clone();
 
         move |entry: &DirEntry| {
-            let metadata = entry.metadata().expect("getting metadata should not fail");
-            let date_modified = metadata
-                .modified()
-                .expect("getting created date should not fail");
-            Self::matches_date(date_modified, &range)
+            entry.metadata().ok().map_or(false, |f| {
+                let Ok(sys_time) = f.modified() else {
+                        return false
+                    };
+                Self::matches_date(&sys_time, &range)
+            })
         }
     }
     fn filter_by_created(&self, range: &PeriodRange) -> impl FnMut(&DirEntry) -> bool {
         let range = range.clone();
 
         move |entry: &DirEntry| {
-            let metadata = entry.metadata().expect("getting metadata should not fail");
-            let date_created = metadata
-                .created()
-                .expect("getting created date should not fail");
-            Self::matches_date(date_created, &range)
+            entry.metadata().ok().map_or(false, |f| {
+                let Ok(sys_time) = f.created() else {
+                        return false
+                    };
+                Self::matches_date(&sys_time, &range)
+            })
         }
     }
 
-    fn matches_date(item_date: std::time::SystemTime, range: &PeriodRange) -> bool {
-        let datetime_file: DateTime<Utc> = chrono::DateTime::from(item_date);
+    fn matches_date(item_date: &std::time::SystemTime, range: &PeriodRange) -> bool {
+        let datetime_file: DateTime<Utc> = chrono::DateTime::from(*item_date);
         let now = chrono::offset::Utc::now();
 
-        let seconds_since_created = u64::try_from((now - datetime_file).num_seconds())
-            .expect("subtraction of two datetimes can't be negative")
-            as f64;
+        let seconds_since_created = match u64::try_from((now - datetime_file).num_seconds()) {
+            Ok(it) => it,
+            Err(err) => {
+                eprintln!("subtraction of two datetimes can't be negative: {err}");
+                return false;
+            }
+        } as f64;
 
         range.in_range(seconds_since_created)
     }
 
-    fn filter_by_mimetype(&self, mimetype: Vec<String>) -> impl FnMut(&DirEntry) -> bool {
+    fn filter_by_mimetype(&self, mimetype: &[String]) -> impl FnMut(&DirEntry) -> bool {
+        let mimetype = mimetype.to_owned();
+
         move |entry| {
-            let file_path = entry.clone().into_path();
-            let mimetype = mimetype.clone();
-            let Ok(Some(file_kind)) = infer::get_from_path(&file_path) else {
+            let Ok(Some(file_kind)) = infer::get_from_path(entry.path()) else {
                 return false
             };
 
@@ -1091,14 +1100,14 @@ impl OrganizeFilter {
                 Err(err) => {
                     eprintln!(
                         "couldn't determine mimetype of {}: {err}",
-                        file_path.display()
+                        entry.path().display()
                     );
                     return false;
                 }
             };
 
             mimetype
-                .into_iter()
+                .iter()
                 .map(|f| f.parse::<mime::Mime>())
                 .filter_map(|r| r.map_err(|err| println!("{err}")).ok())
                 .any(|f| f == file_mime_type)

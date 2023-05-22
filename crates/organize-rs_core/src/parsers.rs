@@ -168,12 +168,10 @@ impl FromStr for PeriodRange {
                 start: 0f64,
                 end: right.value,
             })),
-            Condition(Some(left), Some(right)) if left.value < right.value => {
-                Ok(Self(Range {
-                    start: left.value,
-                    end: right.value,
-                }))
-            }
+            Condition(Some(left), Some(right)) if left.value < right.value => Ok(Self(Range {
+                start: left.value,
+                end: right.value,
+            })),
             _ => unreachable!("shouldn't be able to create a condition!"),
         }
     }
@@ -194,11 +192,9 @@ impl FromStr for SizeRange {
                 let (_, (size, unit, _)) = left_boundary;
 
                 condition.set_condition(SingleSizeCondition {
-                    value: Byte::from_str(format!("{size} {unit}")).map_err(|err| {
-                        Error {
-                            input: format!("Couldn't convert {size} {unit} to bytes: {err}"),
-                            kind: ErrorKind::Fail,
-                        }
+                    value: Byte::from_str(format!("{size} {unit}")).map_err(|err| Error {
+                        input: format!("Couldn't convert {size} {unit} to bytes: {err}"),
+                        kind: ErrorKind::Fail,
                     })?,
                     side: BoundarySide::Left,
                 });
@@ -207,11 +203,9 @@ impl FromStr for SizeRange {
                 let (_, (_, size, unit)) = right_boundary;
 
                 condition.set_condition(SingleSizeCondition {
-                    value: Byte::from_str(format!("{size} {unit}")).map_err(|err| {
-                        Error {
-                            input: format!("Couldn't convert {size} {unit} to bytes: {err}"),
-                            kind: ErrorKind::Fail,
-                        }
+                    value: Byte::from_str(format!("{size} {unit}")).map_err(|err| Error {
+                        input: format!("Couldn't convert {size} {unit} to bytes: {err}"),
+                        kind: ErrorKind::Fail,
                     })?,
                     side: BoundarySide::Right,
                 });
@@ -220,26 +214,26 @@ impl FromStr for SizeRange {
                 let (_, (size_left, unit_left, _, size_right, unit_right)) = whole_condition;
 
                 condition.set_condition(SingleSizeCondition {
-                    value: Byte::from_str(format!("{size_left} {unit_left}")).map_err(
-                        |err| Error {
+                    value: Byte::from_str(format!("{size_left} {unit_left}")).map_err(|err| {
+                        Error {
                             input: format!(
                                 "Couldn't convert {size_left} {unit_left} to bytes: {err}"
                             ),
                             kind: ErrorKind::Fail,
-                        },
-                    )?,
+                        }
+                    })?,
                     side: BoundarySide::Left,
                 });
 
                 condition.set_condition(SingleSizeCondition {
-                    value: Byte::from_str(format!("{size_right} {unit_right}")).map_err(
-                        |err| Error {
+                    value: Byte::from_str(format!("{size_right} {unit_right}")).map_err(|err| {
+                        Error {
                             input: format!(
                                 "Couldn't convert {size_right} {unit_right} to bytes: {err}"
                             ),
                             kind: ErrorKind::Fail,
-                        },
-                    )?,
+                        }
+                    })?,
                     side: BoundarySide::Right,
                 });
             }
