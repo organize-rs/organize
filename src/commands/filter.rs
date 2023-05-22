@@ -50,7 +50,7 @@ impl Runnable for FilterCmd {
         println!("Filter chosen: {:?}", self.filters);
         let filter = self.filters.get_filter();
 
-        let viable_locations = self
+        let _viable_locations = self
             .locations
             .iter()
             .map(|path| FilterWalker::entries(path, self.recursive.max_depth()))
@@ -75,10 +75,6 @@ impl Runnable for FilterCmd {
                     !ignore.iter().any(|pat| path_str.contains(pat))
                 })
             })
-            .collect_vec();
-
-        let _filtered = viable_locations
-            .into_iter()
             .filter(filter)
             .inspect(|dir_entry| println!("{}", dir_entry.path().display()))
             .collect_vec();
