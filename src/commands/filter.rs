@@ -10,22 +10,6 @@ use organize_rs_core::{
     rules::filters::{FilterRecursive, OrganizeFilter},
     FilterWalker,
 };
-use walkdir::DirEntry;
-
-#[derive(Debug, Args, Clone)]
-#[group(id = "location")]
-pub struct LocationOpts {
-    /// Locations to operate on
-    #[arg(short, long, global = true)]
-    locations: Vec<PathBuf>,
-
-    #[command(flatten)]
-    recursive: FilterRecursive,
-
-    /// Targets to operate on
-    #[arg(short, long, global = true, default_value_t = OrganizeTarget::Files, value_enum)]
-    targets: OrganizeTarget,
-}
 
 /// `filter` subcommand
 #[derive(Command, Debug, Args, Clone)]
@@ -45,59 +29,73 @@ pub struct FilterCmd {
     location_opts: LocationOpts,
 }
 
+#[derive(Debug, Args, Clone)]
+#[group(id = "location")]
+pub struct LocationOpts {
+    /// Locations to operate on
+    #[arg(short, long, global = true)]
+    locations: Vec<PathBuf>,
+
+    #[command(flatten)]
+    recursive: FilterRecursive,
+
+    /// Targets to operate on
+    #[arg(short, long, global = true, default_value_t = OrganizeTarget::Files, value_enum)]
+    targets: OrganizeTarget,
+}
+
 impl Runnable for FilterCmd {
     fn run(&self) {
-        self.inner_run();
+        println!("Filter chosen: {:?}", self.filters);
+
+        let mut filters = vec![self.filters.clone()];
+
+        if let Some(ignore_names) = self.ignore_name.clone() {
+            println!("Ignore-Filter chosen: {ignore_names:?}");
+            filters.push(OrganizeFilter::IgnoreName {
+                in_name: ignore_names,
+            });
+        };
+
+        if let Some(ignore_paths) = self.ignore_path.clone() {
+            println!("Ignore-Filter chosen: {ignore_paths:?}");
+            filters.push(OrganizeFilter::IgnorePath {
+                in_path: ignore_paths,
+            });
+        };
+
+        self.inner_run(filters);
     }
 }
 
 impl FilterCmd {
-    fn inner_run(&self) {
-        println!("Filter chosen: {:?}", self.filters);
+    fn inner_run(&self, filters: Vec<OrganizeFilter>) {
+        let mut filter_walker = FilterWalker::new();
 
         // Convert to OrganizeLocation
-        let mut locations = self.location_opts.locations.iter().map(|f| {
-            if self.location_opts.recursive.recursive() {
-                OrganizeLocation::from((
-                    f.clone(),
-                    MaxDepth::new(self.location_opts.recursive.max_depth()),
-                    self.location_opts.targets,
-                ))
-            } else {
-                OrganizeLocation::from((f.clone(), self.location_opts.targets))
-            }
-        });
-
-        let base_entries = FilterWalker::get_applicable_items(&mut locations);
-
-        let mut filters = vec![];
-
-        if let Some(ignore_name) = self.ignore_name.clone() {
-            println!("Ignore-Filter chosen: {ignore_name:?}");
-            filters.push(
-                OrganizeFilter::IgnoreName {
-                    in_name: ignore_name,
-                }
-                .get_filter(),
-            );
-        };
-
-        if let Some(ignore_path) = self.ignore_path.clone() {
-            println!("Ignore-Filter chosen: {ignore_path:?}");
-            filters.push(
-                OrganizeFilter::IgnorePath {
-                    in_path: ignore_path,
-                }
-                .get_filter(),
-            );
-        };
-
-        filters.push(self.get_filter());
-
-        let filtered_entries = FilterWalker::apply_filters(base_entries, filters);
-
-        _ = filtered_entries
+        let locations = self
+            .location_opts
+            .locations
+            .clone()
             .into_iter()
+            .map(|f| {
+                if self.location_opts.recursive.recursive() {
+                    OrganizeLocation::from((
+                        f,
+                        MaxDepth::new(self.location_opts.recursive.max_depth()),
+                        self.location_opts.targets,
+                    ))
+                } else {
+                    OrganizeLocation::from((f, self.location_opts.targets))
+                }
+            })
+            .collect_vec();
+
+        filter_walker.get_applicable_items(locations, filters);
+
+        _ = filter_walker
+            .entries()
+            .iter()
             .inspect(|dir_entry| {
                 println!(
                     "{}\t\"{}\"",
@@ -112,9 +110,5 @@ impl FilterCmd {
                 );
             })
             .collect_vec();
-    }
-
-    fn get_filter(&self) -> Box<dyn FnMut(&DirEntry) -> bool> {
-        self.filters.get_filter()
     }
 }

@@ -11,7 +11,8 @@ use walkdir::DirEntry;
 
 use crate::parsers::{PeriodRange, SizeRange};
 
-type FilterClosure = Box<dyn FnMut(&DirEntry) -> bool>;
+pub type FilterClosure<'a> = Box<dyn FnMut(&DirEntry) -> bool + 'a>;
+pub type FilterCollection<'a> = Vec<Box<dyn FnMut(&DirEntry) -> bool + 'a>>;
 
 /// Comparison conditions for dates
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
@@ -733,30 +734,23 @@ impl Default for OrganizeFilter {
 impl OrganizeFilter {
     pub fn get_filter(&self) -> FilterClosure {
         match self {
-            OrganizeFilter::NoFilter => Box::new(move |_entry| false),
+            OrganizeFilter::NoFilter => Box::new(|_entry: &DirEntry| false),
             OrganizeFilter::AllItems {
                 i_agree_it_is_dangerous,
-            } => Box::new({
-                let i_agree_it_is_dangerous = i_agree_it_is_dangerous.to_owned();
-                move |_entry: &DirEntry| i_agree_it_is_dangerous
-            }),
-            OrganizeFilter::IgnorePath { in_path } => {
-                Box::new(self.filter_ignore_by_str_in_path(in_path))
-            }
-            OrganizeFilter::IgnoreName { in_name } => {
-                Box::new(self.filter_ignore_by_str_in_name(in_name))
-            }
-            OrganizeFilter::Extension { exts } => Box::new(self.filter_by_extension(exts)),
+            } => Box::new(|_entry: &DirEntry| i_agree_it_is_dangerous.to_owned()),
+            OrganizeFilter::IgnorePath { in_path } => self.filter_ignore_by_str_in_path(in_path),
+            OrganizeFilter::IgnoreName { in_name } => self.filter_ignore_by_str_in_name(in_name),
+            OrganizeFilter::Extension { exts } => self.filter_by_extension(exts),
             OrganizeFilter::Name {
                 arguments,
                 case_insensitive,
-            } => Box::new(self.filter_by_name(arguments, *case_insensitive)),
-            OrganizeFilter::Empty => Box::new(self.filter_by_empty()),
-            OrganizeFilter::Created { range } => Box::new(self.filter_by_created(range)),
-            OrganizeFilter::LastModified { range } => Box::new(self.filter_by_last_modified(range)),
-            OrganizeFilter::LastAccessed { range } => Box::new(self.filter_by_last_accessed(range)),
-            OrganizeFilter::Mimetype { mimetype } => Box::new(self.filter_by_mimetype(mimetype)),
-            OrganizeFilter::Size { range } => Box::new(self.filter_by_size(range)),
+            } => self.filter_by_name(arguments, case_insensitive),
+            OrganizeFilter::Empty => self.filter_by_empty(),
+            OrganizeFilter::Created { range } => self.filter_by_created(range),
+            OrganizeFilter::LastModified { range } => self.filter_by_last_modified(range),
+            OrganizeFilter::LastAccessed { range } => self.filter_by_last_accessed(range),
+            OrganizeFilter::Mimetype { mimetype } => self.filter_by_mimetype(mimetype),
+            OrganizeFilter::Size { range } => self.filter_by_size(range),
             OrganizeFilter::Regex { expr: _ } => todo!("not implemented (yet)!"),
             OrganizeFilter::Exif => todo!("not implemented (yet)!"),
             OrganizeFilter::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
@@ -771,225 +765,12 @@ impl OrganizeFilter {
         }
     }
 
-    /// Returns `true` if the organize filter is [`Created`].
-    ///
-    /// [`Created`]: OrganizeFilter::Created
-    #[must_use]
-    pub fn is_date_created(&self) -> bool {
-        matches!(self, Self::Created { .. })
-    }
-
-    /// Returns `true` if the organize filter is [`Added`].
-    ///
-    /// [`Added`]: OrganizeFilter::Added
-    #[must_use]
-    #[cfg(target_os = "osx")]
-    pub fn is_date_added(&self) -> bool {
-        matches!(self, Self::Added { .. })
-    }
-
-    /// Returns `true` if the organize filter is [`LastUsed`].
-    ///
-    /// [`LastUsed`]: OrganizeFilter::LastUsed
-    #[must_use]
-    #[cfg(target_os = "osx")]
-    pub fn is_date_last_used(&self) -> bool {
-        matches!(self, Self::LastUsed { .. })
-    }
-
-    /// Returns `true` if the organize filter is [`LastModified`].
-    ///
-    /// [`LastModified`]: OrganizeFilter::LastModified
-    #[must_use]
-    pub fn is_last_modified(&self) -> bool {
-        matches!(self, Self::LastModified { .. })
-    }
-
-    /// Returns `true` if the organize filter is [`LastAccessed`].
-    ///
-    /// [`LastAccessed`]: OrganizeFilter::LastAccessed
-    #[must_use]
-    pub fn is_last_accessed(&self) -> bool {
-        matches!(self, Self::LastAccessed { .. })
-    }
-
-    /// Returns `true` if the organize filter is [`Duplicate`].
-    ///
-    /// [`Duplicate`]: OrganizeFilter::Duplicate
-    #[must_use]
-    pub fn is_duplicate(&self) -> bool {
-        matches!(self, Self::Duplicate { .. })
-    }
-
-    /// Returns `true` if the organize filter is [`Empty`].
-    ///
-    /// [`Empty`]: OrganizeFilter::Empty
-    #[must_use]
-    pub fn is_empty(&self) -> bool {
-        matches!(self, Self::Empty { .. })
-    }
-
-    /// Returns `true` if the organize filter is [`Exif`].
-    ///
-    /// [`Exif`]: OrganizeFilter::Exif
-    #[must_use]
-    pub fn is_exif(&self) -> bool {
-        matches!(self, Self::Exif)
-    }
-
-    /// Returns `true` if the organize filter is [`Extension`].
-    ///
-    /// [`Extension`]: OrganizeFilter::Extension
-    #[must_use]
-    pub fn is_extension(&self) -> bool {
-        matches!(self, Self::Extension { .. })
-    }
-
-    /// Returns `true` if the organize filter is [`Filecontent`].
-    ///
-    /// [`Filecontent`]: OrganizeFilter::Filecontent
-    #[must_use]
-    pub fn is_filecontent(&self) -> bool {
-        matches!(self, Self::Filecontent { .. })
-    }
-
-    /// Returns `true` if the organize filter is [`Hash`].
-    ///
-    /// [`Hash`]: OrganizeFilter::Hash
-    #[must_use]
-    #[cfg(feature = "research_organize")]
-    pub fn is_hash(&self) -> bool {
-        matches!(self, Self::Hash)
-    }
-
-    /// Returns `true` if the organize filter is [`MacOsTags`].
-    ///
-    /// [`MacOsTags`]: OrganizeFilter::MacOsTags
-    #[must_use]
-    #[cfg(target_os = "osx")]
-    pub fn is_mac_os_tags(&self) -> bool {
-        matches!(self, Self::MacOsTags { .. })
-    }
-
-    #[cfg(target_os = "osx")]
-    pub fn as_mac_os_tags(&self) -> Option<&Vec<String>> {
-        if let Self::MacOsTags { tags } = self {
-            Some(tags)
-        } else {
-            None
-        }
-    }
-
-    #[cfg(target_os = "osx")]
-    pub fn try_into_mac_os_tags(self) -> Result<Vec<String>, Self> {
-        if let Self::MacOsTags { tags } = self {
-            Ok(tags)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the organize filter is [`Mimetype`].
-    ///
-    /// [`Mimetype`]: OrganizeFilter::Mimetype
-    #[must_use]
-    pub fn is_mimetype(&self) -> bool {
-        matches!(self, Self::Mimetype { .. })
-    }
-
-    pub fn as_mimetype(&self) -> Option<&Vec<String>> {
-        if let Self::Mimetype { mimetype } = self {
-            Some(mimetype)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_mimetype(self) -> Result<Vec<String>, Self> {
-        if let Self::Mimetype { mimetype } = self {
-            Ok(mimetype)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the organize filter is [`Name`].
-    ///
-    /// [`Name`]: OrganizeFilter::Name
-    #[must_use]
-    pub fn is_name(&self) -> bool {
-        matches!(self, Self::Name { .. })
-    }
-
-    /// Returns `true` if the organize filter is [`Regex`].
-    ///
-    /// [`Regex`]: OrganizeFilter::Regex
-    #[must_use]
-    pub fn is_regex(&self) -> bool {
-        matches!(self, Self::Regex { .. })
-    }
-
-    pub fn as_regex(&self) -> Option<&String> {
-        if let Self::Regex { expr: expression } = self {
-            Some(expression)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_regex(self) -> Result<String, Self> {
-        if let Self::Regex { expr: expression } = self {
-            Ok(expression)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the organize filter is [`Size`].
-    ///
-    /// [`Size`]: OrganizeFilter::Size
-    #[must_use]
-    pub fn is_size(&self) -> bool {
-        matches!(self, Self::Size { .. })
-    }
-
-    pub fn as_extension(&self) -> Option<&Vec<String>> {
-        if let Self::Extension { exts: extensions } = self {
-            Some(extensions)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_extension(self) -> Result<Vec<String>, Self> {
-        if let Self::Extension { exts: extensions } = self {
-            Ok(extensions)
-        } else {
-            Err(self)
-        }
-    }
-
-    pub fn as_filecontent(&self) -> Option<&String> {
-        if let Self::Filecontent { regex: expression } = self {
-            Some(expression)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_filecontent(self) -> Result<String, Self> {
-        if let Self::Filecontent { regex: expression } = self {
-            Ok(expression)
-        } else {
-            Err(self)
-        }
-    }
-
-    fn filter_by_extension(&self, exts: &[String]) -> impl FnMut(&DirEntry) -> bool {
-        let exts = exts.to_owned();
-        move |entry: &DirEntry| -> bool {
-            let entry = entry.clone();
-            let file_path = entry.into_path();
+    fn filter_by_extension<'a, 'args>(
+        &'a self,
+        exts: &'args [String],
+    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+        Box::new(|entry| {
+            let file_path = entry.path();
             let Some(extension) = file_path.extension() else {
                 return false
             };
@@ -997,21 +778,19 @@ impl OrganizeFilter {
                     return false
                 };
             exts.iter().any(|f| f == extension_str)
-        }
+        })
     }
 
-    fn filter_by_name(
-        &self,
-        arguments: &NameFilterArgs,
-        case_insensitive: bool,
-    ) -> impl FnMut(&DirEntry) -> bool {
-        let arguments = arguments.clone();
-
-        move |entry: &DirEntry| -> bool {
-            let entry = entry.clone();
-            let file_path = entry.into_path();
+    fn filter_by_name<'a, 'args>(
+        &'a self,
+        arguments: &'args NameFilterArgs,
+        case_insensitive: &'args bool,
+    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+        Box::new(|entry| {
+            let arguments = arguments.clone();
+            let file_path = entry.path();
             let file_stem = file_path.file_stem().and_then(|f| f.to_str()).map(|f| {
-                if case_insensitive {
+                if *case_insensitive {
                     f.to_lowercase()
                 } else {
                     f.to_owned()
@@ -1022,7 +801,7 @@ impl OrganizeFilter {
                 .file_name()
                 .and_then(|f| f.to_str())
                 .map(|f| {
-                    if case_insensitive {
+                    if *case_insensitive {
                         f.to_lowercase()
                     } else {
                         f.to_owned()
@@ -1036,7 +815,7 @@ impl OrganizeFilter {
                     ..
                 } => {
                     let mut sw = sw.clone();
-                    if case_insensitive {
+                    if *case_insensitive {
                         sw = sw.to_lowercase();
                     }
 
@@ -1046,7 +825,7 @@ impl OrganizeFilter {
                     contains: Some(c), ..
                 } => {
                     let mut c = c.clone();
-                    if case_insensitive {
+                    if *case_insensitive {
                         c = c.to_lowercase();
                     }
                     file_name_str.contains(&c)
@@ -1056,7 +835,7 @@ impl OrganizeFilter {
                     ..
                 } => {
                     let mut ew = ew.clone();
-                    if case_insensitive {
+                    if *case_insensitive {
                         ew = ew.to_lowercase();
                     }
 
@@ -1068,11 +847,11 @@ impl OrganizeFilter {
                 }
                 NameFilterArgs { .. } => false,
             }
-        }
+        })
     }
 
-    fn filter_by_empty(&self) -> impl FnMut(&DirEntry) -> bool {
-        move |entry: &DirEntry| -> bool {
+    fn filter_by_empty(&self) -> Box<dyn FnMut(&DirEntry) -> bool + '_> {
+        Box::new(|entry| {
             entry
                 .metadata()
                 .map(|e| {
@@ -1085,44 +864,47 @@ impl OrganizeFilter {
                     }
                 })
                 .unwrap_or(false)
-        }
+        })
     }
 
-    fn filter_by_last_accessed(&self, range: &PeriodRange) -> impl FnMut(&DirEntry) -> bool {
-        let range = range.clone();
-
-        move |entry: &DirEntry| {
+    fn filter_by_last_accessed<'a, 'args>(
+        &'a self,
+        range: &'args PeriodRange,
+    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+        Box::new(|entry| {
             entry.metadata().ok().map_or(false, |f| {
                 let Ok(sys_time) = f.accessed() else {
                         return false
                     };
-                Self::matches_date(&sys_time, &range)
+                Self::matches_date(&sys_time, &range.clone())
             })
-        }
+        })
     }
-    fn filter_by_last_modified(&self, range: &PeriodRange) -> impl FnMut(&DirEntry) -> bool {
-        let range = range.clone();
-
-        move |entry: &DirEntry| {
+    fn filter_by_last_modified<'a, 'args>(
+        &'a self,
+        range: &'args PeriodRange,
+    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+        Box::new(|entry| {
             entry.metadata().ok().map_or(false, |f| {
                 let Ok(sys_time) = f.modified() else {
                         return false
                     };
-                Self::matches_date(&sys_time, &range)
+                Self::matches_date(&sys_time, &range.clone())
             })
-        }
+        })
     }
-    fn filter_by_created(&self, range: &PeriodRange) -> impl FnMut(&DirEntry) -> bool {
-        let range = range.clone();
-
-        move |entry: &DirEntry| {
+    fn filter_by_created<'a, 'args>(
+        &'a self,
+        range: &'args PeriodRange,
+    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+        Box::new(|entry| {
             entry.metadata().ok().map_or(false, |f| {
                 let Ok(sys_time) = f.created() else {
                         return false
                     };
-                Self::matches_date(&sys_time, &range)
+                Self::matches_date(&sys_time, &range.clone())
             })
-        }
+        })
     }
 
     fn matches_date(item_date: &std::time::SystemTime, range: &PeriodRange) -> bool {
@@ -1140,10 +922,11 @@ impl OrganizeFilter {
         range.in_range(seconds_since_created)
     }
 
-    fn filter_by_mimetype(&self, mimetype: &[String]) -> impl FnMut(&DirEntry) -> bool {
-        let mimetype = mimetype.to_owned();
-
-        move |entry| {
+    fn filter_by_mimetype<'a, 'args>(
+        &'a self,
+        mimetype: &'args [String],
+    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+        Box::new(|entry| {
             let Ok(Some(file_kind)) = infer::get_from_path(entry.path()) else {
                 return false
             };
@@ -1164,44 +947,39 @@ impl OrganizeFilter {
                 .map(|f| f.parse::<mime::Mime>())
                 .filter_map(|r| r.map_err(|err| println!("{err}")).ok())
                 .any(|f| f == file_mime_type)
-        }
+        })
     }
 
-    fn filter_by_size(&self, range: &SizeRange) -> impl FnMut(&DirEntry) -> bool {
-        let range = range.clone();
-
-        move |entry| {
+    fn filter_by_size<'a, 'args>(
+        &'a self,
+        range: &'args SizeRange,
+    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+        Box::new(|entry| {
             if let Ok(metadata) = entry.metadata() {
                 range.in_range(metadata.len() as f64)
             } else {
                 false
             }
-        }
+        })
     }
 
-    fn filter_ignore_by_str_in_name(
-        &self,
-        ignore_name: &[String],
-    ) -> impl FnMut(&DirEntry) -> bool {
-        let ignore_name = ignore_name.to_owned();
-
-        move |f| {
-            let Some(file_name) = f.file_name().to_str() else { return true };
-            let file_name_str = file_name.to_string();
-            !ignore_name.iter().any(|pat| file_name_str.contains(pat))
-        }
+    fn filter_ignore_by_str_in_name<'a, 'args>(
+        &'a self,
+        ignore_name: &'args [String],
+    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+        Box::new(|entry| {
+            let Some(file_name) = entry.file_name().to_str() else { return false };
+            !ignore_name.iter().any(|pat| file_name.contains(pat))
+        })
     }
 
-    fn filter_ignore_by_str_in_path(
-        &self,
-        ignore_path: &[String],
-    ) -> impl FnMut(&DirEntry) -> bool {
-        let ignore_path = ignore_path.to_owned();
-
-        move |f| {
-            let Some(path) = f.path().to_str() else { return true };
-            let path_str = path.to_string();
-            !ignore_path.iter().any(|pat| path_str.contains(pat))
-        }
+    fn filter_ignore_by_str_in_path<'a, 'args>(
+        &'a self,
+        ignore_path: &'args [String],
+    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+        Box::new(|entry| {
+            let Some(path) = entry.path().to_str() else { return false };
+            !ignore_path.iter().any(|pat| path.contains(pat))
+        })
     }
 }
