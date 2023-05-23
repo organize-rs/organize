@@ -5,6 +5,7 @@ mod completions;
 mod docs;
 pub mod filter;
 mod run_script;
+mod rule;
 
 // Old approach
 // mod edit;
@@ -15,8 +16,10 @@ mod run_script;
 
 use crate::{
     commands::{
+        
         action::ActionCmd, completions::CompletionsCmd, docs::DocsCmd, filter::FilterCmd,
         run_script::RunScriptCmd,
+        rule::RuleCmd,
     },
     config::OrganizeConfig,
 };
@@ -54,6 +57,8 @@ pub enum OrganizeCmd {
     Completions(CompletionsCmd),
     /// Run a `rhai` script
     RunScript(RunScriptCmd),
+    /// Run a
+    Rule(RuleCmd),
 }
 
 #[allow(clippy::struct_excessive_bools)]

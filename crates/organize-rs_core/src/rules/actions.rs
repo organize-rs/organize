@@ -6,6 +6,10 @@ use clap::{Subcommand, ValueEnum};
 
 use displaydoc::Display;
 use serde::{Deserialize, Serialize};
+use trash;
+use walkdir::DirEntry;
+
+type ActionClosure = Box<dyn FnMut(&DirEntry) -> Result<Option<bool>, Box<dyn std::error::Error>>>;
 
 /// Colours for `MacOS` tags
 #[cfg(target_os = "osx")]
@@ -261,7 +265,7 @@ impl Default for WriteMode {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeAction {
     /// Do nothing.
-    None,
+    NoAction,
     /// Confirm before deleting a duplicate.
     ///
     /// Supports placeholders
@@ -579,14 +583,7 @@ pub enum OrganizeAction {
     ///       - trash
     /// ```
     #[serde(rename = "trash")]
-    Trash {
-        /// The source of the file / dir that should be trashed.
-        /// If `src` ends with a slash, it is assumed
-        /// to be a source directory and the file / dir will be
-        /// trashed.
-        #[cfg_attr(feature = "cli", arg(long))]
-        src: String,
-    },
+    Trash,
     /// Write text to a file.
     ///
     /// If the specified path does not exist it will be created.
@@ -649,10 +646,10 @@ pub enum OrganizeAction {
 }
 
 impl OrganizeAction {
-    pub fn run(&self) {
+    pub fn get_action(&self) -> ActionClosure {
         match self {
-            OrganizeAction::None => todo!("not implemented (yet)!"),
-            OrganizeAction::Confirm { text: _, vars: _ } => todo!("not implemented (yet)!"),
+            OrganizeAction::NoAction => Box::new(move |_entry| Ok(Some(false))),
+            OrganizeAction::Trash => Box::new(self.action_move_to_trash()),
             OrganizeAction::Copy {
                 src: _,
                 dst: _,
@@ -660,8 +657,6 @@ impl OrganizeAction {
                 rename_template: _,
                 filesystem: _,
             } => todo!("not implemented (yet)!"),
-            OrganizeAction::Delete { src: _ } => todo!("not implemented (yet)!"),
-            OrganizeAction::Echo { msg: _ } => todo!("not implemented (yet)!"),
             OrganizeAction::Move {
                 src: _,
                 dst: _,
@@ -675,8 +670,10 @@ impl OrganizeAction {
                 on_conflict: _,
                 rename_template: _,
             } => todo!("not implemented (yet)!"),
+            OrganizeAction::Confirm { text: _, vars: _ } => todo!("not implemented (yet)!"),
+            OrganizeAction::Delete { src: _ } => todo!("not implemented (yet)!"),
+            OrganizeAction::Echo { msg: _ } => todo!("not implemented (yet)!"),
             OrganizeAction::Symlink { src: _, dst: _ } => todo!("not implemented (yet)!"),
-            OrganizeAction::Trash { src: _ } => todo!("not implemented (yet)!"),
             OrganizeAction::Write {
                 txt: _,
                 file: _,
@@ -689,164 +686,19 @@ impl OrganizeAction {
         }
     }
 
-    /// Returns `true` if the organize action is [`None`].
-    ///
-    /// [`None`]: OrganizeAction::None
-    #[must_use]
-    pub fn is_none(&self) -> bool {
-        matches!(self, Self::None)
-    }
-
-    /// Returns `true` if the organize action is [`Confirm`].
-    ///
-    /// [`Confirm`]: OrganizeAction::Confirm
-    #[must_use]
-    pub fn is_confirm(&self) -> bool {
-        matches!(self, Self::Confirm { .. })
-    }
-
-    /// Returns `true` if the organize action is [`Copy`].
-    ///
-    /// [`Copy`]: OrganizeAction::Copy
-    #[must_use]
-    pub fn is_copy(&self) -> bool {
-        matches!(self, Self::Copy { .. })
-    }
-
-    /// Returns `true` if the organize action is [`Echo`].
-    ///
-    /// [`Echo`]: OrganizeAction::Echo
-    #[must_use]
-    pub fn is_echo(&self) -> bool {
-        matches!(self, Self::Echo { .. })
-    }
-
-    pub fn as_echo(&self) -> Option<&String> {
-        if let Self::Echo { msg: message } = self {
-            Some(message)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_echo(self) -> Result<String, Self> {
-        if let Self::Echo { msg: message } = self {
-            Ok(message)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the organize action is [`MacOsTags`].
-    ///
-    /// [`MacOsTags`]: OrganizeAction::MacOsTags
-    #[must_use]
-    #[cfg(target_os = "osx")]
-    pub fn is_mac_os_tags(&self) -> bool {
-        matches!(self, Self::MacOsTags { .. })
-    }
-
-    #[cfg(target_os = "osx")]
-    pub fn as_mac_os_tags(&self) -> Option<&Vec<String>> {
-        if let Self::MacOsTags { tags } = self {
-            Some(tags)
-        } else {
-            None
-        }
-    }
-
-    #[cfg(target_os = "osx")]
-    pub fn try_into_mac_os_tags(self) -> Result<Vec<String>, Self> {
-        if let Self::MacOsTags { tags } = self {
-            Ok(tags)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the organize action is [`Move`].
-    ///
-    /// [`Move`]: OrganizeAction::Move
-    #[must_use]
-    pub fn is_move(&self) -> bool {
-        matches!(self, Self::Move { .. })
-    }
-
-    /// Returns `true` if the organize action is [`Rename`].
-    ///
-    /// [`Rename`]: OrganizeAction::Rename
-    #[must_use]
-    pub fn is_rename(&self) -> bool {
-        matches!(self, Self::Rename { .. })
-    }
-
-    /// Returns `true` if the organize action is [`Symlink`].
-    ///
-    /// [`Symlink`]: OrganizeAction::Symlink
-    #[must_use]
-    pub fn is_symlink(&self) -> bool {
-        matches!(self, Self::Symlink { .. })
-    }
-
-    /// Returns `true` if the organize action is [`Write`].
-    ///
-    /// [`Write`]: OrganizeAction::Write
-    #[must_use]
-    pub fn is_write(&self) -> bool {
-        matches!(self, Self::Write { .. })
-    }
-
-    /// Returns `true` if the organize action is [`Delete`].
-    ///
-    /// [`Delete`]: OrganizeAction::Delete
-    #[must_use]
-    pub fn is_delete(&self) -> bool {
-        matches!(self, Self::Delete { .. })
-    }
-
-    pub fn as_delete(&self) -> Option<&String> {
-        if let Self::Delete { src } = self {
-            Some(src)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_delete(self) -> Result<String, Self> {
-        if let Self::Delete { src } = self {
-            Ok(src)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the organize action is [`Trash`].
-    ///
-    /// [`Trash`]: OrganizeAction::Trash
-    #[must_use]
-    pub fn is_trash(&self) -> bool {
-        matches!(self, Self::Trash { .. })
-    }
-
-    pub fn as_trash(&self) -> Option<&String> {
-        if let Self::Trash { src } = self {
-            Some(src)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_trash(self) -> Result<String, Self> {
-        if let Self::Trash { src } = self {
-            Ok(src)
-        } else {
-            Err(self)
+    fn action_move_to_trash(
+        &self,
+    ) -> impl FnMut(&DirEntry) -> Result<Option<bool>, Box<dyn std::error::Error>> {
+        move |entry| {
+            trash::delete(entry.path())
+                .map(|_op| None)
+                .map_err(std::convert::Into::into)
         }
     }
 }
 
 impl Default for OrganizeAction {
     fn default() -> Self {
-        Self::None
+        Self::NoAction
     }
 }

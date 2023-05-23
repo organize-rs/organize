@@ -5,12 +5,6 @@ use clap::Args;
 use organize_rs_core::rules::actions::OrganizeAction;
 
 /// `action` subcommand
-///
-/// The `Parser` proc macro generates an option parser based on the struct
-/// definition, and is defined in the `clap` crate. See their documentation
-/// for a more comprehensive example:
-///
-/// <https://docs.rs/clap/>
 #[derive(Command, Debug, Args, Clone)]
 pub struct ActionCmd {
     #[clap(subcommand)]
@@ -18,11 +12,12 @@ pub struct ActionCmd {
 
     /// Run an action destructively
     #[arg(short, long, global = true, default_value_t = false)]
-    destructive_run: bool,
+    execute: bool,
 }
 
 impl Runnable for ActionCmd {
     fn run(&self) {
-        self.actions.run();
+        println!("Action chosen: {:?}", self.actions);
+        let _action = self.actions.get_action();
     }
 }

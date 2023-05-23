@@ -5,14 +5,13 @@ pub mod actions;
 pub mod aliases;
 pub mod filters;
 
-#[cfg(feature = "cli")]
-use clap::ValueEnum;
-
 use displaydoc::Display;
 use serde::{Deserialize, Serialize};
-// use std::path::PathBuf;
 
-use crate::rules::{actions::OrganizeAction, filters::OrganizeFilter};
+use crate::{
+    locations::OrganizeLocation,
+    rules::{actions::OrganizeAction, filters::OrganizeFilter},
+};
 
 /// Should filters be negated
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
@@ -70,41 +69,6 @@ impl ApplyOrNegateFilter {
         } else {
             Err(self)
         }
-    }
-}
-
-/// Should we go recursive into folders
-#[derive(Debug, Clone, Deserialize, Serialize, Display, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum Recurse {
-    /// operate on top-level only
-    #[serde(rename = "false")]
-    Flat,
-    /// recurse into subfolders
-    #[serde(rename = "true")]
-    Recursive,
-}
-
-impl Recurse {
-    /// Returns `true` if the recurse is [`Flat`].
-    ///
-    /// [`Flat`]: Recurse::Flat
-    #[must_use]
-    pub fn is_flat(&self) -> bool {
-        matches!(self, Self::Flat)
-    }
-
-    /// Returns `true` if the recurse is [`Recursive`].
-    ///
-    /// [`Recursive`]: Recurse::Recursive
-    #[must_use]
-    pub fn is_recursive(&self) -> bool {
-        matches!(self, Self::Recursive)
-    }
-}
-
-impl Default for Recurse {
-    fn default() -> Self {
-        Self::Flat
     }
 }
 
@@ -205,111 +169,134 @@ impl OrganizeFilterMode {
     }
 }
 
-/// Targets `organize` operates on.
-///
-/// When targets is set to dirs, organize will work on
-/// the folders, not on files.
-#[cfg_attr(feature = "cli", derive(ValueEnum))]
-#[derive(Debug, Clone, Deserialize, Serialize, Display, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum OrganizeTargets {
-    /// operate only on directories
-    Dirs,
-    /// operate only on files
-    Files,
-    /// operate on both
-    Both,
-}
-
-impl Default for OrganizeTargets {
-    fn default() -> Self {
-        Self::Files
-    }
-}
-
-impl OrganizeTargets {
-    /// Returns `true` if the organize targets is [`Files`].
-    ///
-    /// [`Files`]: OrganizeTargets::Files
-    #[must_use]
-    pub fn is_files(&self) -> bool {
-        matches!(self, Self::Files)
-    }
-
-    /// Returns `true` if the organize targets is [`Dirs`].
-    ///
-    /// [`Dirs`]: OrganizeTargets::Dirs
-    #[must_use]
-    pub fn is_dirs(&self) -> bool {
-        matches!(self, Self::Dirs)
-    }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct OrganizeLocation {
-    path: String,
-    max_depth: Option<u64>,
-}
-
 /// [`OrganizeRule`] contains a list of objects with the required keys
 /// "locations" and "actions". One config can have many [`OrganizeRule`]s.
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct OrganizeRule {
     /// rule name
     name: String,
+    /// tag for a rule, so you can run a set of rules by passing `--tags` or `--skip-tags`
+    tags: Vec<OrganizeTag>,
     /// whether the rule is enabled / disabled
     enabled: bool,
-    /// when targets is set to dirs, organize will work on
-    /// the folders, not on files
-    targets: OrganizeTargets,
     /// list of locations
     locations: Vec<OrganizeLocation>,
-    /// whether to recurse into subfolders of all locations
-    #[serde(rename = "subfolders")]
-    recursive: Recurse,
     /// whether "all", "any" or "none" of the filters must apply
     filter_mode: OrganizeFilterMode,
     /// supported filters
     filters: Vec<ApplyOrNegateFilter>,
     /// supported actions
     actions: Vec<OrganizeAction>,
-    /// tag for a rule, so you can run a set of rules by passing `--tags` or `--skip-tags`
-    tags: Vec<OrganizeTag>,
 }
 
 impl OrganizeRule {
-    pub fn enabled(&self) -> bool {
-        self.enabled
+    // This method will help users to discover the builder
+    pub fn builder() -> OrganizeRuleBuilder {
+        OrganizeRuleBuilder::default()
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+pub struct OrganizeRuleBuilder {
+    /// rule name
+    name: String,
+    /// tag for a rule, so you can run a set of rules by passing `--tags` or `--skip-tags`
+    tags: Vec<OrganizeTag>,
+    /// whether the rule is enabled / disabled
+    enabled: bool,
+    /// whether "all", "any" or "none" of the filters must apply
+    filter_mode: OrganizeFilterMode,
+    /// list of locations
+    locations: Vec<OrganizeLocation>,
+    /// supported filters
+    filters: Vec<ApplyOrNegateFilter>,
+    /// supported actions
+    actions: Vec<OrganizeAction>,
+}
+
+impl OrganizeRuleBuilder {
+    pub fn new(name: &str) -> OrganizeRuleBuilder {
+        OrganizeRuleBuilder {
+            name: String::from(name),
+            ..Default::default()
+        }
     }
 
-    pub fn tags(&self) -> &[OrganizeTag] {
-        self.tags.as_ref()
+    pub fn build(self) -> OrganizeRule {
+        OrganizeRule {
+            name: self.name,
+            tags: self.tags,
+            enabled: self.enabled,
+            locations: self.locations,
+            filter_mode: self.filter_mode,
+            filters: self.filters,
+            actions: self.actions,
+        }
     }
 
-    pub fn actions(&self) -> &[OrganizeAction] {
-        self.actions.as_ref()
+    /// Set name
+    pub fn name(mut self, name: &str) -> OrganizeRuleBuilder {
+        self.name = String::from(name);
+        self
     }
 
-    pub fn filters(&self) -> &[ApplyOrNegateFilter] {
-        self.filters.as_ref()
+    /// Set enabled
+    pub fn enabled(mut self, enabled: bool) -> OrganizeRuleBuilder {
+        self.enabled = enabled;
+        self
     }
 
-    pub fn filter_mode(&self) -> &OrganizeFilterMode {
-        &self.filter_mode
+    /// Add a single location
+    pub fn location(mut self, location: OrganizeLocation) -> OrganizeRuleBuilder {
+        self.locations.push(location);
+        self
     }
 
-    pub fn subfolders(&self) -> &Recurse {
-        &self.recursive
+    /// Add multiple locations
+    pub fn locations(mut self, mut locations: Vec<OrganizeLocation>) -> OrganizeRuleBuilder {
+        self.locations.append(&mut locations);
+        self
     }
 
-    pub fn targets(&self) -> &OrganizeTargets {
-        &self.targets
+    /// Set filter mode
+    pub fn filter_mode(mut self, filter_mode: OrganizeFilterMode) -> OrganizeRuleBuilder {
+        self.filter_mode = filter_mode;
+        self
     }
 
-    pub fn name(&self) -> &str {
-        self.name.as_ref()
+    /// Add a single filter
+    pub fn filter(mut self, filter: ApplyOrNegateFilter) -> OrganizeRuleBuilder {
+        self.filters.push(filter);
+        self
     }
 
-    pub fn locations(&self) -> &[OrganizeLocation] {
-        self.locations.as_ref()
+    /// Add multiple filters
+    pub fn filters(mut self, mut filters: Vec<ApplyOrNegateFilter>) -> OrganizeRuleBuilder {
+        self.filters.append(&mut filters);
+        self
+    }
+
+    /// Add single action
+    pub fn action(mut self, action: OrganizeAction) -> OrganizeRuleBuilder {
+        self.actions.push(action);
+        self
+    }
+
+    /// Add multiple actions
+    pub fn actions(mut self, mut actions: Vec<OrganizeAction>) -> OrganizeRuleBuilder {
+        self.actions.append(&mut actions);
+        self
+    }
+
+    /// Add single tag
+    pub fn tag(mut self, tag: OrganizeTag) -> OrganizeRuleBuilder {
+        self.tags.push(tag);
+        self
+    }
+
+    /// Add multiple actions
+    pub fn tags(mut self, mut tags: Vec<OrganizeTag>) -> OrganizeRuleBuilder {
+        self.tags.append(&mut tags);
+        self
     }
 }
