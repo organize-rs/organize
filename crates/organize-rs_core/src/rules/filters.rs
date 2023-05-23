@@ -11,6 +11,8 @@ use walkdir::DirEntry;
 
 use crate::parsers::{PeriodRange, SizeRange};
 
+type FilterClosure = Box<dyn FnMut(&DirEntry) -> bool>;
+
 /// Comparison conditions for dates
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
@@ -132,6 +134,7 @@ impl FilterRecursive {
     }
 }
 
+/// Arguments for `name` filter
 #[cfg_attr(feature = "cli", derive(Args))]
 #[derive(Display, Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "cli", group(required = true, multiple = false))]
@@ -212,6 +215,25 @@ impl From<(f64, &str)> for DateUnit {
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeFilter {
+    /// Don't use any filter.
+    ///
+    /// # Result
+    ///
+    /// Empty / no items due to the risk otherwise if it's used in
+    /// combination with an action, that the action will be applied
+    /// to all results.
+    NoFilter,
+    /// Output all items.
+    ///
+    /// # Result
+    ///
+    /// Careful! All items are returned, meaning in combination with
+    /// an action like `Trash` it would move *all* files/folders to
+    /// the trash bin.
+    AllItems {
+        #[cfg_attr(feature = "cli", arg(long))]
+        i_agree_it_is_dangerous: bool,
+    },
     /// Matches locations by created date
     ///
     /// # Result
@@ -688,11 +710,42 @@ pub enum OrganizeFilter {
         #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(SizeRange)))]
         range: SizeRange,
     },
+    /// Ignore expression in path
+    IgnorePath {
+        /// Matches for these Strings in the whole Path
+        // #[cfg_attr(feature = "cli", arg(long))]
+        in_path: Vec<String>,
+    },
+    /// Ignore expression in file name
+    IgnoreName {
+        /// Matches for these Strings in the Filename
+        // #[cfg_attr(feature = "cli", arg(long))]
+        in_name: Vec<String>,
+    },
+}
+
+impl Default for OrganizeFilter {
+    fn default() -> Self {
+        Self::NoFilter
+    }
 }
 
 impl OrganizeFilter {
-    pub fn get_filter(&self) -> Box<dyn FnMut(&DirEntry) -> bool> {
+    pub fn get_filter(&self) -> FilterClosure {
         match self {
+            OrganizeFilter::NoFilter => Box::new(move |_entry| false),
+            OrganizeFilter::AllItems {
+                i_agree_it_is_dangerous,
+            } => Box::new({
+                let i_agree_it_is_dangerous = i_agree_it_is_dangerous.to_owned();
+                move |_entry: &DirEntry| i_agree_it_is_dangerous
+            }),
+            OrganizeFilter::IgnorePath { in_path } => {
+                Box::new(self.filter_ignore_by_str_in_path(in_path))
+            }
+            OrganizeFilter::IgnoreName { in_name } => {
+                Box::new(self.filter_ignore_by_str_in_name(in_name))
+            }
             OrganizeFilter::Extension { exts } => Box::new(self.filter_by_extension(exts)),
             OrganizeFilter::Name {
                 arguments,
@@ -1123,6 +1176,32 @@ impl OrganizeFilter {
             } else {
                 false
             }
+        }
+    }
+
+    fn filter_ignore_by_str_in_name(
+        &self,
+        ignore_name: &[String],
+    ) -> impl FnMut(&DirEntry) -> bool {
+        let ignore_name = ignore_name.to_owned();
+
+        move |f| {
+            let Some(file_name) = f.file_name().to_str() else { return true };
+            let file_name_str = file_name.to_string();
+            !ignore_name.iter().any(|pat| file_name_str.contains(pat))
+        }
+    }
+
+    fn filter_ignore_by_str_in_path(
+        &self,
+        ignore_path: &[String],
+    ) -> impl FnMut(&DirEntry) -> bool {
+        let ignore_path = ignore_path.to_owned();
+
+        move |f| {
+            let Some(path) = f.path().to_str() else { return true };
+            let path_str = path.to_string();
+            !ignore_path.iter().any(|pat| path_str.contains(pat))
         }
     }
 }

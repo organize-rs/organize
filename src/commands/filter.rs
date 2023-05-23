@@ -1,33 +1,37 @@
 //! Filters that organize can apply
 
-use std::fs::FileType;
+use std::path::PathBuf;
 
 use abscissa_core::{Command, Runnable};
 use clap::Args;
 use itertools::Itertools;
 use organize_rs_core::{
-    rules::{
-        filters::{FilterRecursive, OrganizeFilter},
-        OrganizeTargets,
-    },
+    locations::{MaxDepth, OrganizeLocation, OrganizeTarget},
+    rules::filters::{FilterRecursive, OrganizeFilter},
     FilterWalker,
 };
+use walkdir::DirEntry;
+
+#[derive(Debug, Args, Clone)]
+#[group(id = "location")]
+pub struct LocationOpts {
+    /// Locations to operate on
+    #[arg(short, long, global = true)]
+    locations: Vec<PathBuf>,
+
+    #[command(flatten)]
+    recursive: FilterRecursive,
+
+    /// Targets to operate on
+    #[arg(short, long, global = true, default_value_t = OrganizeTarget::Files, value_enum)]
+    targets: OrganizeTarget,
+}
 
 /// `filter` subcommand
-///
-/// The `Parser` proc macro generates an option parser based on the struct
-/// definition, and is defined in the `clap` crate. See their documentation
-/// for a more comprehensive example:
-///
-/// <https://docs.rs/clap/>
-#[derive(Command, Debug, Args)]
+#[derive(Command, Debug, Args, Clone)]
 pub struct FilterCmd {
     #[clap(subcommand)]
     filters: OrganizeFilter,
-
-    /// Locations to operate on
-    #[arg(short, long, global = true)]
-    locations: Vec<String>,
 
     /// Words in file names to be ignored
     #[arg(long, global = true)]
@@ -37,46 +41,80 @@ pub struct FilterCmd {
     #[arg(long, global = true)]
     ignore_path: Option<Vec<String>>,
 
-    /// Targets to operate on
-    #[arg(short, long, global = true, default_value_t = OrganizeTargets::Files, value_enum)]
-    targets: OrganizeTargets,
-
     #[command(flatten)]
-    recursive: FilterRecursive,
+    location_opts: LocationOpts,
 }
 
 impl Runnable for FilterCmd {
     fn run(&self) {
-        println!("Filter chosen: {:?}", self.filters);
-        let filter = self.filters.get_filter();
+        self.inner_run();
+    }
+}
 
-        let _viable_locations = self
-            .locations
-            .iter()
-            .map(|path| FilterWalker::entries(path, self.recursive.max_depth()))
-            .flatten_ok()
-            .filter_map(std::result::Result::ok)
-            .filter(|f| match self.targets {
-                OrganizeTargets::Dirs => FileType::is_dir(&f.file_type()),
-                OrganizeTargets::Files => FileType::is_file(&f.file_type()),
-                OrganizeTargets::Both => true,
+impl FilterCmd {
+    fn inner_run(&self) {
+        println!("Filter chosen: {:?}", self.filters);
+
+        // Convert to OrganizeLocation
+        let mut locations = self.location_opts.locations.iter().map(|f| {
+            if self.location_opts.recursive.recursive() {
+                OrganizeLocation::from((
+                    f.clone(),
+                    MaxDepth::new(self.location_opts.recursive.max_depth()),
+                    self.location_opts.targets,
+                ))
+            } else {
+                OrganizeLocation::from((f.clone(), self.location_opts.targets))
+            }
+        });
+
+        let base_entries = FilterWalker::get_applicable_items(&mut locations);
+
+        let mut filters = vec![];
+
+        if let Some(ignore_name) = self.ignore_name.clone() {
+            println!("Ignore-Filter chosen: {ignore_name:?}");
+            filters.push(
+                OrganizeFilter::IgnoreName {
+                    in_name: ignore_name,
+                }
+                .get_filter(),
+            );
+        };
+
+        if let Some(ignore_path) = self.ignore_path.clone() {
+            println!("Ignore-Filter chosen: {ignore_path:?}");
+            filters.push(
+                OrganizeFilter::IgnorePath {
+                    in_path: ignore_path,
+                }
+                .get_filter(),
+            );
+        };
+
+        filters.push(self.get_filter());
+
+        let filtered_entries = FilterWalker::apply_filters(base_entries, filters);
+
+        _ = filtered_entries
+            .into_iter()
+            .inspect(|dir_entry| {
+                println!(
+                    "{}\t\"{}\"",
+                    if dir_entry.path().is_dir() {
+                        "D"
+                    } else if dir_entry.path().is_file() {
+                        "F"
+                    } else {
+                        "L"
+                    },
+                    dir_entry.path().display()
+                );
             })
-            .filter(|f| {
-                self.ignore_name.as_ref().map_or(true, |ignore| {
-                    let Some(file_name) = f.file_name().to_str() else { return true };
-                    let file_name_str = file_name.to_string();
-                    !ignore.iter().any(|pat| file_name_str.contains(pat))
-                })
-            })
-            .filter(|f| {
-                self.ignore_path.as_ref().map_or(true, |ignore| {
-                    let Some(path) = f.path().to_str() else { return true };
-                    let path_str = path.to_string();
-                    !ignore.iter().any(|pat| path_str.contains(pat))
-                })
-            })
-            .filter(filter)
-            .inspect(|dir_entry| println!("{}", dir_entry.path().display()))
             .collect_vec();
+    }
+
+    fn get_filter(&self) -> Box<dyn FnMut(&DirEntry) -> bool> {
+        self.filters.get_filter()
     }
 }

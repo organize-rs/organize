@@ -56,19 +56,21 @@ displaydoc = "0.2.4"
 clap_complete = "4.3.0"
 indicatif = "0.17.3"
 rayon = "1.7.0"
+trash = "3.0.2"
 
 # parsing
 winnow = "0.4.6"
 byte-unit = "4.0.19"
 
-# dev dependencies
-tempfile = "3.5.0"
-aho-corasick = "1.0"
 
 # infer file and MIME type by magic number
 infer = "0.13"
 mime = "0.3"
 
+
+# dev dependencies
+tempfile = "3.5.0"
+aho-corasick = "1.0"
 rstest = "0.17"
 quickcheck = "1"
 quickcheck_macros = "1"
@@ -132,6 +134,7 @@ itertools = { workspace = true }
 clap_complete = { workspace = true }
 indicatif = { workspace = true }
 winnow = { workspace = true }
+anyhow = { workspace = true }
 
 [dev-dependencies]
 abscissa_core = { workspace = true, features = ["testing"] }
@@ -158,11 +161,13 @@ codegen-units = 4
 
 [profile.release]
 opt-level = 3
-debug = true             # true for profiling
+panic = "abort"
+debug = false            # true for profiling
 rpath = false
 lto = "fat"
 debug-assertions = false
 codegen-units = 1
+strip = true
 
 [profile.test]
 opt-level = 1

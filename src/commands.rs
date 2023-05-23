@@ -4,6 +4,7 @@ mod action;
 mod completions;
 mod docs;
 mod filter;
+mod rule;
 
 // Old approach
 // mod edit;
@@ -13,7 +14,10 @@ mod filter;
 // mod sim;
 
 use crate::{
-    commands::{action::ActionCmd, completions::CompletionsCmd, docs::DocsCmd, filter::FilterCmd},
+    commands::{
+        action::ActionCmd, completions::CompletionsCmd, docs::DocsCmd, filter::FilterCmd,
+        rule::RuleCmd,
+    },
     config::OrganizeConfig,
 };
 use abscissa_core::{Command, Configurable, FrameworkError, Runnable};
@@ -48,6 +52,8 @@ pub enum OrganizeCmd {
     Filter(FilterCmd),
     /// Generate Completions for your shell
     Completions(CompletionsCmd),
+    /// Run a
+    Rule(RuleCmd),
 }
 
 #[allow(clippy::struct_excessive_bools)]
