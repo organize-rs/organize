@@ -1,6 +1,6 @@
 //! Filters that `organize` operates with
 
-use std::fmt::Display;
+use std::{collections::HashMap, fmt::Display};
 
 use chrono::{DateTime, Utc};
 #[cfg(feature = "cli")]
@@ -8,6 +8,7 @@ use clap::{Args, Subcommand, ValueEnum};
 
 use displaydoc::Display;
 
+use itertools::{Either, Itertools};
 use serde::{Deserialize, Serialize};
 use walkdir::DirEntry;
 
@@ -19,6 +20,65 @@ pub type FilterSliceMut<'a> = &'a mut [Box<dyn FnMut(&DirEntry) -> bool>];
 
 #[derive(Debug, Clone, Default)]
 pub struct FilterCollection(Vec<(FilterModeGroupKind, FilterApplicationKind)>);
+
+impl Display for FilterCollection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut collection: HashMap<&FilterModeGroupKind, Vec<&FilterApplicationKind>> =
+            HashMap::new();
+
+        write!(
+            f,
+            "
+    FilterCollection
+
+    Filters:
+        "
+        )?;
+
+        let (all, other): (Vec<_>, Vec<_>) =
+            self.0.iter().partition_map(|(mode, filter)| match mode {
+                FilterModeGroupKind::All => Either::Left((mode, filter)),
+                FilterModeGroupKind::Any => Either::Right((mode, filter)),
+                FilterModeGroupKind::None => Either::Right((mode, filter)),
+            });
+
+        let (any, none): (Vec<_>, Vec<_>) =
+            other
+                .into_iter()
+                .partition_map(|(mode, filter)| match mode {
+                    FilterModeGroupKind::Any => Either::Left((mode, filter)),
+                    FilterModeGroupKind::None => Either::Right((mode, filter)),
+                    FilterModeGroupKind::All => {
+                        unreachable!(
+                            "We took already care of that variant, shouldn't exist in here."
+                        )
+                    }
+                });
+
+        let variants_partitioned = vec![all, any, none];
+
+        for variant in &variants_partitioned {
+            for (idx, (mode, filter)) in variant.iter().enumerate() {
+                if idx == 0 {
+                    write!(
+                        f,
+                        "
+    Mode: {mode}
+    ^^^^"
+                    )?;
+                }
+
+                write!(
+                    f,
+                    "
+    Application Kind: {filter}"
+                )?
+            }
+        }
+
+        Ok(())
+    }
+}
 
 impl FilterCollection {
     pub fn new() -> Self {
@@ -36,6 +96,10 @@ impl FilterCollection {
     pub fn push(&mut self, filter_collection: (FilterModeGroupKind, FilterApplicationKind)) {
         self.0.push(filter_collection)
     }
+
+    pub fn print_filters(&self) {
+        self.0.iter().for_each(|filter| {})
+    }
 }
 
 impl std::ops::Deref for FilterCollection {
@@ -49,9 +113,9 @@ impl std::ops::Deref for FilterCollection {
 /// Should filters be negated
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub enum FilterApplicationKind {
-    /// Apply a filter
+    /// Apply {0}
     Retain(FilterKind),
-    /// Negate this filter
+    /// Negate {0}
     Invert(FilterKind),
 }
 
@@ -109,7 +173,9 @@ impl FilterApplicationKind {
 /// of the filters must apply
 
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
-#[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Copy)]
+#[derive(
+    Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Copy, Hash,
+)]
 #[non_exhaustive]
 pub enum FilterModeGroupKind {
     /// All of the filters need to apply
@@ -832,59 +898,145 @@ pub enum FilterKind {
 impl Display for FilterKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            FilterKind::NoFilter => write!(f, "Filter: None."),
+            FilterKind::NoFilter => write!(
+                f,
+                "
+    -> NoFilter
+            "
+            ),
             FilterKind::AllItems {
                 i_agree_it_is_dangerous,
             } => write!(
                 f,
-                "Filter: All items. Arguments: consent: {}",
-                i_agree_it_is_dangerous
+                "
+    -> All items
+        Arguments:
+            consent: {i_agree_it_is_dangerous}
+            "
             ),
             FilterKind::Created { range } => {
-                write!(f, "Filter: Created. Arguments: range: {}", range)
+                write!(
+                    f,
+                    "
+    -> Created
+        Arguments:
+            range: {range}
+                "
+                )
             }
             FilterKind::LastAccessed { range } => {
-                write!(f, "Filter: LastAccessed. Arguments: range: {}", range)
+                write!(
+                    f,
+                    "
+    -> LastAccessed
+        Arguments:
+            range: {range}
+                "
+                )
             }
             FilterKind::LastModified { range } => {
-                write!(f, "Filter: LastModified. Arguments: range: {}", range)
+                write!(
+                    f,
+                    "
+    -> LastModified
+        Arguments:
+            range: {range}
+    "
+                )
             }
             FilterKind::Duplicate {
                 detect_original_by,
                 reverse,
             } => write!(
                 f,
-                "Filter: Duplicate. Arguments: detection: {:?}, reverse: {}",
-                detect_original_by, reverse
+                "
+    -> Duplicate
+        Arguments:
+            detection: {detect_original_by:?},
+            reverse: {reverse}
+    "
             ),
             FilterKind::Empty => write!(f, "Filter: Empty."),
             FilterKind::Exif => write!(f, "Filter: Exif."),
             FilterKind::Extension { exts } => {
-                write!(f, "Filter: Extension. Arguments: exts: {:?}", exts)
+                write!(
+                    f,
+                    "
+    -> Extension
+        Arguments:
+            exts: {exts:?}
+                "
+                )
             }
             FilterKind::Filecontent { regex } => {
-                write!(f, "Filter: Filecontent. Arguments: regex: {}", regex)
+                write!(
+                    f,
+                    "
+    -> Filecontent
+        Arguments:
+            regex: {regex}
+    "
+                )
             }
             FilterKind::Mimetype { mimetype } => {
-                write!(f, "Filter: Mimetype. Arguments: mimetypes: {:?}", mimetype)
+                write!(
+                    f,
+                    "
+    -> Mimetype
+        Arguments:
+            mimetypes: {mimetype:?}
+                "
+                )
             }
             FilterKind::Name {
                 arguments,
                 case_insensitive,
             } => write!(
                 f,
-                "Filter: Name. Arguments: args: {:?}, case_insensitive: {}",
-                arguments, case_insensitive
+                "
+    -> Name
+        Arguments:
+            args: {arguments:?},
+            case_insensitive: {case_insensitive}
+                "
             ),
-            FilterKind::Regex { expr } => write!(f, "Filter: Regex. Arguments: expr: {}", expr),
+            FilterKind::Regex { expr } => write!(
+                f,
+                "
+    -> Regex
+        Arguments:
+        expr: {expr}
+            "
+            ),
             FilterKind::Size { range } => {
-                write!(f, "Filter: Size. Arguments: range: {}", range)
+                write!(
+                    f,
+                    "
+    -> Size
+        Arguments:
+            range: {range}
+                "
+                )
             }
             FilterKind::IgnorePath { in_path } => {
-                write!(f, "Filter: IgnorePath. Arguments: paths: {:?}", in_path)
+                write!(
+                    f,
+                    "
+    -> IgnorePath
+        Arguments:
+            paths: {in_path:?}
+                "
+                )
             }
             FilterKind::IgnoreName { in_name } => {
-                write!(f, "Filter: IgnoreName. Arguments: names: {:?}", in_name)
+                write!(
+                    f,
+                    "
+    -> IgnoreName
+        Arguments:
+            names: {in_name:?}
+                "
+                )
             }
         }
     }

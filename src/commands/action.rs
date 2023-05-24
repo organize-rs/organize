@@ -17,7 +17,7 @@ pub struct ActionCmd {
 
 impl Runnable for ActionCmd {
     fn run(&self) {
-        println!("Action chosen: {:?}", self.actions);
+        println!("Action chosen: {}", self.actions);
         let _action = self.actions.get_action();
     }
 }

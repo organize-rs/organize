@@ -23,6 +23,9 @@
 - [ ] Exif
 - [ ] FileContent
 - [ ] Duplicate
+  - we can utilize `itertools::unique_by`
+    - but that does already make it unique, so we need to see how we would collect the `DirEntry`, that was removed due to not being unique
+    - we can use everything that is being exposed by the `DirEntry` itself (metadata.len(), filename(), etc.)
 - [ ] Added (OSX?)
 - [ ] LastUsed (OSX?)
   - [RESEARCH] how does it relate to `LastAccessed`?
@@ -31,9 +34,6 @@
 
 ### Actions impl
 
-- [ ] None
-  - [RESEARCH] is a `do nothing` action that useful even?
-    - for non-destructive actions we have the `dry-run` mode and `destructive` flag
 - [ ] Confirm
 - [ ] Copy
 - [ ] Delete
