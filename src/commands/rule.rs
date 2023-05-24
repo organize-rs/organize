@@ -6,11 +6,12 @@ use abscissa_core::{status_err, Application, Command, Runnable, Shutdown};
 use anyhow::Result;
 use clap::Parser;
 use organize_rs_core::{
-    locations::{OrganizeLocation, OrganizeTarget},
+    locations::{LocationKind, TargetKind},
     parsers::SizeRange,
     rules::{
-        actions::OrganizeAction, filters::OrganizeFilter, ApplyOrNegateFilter, OrganizeFilterMode,
-        OrganizeRule, OrganizeTag,
+        actions::ActionKind,
+        filters::{FilterApplicationKind, FilterKind, FilterModeGroupKind},
+        Rule, Tag,
     },
 };
 
@@ -37,23 +38,23 @@ impl Runnable for RuleCmd {
 
 impl RuleCmd {
     fn inner_run(&self) -> Result<()> {
-        let rule_builder = OrganizeRule::builder();
+        let rule_builder = Rule::builder();
 
         let _rule = rule_builder
             .name("test")
-            .filter(ApplyOrNegateFilter::Apply(OrganizeFilter::Extension {
+            .filter(FilterApplicationKind::Retain(FilterKind::Extension {
                 exts: vec!["toml".to_string()],
             }))
-            .filter(ApplyOrNegateFilter::Apply(OrganizeFilter::Size {
+            .filter(FilterApplicationKind::Retain(FilterKind::Size {
                 range: SizeRange::from_str("1KiB..")?,
             }))
-            .filter_mode(OrganizeFilterMode::All)
-            .action(OrganizeAction::Trash)
-            .location(OrganizeLocation::NonRecursive {
+            .filter_mode(FilterModeGroupKind::All)
+            .action(ActionKind::Trash)
+            .location(LocationKind::NonRecursive {
                 path: r"C:\Users\dailyuse\dev-src\organize".into(),
-                target: OrganizeTarget::Files,
+                target: TargetKind::Files,
             })
-            .tag(OrganizeTag::Custom("my_test_rule".to_string()))
+            .tag(Tag::Custom("my_test_rule".to_string()))
             .build();
 
         Ok(())

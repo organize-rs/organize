@@ -13,7 +13,7 @@ use displaydoc::Display;
 /// the folders, not on files.
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Deserialize, Serialize, Display, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum OrganizeTarget {
+pub enum TargetKind {
     /// operate only on directories
     Dirs,
     /// operate only on files
@@ -22,13 +22,13 @@ pub enum OrganizeTarget {
     Both,
 }
 
-impl Default for OrganizeTarget {
+impl Default for TargetKind {
     fn default() -> Self {
         Self::Files
     }
 }
 
-impl OrganizeTarget {
+impl TargetKind {
     /// Returns `true` if the organize targets is [`Files`].
     ///
     /// [`Files`]: OrganizeTargets::Files
@@ -83,7 +83,7 @@ impl Default for MaxDepth {
 /// [`OrganizeLocation] contains the directories and files
 /// organize should include in the entry discovery
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub enum OrganizeLocation {
+pub enum LocationKind {
     /// Recursive discovery of directory entries
     RecursiveWithMaxDepth {
         /// path to the location that should be filtered
@@ -92,7 +92,7 @@ pub enum OrganizeLocation {
         max_depth: MaxDepth,
         /// when targets is set to dirs, organize will work on
         /// the folders, not on files
-        target: OrganizeTarget,
+        target: TargetKind,
     },
     /// Non-recursive discovery of directory entries
     NonRecursive {
@@ -100,14 +100,14 @@ pub enum OrganizeLocation {
         path: PathBuf,
         /// when targets is set to dirs, organize will work on
         /// the folders, not on files
-        target: OrganizeTarget,
+        target: TargetKind,
     },
 }
 
-impl Display for OrganizeLocation {
+impl Display for LocationKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            OrganizeLocation::RecursiveWithMaxDepth {
+            LocationKind::RecursiveWithMaxDepth {
                 path,
                 max_depth,
                 target,
@@ -125,7 +125,7 @@ impl Display for OrganizeLocation {
                     target
                 )
             }
-            OrganizeLocation::NonRecursive { path, target } => write!(
+            LocationKind::NonRecursive { path, target } => write!(
                 f,
                 "
     Non-Recursive Location
@@ -139,8 +139,8 @@ impl Display for OrganizeLocation {
     }
 }
 
-impl From<(PathBuf, OrganizeTarget)> for OrganizeLocation {
-    fn from(value: (PathBuf, OrganizeTarget)) -> Self {
+impl From<(PathBuf, TargetKind)> for LocationKind {
+    fn from(value: (PathBuf, TargetKind)) -> Self {
         Self::NonRecursive {
             path: value.0,
             target: value.1,
@@ -148,8 +148,8 @@ impl From<(PathBuf, OrganizeTarget)> for OrganizeLocation {
     }
 }
 
-impl From<(PathBuf, MaxDepth, OrganizeTarget)> for OrganizeLocation {
-    fn from(value: (PathBuf, MaxDepth, OrganizeTarget)) -> Self {
+impl From<(PathBuf, MaxDepth, TargetKind)> for LocationKind {
+    fn from(value: (PathBuf, MaxDepth, TargetKind)) -> Self {
         Self::RecursiveWithMaxDepth {
             path: value.0,
             max_depth: value.1,

@@ -6,8 +6,11 @@ use abscissa_core::{Command, Runnable};
 use clap::Args;
 use itertools::Itertools;
 use organize_rs_core::{
-    locations::{MaxDepth, OrganizeLocation, OrganizeTarget},
-    rules::filters::{FilterRecursive, OrganizeFilter},
+    locations::{LocationKind, MaxDepth, TargetKind},
+    rules::filters::{
+        FilterApplicationKind, FilterCollection, FilterKind, FilterModeGroupKind,
+        RecursiveFilterArgs,
+    },
     FilterWalker,
 };
 
@@ -15,7 +18,7 @@ use organize_rs_core::{
 #[derive(Command, Debug, Args, Clone)]
 pub struct FilterCmd {
     #[clap(subcommand)]
-    filters: OrganizeFilter,
+    filters: FilterKind,
 
     /// Locations to operate on
     #[arg(short, long, global = true)]
@@ -41,35 +44,44 @@ pub struct LocationOpts {
     locations: Vec<PathBuf>,
 
     #[command(flatten)]
-    recursive: FilterRecursive,
+    recursive: RecursiveFilterArgs,
 
     /// Targets to operate on
-    #[arg(short, long, global = true, default_value_t = OrganizeTarget::Files, value_enum)]
-    targets: OrganizeTarget,
+    #[arg(short, long, global = true, default_value_t = TargetKind::Files, value_enum)]
+    targets: TargetKind,
 }
 
 impl Runnable for FilterCmd {
     fn run(&self) {
-        let mut filters = vec![self.filters.clone()];
+        let mut filter_collection = FilterCollection::with_vec(vec![(
+            FilterModeGroupKind::Any,
+            FilterApplicationKind::Retain(self.filters.clone()),
+        )]);
 
         if let Some(ignore_names) = self.ignore_name.clone() {
-            filters.push(OrganizeFilter::IgnoreName {
-                in_name: ignore_names,
-            });
+            filter_collection.push((
+                FilterModeGroupKind::None,
+                FilterApplicationKind::Retain(FilterKind::IgnoreName {
+                    in_name: ignore_names,
+                }),
+            ));
         };
 
         if let Some(ignore_paths) = self.ignore_path.clone() {
-            filters.push(OrganizeFilter::IgnorePath {
-                in_path: ignore_paths,
-            });
+            filter_collection.push((
+                FilterModeGroupKind::None,
+                FilterApplicationKind::Retain(FilterKind::IgnorePath {
+                    in_path: ignore_paths,
+                }),
+            ));
         };
 
-        self.inner_run(filters);
+        self.inner_run(filter_collection);
     }
 }
 
 impl FilterCmd {
-    fn inner_run(&self, filters: Vec<OrganizeFilter>) {
+    fn inner_run(&self, filters: FilterCollection) {
         let mut filter_walker = FilterWalker::new();
 
         // Convert to OrganizeLocation
@@ -80,13 +92,13 @@ impl FilterCmd {
             .into_iter()
             .map(|f| {
                 if self.location_opts.recursive.recursive() {
-                    OrganizeLocation::from((
+                    LocationKind::from((
                         f,
                         MaxDepth::new(self.location_opts.recursive.max_depth()),
                         self.location_opts.targets,
                     ))
                 } else {
-                    OrganizeLocation::from((f, self.location_opts.targets))
+                    LocationKind::from((f, self.location_opts.targets))
                 }
             })
             // .inspect(|f| println!("Got the following locations: {f}"))

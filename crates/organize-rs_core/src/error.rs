@@ -5,7 +5,7 @@ use thiserror::Error as ThisError;
 pub type OrganizeResult<T> = std::result::Result<T, Box<dyn StdError>>;
 
 #[derive(Debug, Clone, ThisError, Display)]
-pub enum OrganizeError {
+pub enum ErrorKind {
     /// extension is not extractable from file: {0:?}
     ExtensionNotExtractable(std::path::PathBuf),
 }

@@ -5,76 +5,22 @@ pub mod actions;
 pub mod aliases;
 pub mod filters;
 
+use std::fmt::Display;
+
 use displaydoc::Display;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    locations::OrganizeLocation,
-    rules::{actions::OrganizeAction, filters::OrganizeFilter},
+    locations::LocationKind,
+    rules::{
+        actions::ActionKind,
+        filters::{FilterApplicationKind, FilterModeGroupKind},
+    },
 };
-
-/// Should filters be negated
-#[derive(Debug, Clone, Deserialize, Serialize, Display)]
-pub enum ApplyOrNegateFilter {
-    /// Apply a filter
-    Apply(OrganizeFilter),
-    /// Negate this filter
-    Negate(OrganizeFilter),
-}
-
-impl ApplyOrNegateFilter {
-    /// Returns `true` if the apply or negate filter is [`Apply`].
-    ///
-    /// [`Apply`]: ApplyOrNegateFilter::Apply
-    #[must_use]
-    pub fn is_apply(&self) -> bool {
-        matches!(self, Self::Apply(..))
-    }
-
-    pub fn as_apply(&self) -> Option<&OrganizeFilter> {
-        if let Self::Apply(v) = self {
-            Some(v)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_apply(self) -> Result<OrganizeFilter, Self> {
-        if let Self::Apply(v) = self {
-            Ok(v)
-        } else {
-            Err(self)
-        }
-    }
-
-    /// Returns `true` if the apply or negate filter is [`Negate`].
-    ///
-    /// [`Negate`]: ApplyOrNegateFilter::Negate
-    #[must_use]
-    pub fn is_negate(&self) -> bool {
-        matches!(self, Self::Negate(..))
-    }
-
-    pub fn as_negate(&self) -> Option<&OrganizeFilter> {
-        if let Self::Negate(v) = self {
-            Some(v)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_negate(self) -> Result<OrganizeFilter, Self> {
-        if let Self::Negate(v) = self {
-            Ok(v)
-        } else {
-            Err(self)
-        }
-    }
-}
 
 /// Tags that can be applied to rules
 #[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord)]
-pub enum OrganizeTag {
+pub enum Tag {
     /// Always run filters/actions with this tag
     Always,
     /// Never run filters/actions with this tag
@@ -83,7 +29,7 @@ pub enum OrganizeTag {
     Custom(String),
 }
 
-impl OrganizeTag {
+impl Tag {
     /// Returns `true` if the organize tag is [`Always`].
     ///
     /// [`Always`]: OrganizeTag::Always
@@ -125,105 +71,90 @@ impl OrganizeTag {
     }
 }
 
-/// Application of filters, so whether "all", "any" or "none"
-/// of the filters must apply
-#[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Copy)]
-pub enum OrganizeFilterMode {
-    /// All of the filters need to apply
-    All,
-    /// Any of the filters need to apply
-    Any,
-    /// None of the filters need to apply
-    None,
-}
-
-impl Default for OrganizeFilterMode {
-    fn default() -> Self {
-        Self::Any
-    }
-}
-
-impl OrganizeFilterMode {
-    /// Returns `true` if the organize filter mode is [`All`].
-    ///
-    /// [`All`]: OrganizeFilterMode::All
-    #[must_use]
-    pub fn is_all(&self) -> bool {
-        matches!(self, Self::All)
-    }
-
-    /// Returns `true` if the organize filter mode is [`Any`].
-    ///
-    /// [`Any`]: OrganizeFilterMode::Any
-    #[must_use]
-    pub fn is_any(&self) -> bool {
-        matches!(self, Self::Any)
-    }
-
-    /// Returns `true` if the organize filter mode is [`None`].
-    ///
-    /// [`None`]: OrganizeFilterMode::None
-    #[must_use]
-    pub fn is_none(&self) -> bool {
-        matches!(self, Self::None)
-    }
-}
-
-/// [`OrganizeRule`] contains a list of objects with the required keys
-/// "locations" and "actions". One config can have many [`OrganizeRule`]s.
+/// [`Rule`] contains a list of objects with the required keys
+/// "locations" and "actions". One config can have many [`Rule`]s.
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct OrganizeRule {
+pub struct Rule {
     /// rule name
     name: String,
     /// tag for a rule, so you can run a set of rules by passing `--tags` or `--skip-tags`
-    tags: Vec<OrganizeTag>,
+    tags: Vec<Tag>,
     /// whether the rule is enabled / disabled
     enabled: bool,
     /// list of locations
-    locations: Vec<OrganizeLocation>,
+    locations: Vec<LocationKind>,
     /// whether "all", "any" or "none" of the filters must apply
-    filter_mode: OrganizeFilterMode,
+    filter_mode: FilterModeGroupKind,
     /// supported filters
-    filters: Vec<ApplyOrNegateFilter>,
+    filters: Vec<FilterApplicationKind>,
     /// supported actions
-    actions: Vec<OrganizeAction>,
+    actions: Vec<ActionKind>,
 }
 
-impl OrganizeRule {
+impl Display for Rule {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let Rule {
+            name,
+            tags,
+            enabled,
+            locations,
+            filter_mode,
+            filters,
+            actions,
+        } = self;
+
+        write!(
+            f,
+            "
+    Rule - {name} ({enabled})
+        -> {filter_mode}
+
+    Tags: {tags:?}
+    Locations: {locations:?}
+
+    Filters: {filters:?}
+
+    Actions: {actions:?}
+        "
+        )
+    }
+}
+
+impl Rule {
     // This method will help users to discover the builder
-    pub fn builder() -> OrganizeRuleBuilder {
-        OrganizeRuleBuilder::default()
+    pub fn builder() -> RuleBuilder {
+        RuleBuilder::default()
     }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
-pub struct OrganizeRuleBuilder {
+pub struct RuleBuilder {
     /// rule name
     name: String,
     /// tag for a rule, so you can run a set of rules by passing `--tags` or `--skip-tags`
-    tags: Vec<OrganizeTag>,
+    tags: Vec<Tag>,
     /// whether the rule is enabled / disabled
     enabled: bool,
     /// whether "all", "any" or "none" of the filters must apply
-    filter_mode: OrganizeFilterMode,
+    filter_mode: FilterModeGroupKind,
     /// list of locations
-    locations: Vec<OrganizeLocation>,
+    locations: Vec<LocationKind>,
     /// supported filters
-    filters: Vec<ApplyOrNegateFilter>,
+    filters: Vec<FilterApplicationKind>,
     /// supported actions
-    actions: Vec<OrganizeAction>,
+    actions: Vec<ActionKind>,
 }
 
-impl OrganizeRuleBuilder {
-    pub fn new(name: &str) -> OrganizeRuleBuilder {
-        OrganizeRuleBuilder {
+impl RuleBuilder {
+    pub fn new(name: &str) -> RuleBuilder {
+        RuleBuilder {
             name: String::from(name),
             ..Default::default()
         }
     }
 
-    pub fn build(self) -> OrganizeRule {
-        OrganizeRule {
+    pub fn build(self) -> Rule {
+        Rule {
             name: self.name,
             tags: self.tags,
             enabled: self.enabled,
@@ -235,67 +166,67 @@ impl OrganizeRuleBuilder {
     }
 
     /// Set name
-    pub fn name(mut self, name: &str) -> OrganizeRuleBuilder {
+    pub fn name(mut self, name: &str) -> RuleBuilder {
         self.name = String::from(name);
         self
     }
 
     /// Set enabled
-    pub fn enabled(mut self, enabled: bool) -> OrganizeRuleBuilder {
+    pub fn enabled(mut self, enabled: bool) -> RuleBuilder {
         self.enabled = enabled;
         self
     }
 
     /// Add a single location
-    pub fn location(mut self, location: OrganizeLocation) -> OrganizeRuleBuilder {
+    pub fn location(mut self, location: LocationKind) -> RuleBuilder {
         self.locations.push(location);
         self
     }
 
     /// Add multiple locations
-    pub fn locations(mut self, mut locations: Vec<OrganizeLocation>) -> OrganizeRuleBuilder {
+    pub fn locations(mut self, mut locations: Vec<LocationKind>) -> RuleBuilder {
         self.locations.append(&mut locations);
         self
     }
 
     /// Set filter mode
-    pub fn filter_mode(mut self, filter_mode: OrganizeFilterMode) -> OrganizeRuleBuilder {
+    pub fn filter_mode(mut self, filter_mode: FilterModeGroupKind) -> RuleBuilder {
         self.filter_mode = filter_mode;
         self
     }
 
     /// Add a single filter
-    pub fn filter(mut self, filter: ApplyOrNegateFilter) -> OrganizeRuleBuilder {
+    pub fn filter(mut self, filter: FilterApplicationKind) -> RuleBuilder {
         self.filters.push(filter);
         self
     }
 
     /// Add multiple filters
-    pub fn filters(mut self, mut filters: Vec<ApplyOrNegateFilter>) -> OrganizeRuleBuilder {
+    pub fn filters(mut self, mut filters: Vec<FilterApplicationKind>) -> RuleBuilder {
         self.filters.append(&mut filters);
         self
     }
 
     /// Add single action
-    pub fn action(mut self, action: OrganizeAction) -> OrganizeRuleBuilder {
+    pub fn action(mut self, action: ActionKind) -> RuleBuilder {
         self.actions.push(action);
         self
     }
 
     /// Add multiple actions
-    pub fn actions(mut self, mut actions: Vec<OrganizeAction>) -> OrganizeRuleBuilder {
+    pub fn actions(mut self, mut actions: Vec<ActionKind>) -> RuleBuilder {
         self.actions.append(&mut actions);
         self
     }
 
     /// Add single tag
-    pub fn tag(mut self, tag: OrganizeTag) -> OrganizeRuleBuilder {
+    pub fn tag(mut self, tag: Tag) -> RuleBuilder {
         self.tags.push(tag);
         self
     }
 
     /// Add multiple actions
-    pub fn tags(mut self, mut tags: Vec<OrganizeTag>) -> OrganizeRuleBuilder {
+    pub fn tags(mut self, mut tags: Vec<Tag>) -> RuleBuilder {
         self.tags.append(&mut tags);
         self
     }

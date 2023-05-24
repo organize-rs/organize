@@ -15,7 +15,7 @@ type ActionClosure = Box<dyn FnMut(&DirEntry) -> Result<Option<bool>, Box<dyn st
 #[cfg(target_os = "osx")]
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
-pub enum MacOsTagColours {
+pub enum MacOsTagColourKind {
     None,
     Gray,
     Green,
@@ -27,7 +27,7 @@ pub enum MacOsTagColours {
 }
 
 #[cfg(target_os = "osx")]
-impl MacOsTagColours {
+impl MacOsTagColourKind {
     /// Returns `true` if the mac os tag colours is [`None`].
     ///
     /// [`None`]: MacOsTagColours::None
@@ -94,7 +94,7 @@ impl MacOsTagColours {
 }
 
 #[cfg(target_os = "osx")]
-impl Default for MacOsTagColours {
+impl Default for MacOsTagColourKind {
     fn default() -> Self {
         Self::None
     }
@@ -104,7 +104,7 @@ impl Default for MacOsTagColours {
 /// Actions for conflict resolution
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
-pub enum OnConflict {
+pub enum OnConflictKind {
     /// Skip the item
     Skip,
     /// Overwrite the item
@@ -127,7 +127,7 @@ pub enum OnConflict {
     Smallest,
 }
 
-impl OnConflict {
+impl OnConflictKind {
     /// Returns `true` if [`OnConflict`] is [`Skip`].
     ///
     /// [`Skip`]: OnConflict::Skip
@@ -169,7 +169,7 @@ impl OnConflict {
     }
 }
 
-impl Default for OnConflict {
+impl Default for OnConflictKind {
     fn default() -> Self {
         Self::RenameNew
     }
@@ -178,7 +178,7 @@ impl Default for OnConflict {
 /// Support template strings
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
-pub enum TemplateStrings {
+pub enum TemplateStringKind {
     /// {{filename}}
     Filename,
     /// {{counter}}
@@ -187,7 +187,7 @@ pub enum TemplateStrings {
     Extension,
 }
 
-impl TemplateStrings {
+impl TemplateStringKind {
     /// Returns `true` if [`TemplateStrings`] is [`Filename`].
     ///
     /// [`Filename`]: TemplateStrings::Filename
@@ -216,7 +216,7 @@ impl TemplateStrings {
 /// Mode how should be written to a file
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub enum WriteMode {
+pub enum WriteModeKind {
     /// append text to the file
     Append,
     /// insert text as first line
@@ -225,7 +225,7 @@ pub enum WriteMode {
     Overwrite,
 }
 
-impl WriteMode {
+impl WriteModeKind {
     /// Returns `true` if the write mode is [`Append`].
     ///
     /// [`Append`]: WriteMode::Append
@@ -251,7 +251,7 @@ impl WriteMode {
     }
 }
 
-impl Default for WriteMode {
+impl Default for WriteModeKind {
     fn default() -> Self {
         Self::Append
     }
@@ -263,7 +263,7 @@ impl Default for WriteMode {
 /// Actions that can be used within the config file
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub enum OrganizeAction {
+pub enum ActionKind {
     /// Do nothing.
     NoAction,
     /// Confirm before deleting a duplicate.
@@ -338,12 +338,12 @@ pub enum OrganizeAction {
         ///
         /// Defaults to rename_new.
         #[cfg_attr(feature = "cli", arg(long))]
-        on_conflict: OnConflict,
+        on_conflict: OnConflictKind,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
-        rename_template: Vec<TemplateStrings>,
+        rename_template: Vec<TemplateStringKind>,
         /// An opener url of the filesystem you want to copy to.
         ///
         /// If this is not given, the local filesystem is used.
@@ -491,12 +491,12 @@ pub enum OrganizeAction {
         ///
         /// Defaults to rename_new.
         #[cfg_attr(feature = "cli", arg(long))]
-        on_conflict: OnConflict,
+        on_conflict: OnConflictKind,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
-        rename_template: Vec<TemplateStrings>,
+        rename_template: Vec<TemplateStringKind>,
         /// An opener url of the filesystem you want to move to.
         ///
         /// If this is not given, the local filesystem is used.
@@ -535,12 +535,12 @@ pub enum OrganizeAction {
         ///
         /// Defaults to rename_new.
         #[cfg_attr(feature = "cli", arg(long))]
-        on_conflict: OnConflict,
+        on_conflict: OnConflictKind,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
-        rename_template: Vec<TemplateStrings>,
+        rename_template: Vec<TemplateStringKind>,
     },
     /// Create a symbolic link.
     #[serde(rename = "symlink")]
@@ -622,7 +622,7 @@ pub enum OrganizeAction {
         ///
         /// Defaults to `append`.
         #[cfg_attr(feature = "cli", arg(long))]
-        mode: WriteMode,
+        mode: WriteModeKind,
         /// Whether to append a newline to the given text.
         ///
         /// Defaults to `true`.
@@ -645,36 +645,36 @@ pub enum OrganizeAction {
     Shell,
 }
 
-impl OrganizeAction {
+impl ActionKind {
     pub fn get_action(&self) -> ActionClosure {
         match self {
-            OrganizeAction::NoAction => Box::new(move |_entry| Ok(Some(false))),
-            OrganizeAction::Trash => Box::new(self.action_move_to_trash()),
-            OrganizeAction::Copy {
+            ActionKind::NoAction => Box::new(move |_entry| Ok(Some(false))),
+            ActionKind::Trash => Box::new(self.action_move_to_trash()),
+            ActionKind::Copy {
                 src: _,
                 dst: _,
                 on_conflict: _,
                 rename_template: _,
                 filesystem: _,
             } => todo!("not implemented (yet)!"),
-            OrganizeAction::Move {
+            ActionKind::Move {
                 src: _,
                 dst: _,
                 on_conflict: _,
                 rename_template: _,
                 filesystem: _,
             } => todo!("not implemented (yet)!"),
-            OrganizeAction::Rename {
+            ActionKind::Rename {
                 src: _,
                 name: _,
                 on_conflict: _,
                 rename_template: _,
             } => todo!("not implemented (yet)!"),
-            OrganizeAction::Confirm { text: _, vars: _ } => todo!("not implemented (yet)!"),
-            OrganizeAction::Delete { src: _ } => todo!("not implemented (yet)!"),
-            OrganizeAction::Echo { msg: _ } => todo!("not implemented (yet)!"),
-            OrganizeAction::Symlink { src: _, dst: _ } => todo!("not implemented (yet)!"),
-            OrganizeAction::Write {
+            ActionKind::Confirm { text: _, vars: _ } => todo!("not implemented (yet)!"),
+            ActionKind::Delete { src: _ } => todo!("not implemented (yet)!"),
+            ActionKind::Echo { msg: _ } => todo!("not implemented (yet)!"),
+            ActionKind::Symlink { src: _, dst: _ } => todo!("not implemented (yet)!"),
+            ActionKind::Write {
                 txt: _,
                 file: _,
                 mode: _,
@@ -682,7 +682,9 @@ impl OrganizeAction {
                 clear_before_first_write: _,
                 filesystem: _,
             } => todo!("not implemented (yet)!"),
-            OrganizeAction::Shell => todo!("not implemented (yet)!"),
+            ActionKind::Shell => todo!("not implemented (yet)!"),
+            #[cfg(target_os = "osx")]
+            ActionKind::MacOsTags { tags } => todo!(),
         }
     }
 
@@ -697,7 +699,7 @@ impl OrganizeAction {
     }
 }
 
-impl Default for OrganizeAction {
+impl Default for ActionKind {
     fn default() -> Self {
         Self::NoAction
     }

@@ -2,13 +2,13 @@
 
 use abscissa_core::{Command, Runnable};
 use clap::Args;
-use organize_rs_core::rules::actions::OrganizeAction;
+use organize_rs_core::rules::actions::ActionKind;
 
 /// `action` subcommand
 #[derive(Command, Debug, Args, Clone)]
 pub struct ActionCmd {
     #[clap(subcommand)]
-    actions: OrganizeAction,
+    actions: ActionKind,
 
     /// Run an action destructively
     #[arg(short, long, global = true, default_value_t = false)]

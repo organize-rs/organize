@@ -14,46 +14,146 @@ use walkdir::DirEntry;
 use crate::parsers::{PeriodRange, SizeRange};
 
 pub type FilterClosure<'a> = Box<dyn FnMut(&DirEntry) -> bool + 'a>;
-pub type FilterCollection<'a> = Vec<Box<dyn FnMut(&DirEntry) -> bool + 'a>>;
+pub type RawFilterFnCollection<'a> = Vec<Box<dyn FnMut(&DirEntry) -> bool + 'a>>;
+pub type FilterSliceMut<'a> = &'a mut [Box<dyn FnMut(&DirEntry) -> bool>];
 
-/// Comparison conditions for dates
-#[cfg_attr(feature = "cli", derive(ValueEnum))]
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
-pub enum Interval {
-    /// older
-    OlderThan,
-    /// newer
-    NewerThan,
-}
+#[derive(Debug, Clone, Default)]
+pub struct FilterCollection(Vec<(FilterModeGroupKind, FilterApplicationKind)>);
 
-impl Interval {
-    /// Returns `true` if the older newer is [`Older`].
-    ///
-    /// [`Older`]: OlderNewer::Older
-    #[must_use]
-    pub fn is_older(&self) -> bool {
-        matches!(self, Self::OlderThan)
+impl FilterCollection {
+    pub fn new() -> Self {
+        Self::default()
     }
 
-    /// Returns `true` if the older newer is [`Newer`].
-    ///
-    /// [`Newer`]: OlderNewer::Newer
-    #[must_use]
-    pub fn is_newer(&self) -> bool {
-        matches!(self, Self::NewerThan)
+    pub fn with_vec(filter_collection: Vec<(FilterModeGroupKind, FilterApplicationKind)>) -> Self {
+        Self(filter_collection)
+    }
+
+    pub fn decompose(self) -> Vec<(FilterModeGroupKind, FilterApplicationKind)> {
+        self.0
+    }
+
+    pub fn push(&mut self, filter_collection: (FilterModeGroupKind, FilterApplicationKind)) {
+        self.0.push(filter_collection)
     }
 }
 
-impl Default for Interval {
+impl std::ops::Deref for FilterCollection {
+    type Target = Vec<(FilterModeGroupKind, FilterApplicationKind)>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+/// Should filters be negated
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+pub enum FilterApplicationKind {
+    /// Apply a filter
+    Retain(FilterKind),
+    /// Negate this filter
+    Invert(FilterKind),
+}
+
+impl FilterApplicationKind {
+    /// Returns `true` if the apply or negate filter is [`Apply`].
+    ///
+    /// [`Apply`]: ApplyOrNegateFilter::Apply
+    #[must_use]
+    pub fn is_apply(&self) -> bool {
+        matches!(self, Self::Retain(..))
+    }
+
+    pub fn as_apply(&self) -> Option<&FilterKind> {
+        if let Self::Retain(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_apply(self) -> Result<FilterKind, Self> {
+        if let Self::Retain(v) = self {
+            Ok(v)
+        } else {
+            Err(self)
+        }
+    }
+
+    /// Returns `true` if the apply or negate filter is [`Negate`].
+    ///
+    /// [`Negate`]: ApplyOrNegateFilter::Negate
+    #[must_use]
+    pub fn is_invert(&self) -> bool {
+        matches!(self, Self::Invert(..))
+    }
+
+    pub fn as_invert(&self) -> Option<&FilterKind> {
+        if let Self::Invert(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    pub fn try_into_invert(self) -> Result<FilterKind, Self> {
+        if let Self::Invert(v) = self {
+            Ok(v)
+        } else {
+            Err(self)
+        }
+    }
+}
+
+/// Application of filters, so whether "all", "any" or "none"
+/// of the filters must apply
+#[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Copy)]
+#[non_exhaustive]
+pub enum FilterModeGroupKind {
+    /// All of the filters need to apply
+    All,
+    /// Any of the filters need to apply
+    Any,
+    /// None of the filters need to apply
+    None,
+}
+
+impl Default for FilterModeGroupKind {
     fn default() -> Self {
-        Self::OlderThan
+        Self::Any
+    }
+}
+
+impl FilterModeGroupKind {
+    /// Returns `true` if the organize filter mode is [`All`].
+    ///
+    /// [`All`]: OrganizeFilterMode::All
+    #[must_use]
+    pub fn is_all(&self) -> bool {
+        matches!(self, Self::All)
+    }
+
+    /// Returns `true` if the organize filter mode is [`Any`].
+    ///
+    /// [`Any`]: OrganizeFilterMode::Any
+    #[must_use]
+    pub fn is_any(&self) -> bool {
+        matches!(self, Self::Any)
+    }
+
+    /// Returns `true` if the organize filter mode is [`None`].
+    ///
+    /// [`None`]: OrganizeFilterMode::None
+    #[must_use]
+    pub fn is_none(&self) -> bool {
+        matches!(self, Self::None)
     }
 }
 
 /// Duplication detection
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
-pub enum DetectDuplicateBy {
+pub enum DuplicateKind {
     /// Whatever file is visited first is the original.
     ///
     /// This depends on the order of your location entries.
@@ -68,13 +168,13 @@ pub enum DetectDuplicateBy {
     // Hash,
 }
 
-impl Default for DetectDuplicateBy {
+impl Default for DuplicateKind {
     fn default() -> Self {
         Self::Name
     }
 }
 
-impl DetectDuplicateBy {
+impl DuplicateKind {
     /// Returns `true` if the detect duplicate by is [`FirstSeen`].
     ///
     /// [`FirstSeen`]: DetectDuplicateBy::FirstSeen
@@ -111,7 +211,7 @@ impl DetectDuplicateBy {
 #[cfg_attr(feature = "cli", derive(Args))]
 #[derive(Display, Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "cli", group(required = false, multiple = true))]
-pub struct FilterRecursive {
+pub struct RecursiveFilterArgs {
     /// Recurse into subfolders
     #[cfg_attr(
         feature = "cli",
@@ -127,7 +227,7 @@ pub struct FilterRecursive {
     max_depth: u64,
 }
 
-impl FilterRecursive {
+impl RecursiveFilterArgs {
     pub fn recursive(&self) -> bool {
         self.recursive
     }
@@ -158,7 +258,7 @@ pub struct NameFilterArgs {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
-pub enum DateUnit {
+pub enum DateUnitKind {
     /// specify number of years
     #[serde(rename = "years")]
     Years(f64),
@@ -182,21 +282,21 @@ pub enum DateUnit {
     Seconds(f64),
 }
 
-impl DateUnit {
+impl DateUnitKind {
     pub fn into_seconds(&self) -> f64 {
         match self {
-            DateUnit::Years(y) => *y * 52f64 * 7f64 * 24f64 * 60f64 * 60f64,
-            DateUnit::Months(mo) => *mo * 4f64 * 7f64 * 24f64 * 60f64 * 60f64,
-            DateUnit::Weeks(w) => *w * 7f64 * 24f64 * 60f64 * 60f64,
-            DateUnit::Days(d) => *d * 24f64 * 60f64 * 60f64,
-            DateUnit::Hours(h) => *h * 60f64 * 60f64,
-            DateUnit::Minutes(m) => *m * 60f64,
-            DateUnit::Seconds(s) => *s,
+            DateUnitKind::Years(y) => *y * 52f64 * 7f64 * 24f64 * 60f64 * 60f64,
+            DateUnitKind::Months(mo) => *mo * 4f64 * 7f64 * 24f64 * 60f64 * 60f64,
+            DateUnitKind::Weeks(w) => *w * 7f64 * 24f64 * 60f64 * 60f64,
+            DateUnitKind::Days(d) => *d * 24f64 * 60f64 * 60f64,
+            DateUnitKind::Hours(h) => *h * 60f64 * 60f64,
+            DateUnitKind::Minutes(m) => *m * 60f64,
+            DateUnitKind::Seconds(s) => *s,
         }
     }
 }
 
-impl From<(f64, &str)> for DateUnit {
+impl From<(f64, &str)> for DateUnitKind {
     fn from(value: (f64, &str)) -> Self {
         let (value, unit) = value;
 
@@ -217,7 +317,7 @@ impl From<(f64, &str)> for DateUnit {
 /// use to apply to locations.
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub enum OrganizeFilter {
+pub enum FilterKind {
     /// Don't use any filter.
     ///
     /// # Result
@@ -400,7 +500,7 @@ pub enum OrganizeFilter {
     #[serde(rename = "duplicate")]
     Duplicate {
         #[cfg_attr(feature = "cli", arg(long))]
-        detect_original_by: Option<DetectDuplicateBy>,
+        detect_original_by: Option<DuplicateKind>,
         #[cfg_attr(feature = "cli", arg(long))]
         reverse: bool,
     },
@@ -727,27 +827,27 @@ pub enum OrganizeFilter {
     },
 }
 
-impl Display for OrganizeFilter {
+impl Display for FilterKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            OrganizeFilter::NoFilter => write!(f, "Filter: None."),
-            OrganizeFilter::AllItems {
+            FilterKind::NoFilter => write!(f, "Filter: None."),
+            FilterKind::AllItems {
                 i_agree_it_is_dangerous,
             } => write!(
                 f,
                 "Filter: All items. Arguments: consent: {}",
                 i_agree_it_is_dangerous
             ),
-            OrganizeFilter::Created { range } => {
+            FilterKind::Created { range } => {
                 write!(f, "Filter: Created. Arguments: range: {}", range)
             }
-            OrganizeFilter::LastAccessed { range } => {
+            FilterKind::LastAccessed { range } => {
                 write!(f, "Filter: LastAccessed. Arguments: range: {}", range)
             }
-            OrganizeFilter::LastModified { range } => {
+            FilterKind::LastModified { range } => {
                 write!(f, "Filter: LastModified. Arguments: range: {}", range)
             }
-            OrganizeFilter::Duplicate {
+            FilterKind::Duplicate {
                 detect_original_by,
                 reverse,
             } => write!(
@@ -755,18 +855,18 @@ impl Display for OrganizeFilter {
                 "Filter: Duplicate. Arguments: detection: {:?}, reverse: {}",
                 detect_original_by, reverse
             ),
-            OrganizeFilter::Empty => write!(f, "Filter: Empty."),
-            OrganizeFilter::Exif => write!(f, "Filter: Exif."),
-            OrganizeFilter::Extension { exts } => {
+            FilterKind::Empty => write!(f, "Filter: Empty."),
+            FilterKind::Exif => write!(f, "Filter: Exif."),
+            FilterKind::Extension { exts } => {
                 write!(f, "Filter: Extension. Arguments: exts: {:?}", exts)
             }
-            OrganizeFilter::Filecontent { regex } => {
+            FilterKind::Filecontent { regex } => {
                 write!(f, "Filter: Filecontent. Arguments: regex: {}", regex)
             }
-            OrganizeFilter::Mimetype { mimetype } => {
+            FilterKind::Mimetype { mimetype } => {
                 write!(f, "Filter: Mimetype. Arguments: mimetypes: {:?}", mimetype)
             }
-            OrganizeFilter::Name {
+            FilterKind::Name {
                 arguments,
                 case_insensitive,
             } => write!(
@@ -774,57 +874,57 @@ impl Display for OrganizeFilter {
                 "Filter: Name. Arguments: args: {:?}, case_insensitive: {}",
                 arguments, case_insensitive
             ),
-            OrganizeFilter::Regex { expr } => write!(f, "Filter: Regex. Arguments: expr: {}", expr),
-            OrganizeFilter::Size { range } => {
+            FilterKind::Regex { expr } => write!(f, "Filter: Regex. Arguments: expr: {}", expr),
+            FilterKind::Size { range } => {
                 write!(f, "Filter: Size. Arguments: range: {}", range)
             }
-            OrganizeFilter::IgnorePath { in_path } => {
+            FilterKind::IgnorePath { in_path } => {
                 write!(f, "Filter: IgnorePath. Arguments: paths: {:?}", in_path)
             }
-            OrganizeFilter::IgnoreName { in_name } => {
+            FilterKind::IgnoreName { in_name } => {
                 write!(f, "Filter: IgnoreName. Arguments: names: {:?}", in_name)
             }
         }
     }
 }
 
-impl Default for OrganizeFilter {
+impl Default for FilterKind {
     fn default() -> Self {
         Self::NoFilter
     }
 }
 
-impl OrganizeFilter {
+impl FilterKind {
     pub fn get_filter(&self) -> FilterClosure {
         match self {
-            OrganizeFilter::NoFilter => Box::new(|_entry: &DirEntry| false),
-            OrganizeFilter::AllItems {
+            FilterKind::NoFilter => Box::new(|_entry: &DirEntry| false),
+            FilterKind::AllItems {
                 i_agree_it_is_dangerous,
             } => Box::new(|_entry: &DirEntry| i_agree_it_is_dangerous.to_owned()),
-            OrganizeFilter::IgnorePath { in_path } => self.filter_ignore_str_is_in_path(in_path),
-            OrganizeFilter::IgnoreName { in_name } => self.filter_ignore_str_is_in_name(in_name),
-            OrganizeFilter::Extension { exts } => self.filter_by_extension(exts),
-            OrganizeFilter::Name {
+            FilterKind::IgnorePath { in_path } => self.filter_ignore_str_is_in_path(in_path),
+            FilterKind::IgnoreName { in_name } => self.filter_ignore_str_is_in_name(in_name),
+            FilterKind::Extension { exts } => self.filter_by_extension(exts),
+            FilterKind::Name {
                 arguments,
                 case_insensitive,
             } => self.filter_by_name(arguments, case_insensitive),
-            OrganizeFilter::Empty => self.filter_by_empty(),
-            OrganizeFilter::Created { range } => self.filter_by_created(range),
-            OrganizeFilter::LastModified { range } => self.filter_by_last_modified(range),
-            OrganizeFilter::LastAccessed { range } => self.filter_by_last_accessed(range),
-            OrganizeFilter::Mimetype { mimetype } => self.filter_by_mimetype(mimetype),
-            OrganizeFilter::Size { range } => self.filter_by_size(range),
-            OrganizeFilter::Regex { expr: _ } => todo!("not implemented (yet)!"),
-            OrganizeFilter::Exif => todo!("not implemented (yet)!"),
-            OrganizeFilter::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
-            OrganizeFilter::Duplicate {
+            FilterKind::Empty => self.filter_by_empty(),
+            FilterKind::Created { range } => self.filter_by_created(range),
+            FilterKind::LastModified { range } => self.filter_by_last_modified(range),
+            FilterKind::LastAccessed { range } => self.filter_by_last_accessed(range),
+            FilterKind::Mimetype { mimetype } => self.filter_by_mimetype(mimetype),
+            FilterKind::Size { range } => self.filter_by_size(range),
+            FilterKind::Regex { expr: _ } => todo!("not implemented (yet)!"),
+            FilterKind::Exif => todo!("not implemented (yet)!"),
+            FilterKind::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
+            FilterKind::Duplicate {
                 detect_original_by: _,
                 reverse: _,
             } => todo!("not implemented (yet)!"),
             #[cfg(target_os = "osx")]
-            OrganizeFilter::Added { date, mode } => todo!("not implemented (yet)!"),
+            FilterKind::Added { date, mode } => todo!("not implemented (yet)!"),
             #[cfg(target_os = "osx")]
-            OrganizeFilter::LastUsed { date, mode } => todo!("not implemented (yet)!"),
+            FilterKind::LastUsed { date, mode } => todo!("not implemented (yet)!"),
         }
     }
 
