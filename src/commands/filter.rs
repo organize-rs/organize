@@ -46,19 +46,15 @@ pub struct LocationOpts {
 
 impl Runnable for FilterCmd {
     fn run(&self) {
-        println!("Filter chosen: {:?}", self.filters);
-
         let mut filters = vec![self.filters.clone()];
 
         if let Some(ignore_names) = self.ignore_name.clone() {
-            println!("Ignore-Filter chosen: {ignore_names:?}");
             filters.push(OrganizeFilter::IgnoreName {
                 in_name: ignore_names,
             });
         };
 
         if let Some(ignore_paths) = self.ignore_path.clone() {
-            println!("Ignore-Filter chosen: {ignore_paths:?}");
             filters.push(OrganizeFilter::IgnorePath {
                 in_path: ignore_paths,
             });
@@ -89,26 +85,29 @@ impl FilterCmd {
                     OrganizeLocation::from((f, self.location_opts.targets))
                 }
             })
+            // .inspect(|f| println!("Got the following locations: {f}"))
             .collect_vec();
 
         filter_walker.get_applicable_items(locations, filters);
 
-        _ = filter_walker
-            .entries()
-            .iter()
-            .inspect(|dir_entry| {
-                println!(
-                    "{}\t\"{}\"",
-                    if dir_entry.path().is_dir() {
-                        "D"
-                    } else if dir_entry.path().is_file() {
-                        "F"
-                    } else {
-                        "L"
-                    },
-                    dir_entry.path().display()
-                );
-            })
-            .collect_vec();
+        filter_walker.print_entries();
+
+        // let _test = filter_walker
+        //     .entries()
+        //     .iter()
+        //     .inspect(|dir_entry| {
+        //         println!(
+        //             "{}\t\"{}\"",
+        //             if dir_entry.path().is_dir() {
+        //                 "D"
+        //             } else if dir_entry.path().is_file() {
+        //                 "F"
+        //             } else {
+        //                 "L"
+        //             },
+        //             dir_entry.path().display()
+        //         );
+        //     })
+        //     .collect_vec();
     }
 }

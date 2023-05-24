@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{fmt::Display, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -7,7 +7,7 @@ use clap::ValueEnum;
 
 use displaydoc::Display;
 
-/// Targets `organize` operates on.
+/// [`OrganizeTarget`] defines targets `organize` operates on.
 ///
 /// When targets is set to dirs, organize will work on
 /// the folders, not on files.
@@ -49,6 +49,12 @@ impl OrganizeTarget {
 #[derive(Debug, Clone, Deserialize, Serialize, Copy)]
 pub struct MaxDepth(u64);
 
+impl Display for MaxDepth {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "MaxDepth({})", self.0)
+    }
+}
+
 impl MaxDepth {
     pub fn new(value: u64) -> Self {
         MaxDepth(value)
@@ -74,22 +80,63 @@ impl Default for MaxDepth {
         Self(1)
     }
 }
-
+/// [`OrganizeLocation] contains the directories and files
+/// organize should include in the entry discovery
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum OrganizeLocation {
+    /// Recursive discovery of directory entries
     RecursiveWithMaxDepth {
+        /// path to the location that should be filtered
         path: PathBuf,
+        /// maximum recursion depth
         max_depth: MaxDepth,
         /// when targets is set to dirs, organize will work on
         /// the folders, not on files
         target: OrganizeTarget,
     },
+    /// Non-recursive discovery of directory entries
     NonRecursive {
+        /// path to the location that should be filtered
         path: PathBuf,
         /// when targets is set to dirs, organize will work on
         /// the folders, not on files
         target: OrganizeTarget,
     },
+}
+
+impl Display for OrganizeLocation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            OrganizeLocation::RecursiveWithMaxDepth {
+                path,
+                max_depth,
+                target,
+            } => {
+                write!(
+                    f,
+                    "
+    Recursive Location with max-depth
+        location: {}
+        max-depth: {}
+        target: {}
+            ",
+                    path.display(),
+                    max_depth,
+                    target
+                )
+            }
+            OrganizeLocation::NonRecursive { path, target } => write!(
+                f,
+                "
+    Non-Recursive Location
+        location: {}
+        target: {}
+            ",
+                path.display(),
+                target
+            ),
+        }
+    }
 }
 
 impl From<(PathBuf, OrganizeTarget)> for OrganizeLocation {

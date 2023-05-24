@@ -1,5 +1,7 @@
 //! Filters that `organize` operates with
 
+use std::fmt::Display;
+
 use chrono::{DateTime, Utc};
 #[cfg(feature = "cli")]
 use clap::{Args, Subcommand, ValueEnum};
@@ -725,6 +727,67 @@ pub enum OrganizeFilter {
     },
 }
 
+impl Display for OrganizeFilter {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            OrganizeFilter::NoFilter => write!(f, "Filter: None."),
+            OrganizeFilter::AllItems {
+                i_agree_it_is_dangerous,
+            } => write!(
+                f,
+                "Filter: All items. Arguments: consent: {}",
+                i_agree_it_is_dangerous
+            ),
+            OrganizeFilter::Created { range } => {
+                write!(f, "Filter: Created. Arguments: range: {}", range)
+            }
+            OrganizeFilter::LastAccessed { range } => {
+                write!(f, "Filter: LastAccessed. Arguments: range: {}", range)
+            }
+            OrganizeFilter::LastModified { range } => {
+                write!(f, "Filter: LastModified. Arguments: range: {}", range)
+            }
+            OrganizeFilter::Duplicate {
+                detect_original_by,
+                reverse,
+            } => write!(
+                f,
+                "Filter: Duplicate. Arguments: detection: {:?}, reverse: {}",
+                detect_original_by, reverse
+            ),
+            OrganizeFilter::Empty => write!(f, "Filter: Empty."),
+            OrganizeFilter::Exif => write!(f, "Filter: Exif."),
+            OrganizeFilter::Extension { exts } => {
+                write!(f, "Filter: Extension. Arguments: exts: {:?}", exts)
+            }
+            OrganizeFilter::Filecontent { regex } => {
+                write!(f, "Filter: Filecontent. Arguments: regex: {}", regex)
+            }
+            OrganizeFilter::Mimetype { mimetype } => {
+                write!(f, "Filter: Mimetype. Arguments: mimetypes: {:?}", mimetype)
+            }
+            OrganizeFilter::Name {
+                arguments,
+                case_insensitive,
+            } => write!(
+                f,
+                "Filter: Name. Arguments: args: {:?}, case_insensitive: {}",
+                arguments, case_insensitive
+            ),
+            OrganizeFilter::Regex { expr } => write!(f, "Filter: Regex. Arguments: expr: {}", expr),
+            OrganizeFilter::Size { range } => {
+                write!(f, "Filter: Size. Arguments: range: {}", range)
+            }
+            OrganizeFilter::IgnorePath { in_path } => {
+                write!(f, "Filter: IgnorePath. Arguments: paths: {:?}", in_path)
+            }
+            OrganizeFilter::IgnoreName { in_name } => {
+                write!(f, "Filter: IgnoreName. Arguments: names: {:?}", in_name)
+            }
+        }
+    }
+}
+
 impl Default for OrganizeFilter {
     fn default() -> Self {
         Self::NoFilter
@@ -738,8 +801,8 @@ impl OrganizeFilter {
             OrganizeFilter::AllItems {
                 i_agree_it_is_dangerous,
             } => Box::new(|_entry: &DirEntry| i_agree_it_is_dangerous.to_owned()),
-            OrganizeFilter::IgnorePath { in_path } => self.filter_ignore_by_str_in_path(in_path),
-            OrganizeFilter::IgnoreName { in_name } => self.filter_ignore_by_str_in_name(in_name),
+            OrganizeFilter::IgnorePath { in_path } => self.filter_ignore_str_is_in_path(in_path),
+            OrganizeFilter::IgnoreName { in_name } => self.filter_ignore_str_is_in_name(in_name),
             OrganizeFilter::Extension { exts } => self.filter_by_extension(exts),
             OrganizeFilter::Name {
                 arguments,
@@ -873,9 +936,7 @@ impl OrganizeFilter {
     ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |f| {
-                let Ok(sys_time) = f.accessed() else {
-                        return false
-                    };
+                let Ok(sys_time) = f.accessed() else { return false };
                 Self::matches_date(&sys_time, &range.clone())
             })
         })
@@ -886,9 +947,7 @@ impl OrganizeFilter {
     ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |f| {
-                let Ok(sys_time) = f.modified() else {
-                        return false
-                    };
+                let Ok(sys_time) = f.modified() else { return false };
                 Self::matches_date(&sys_time, &range.clone())
             })
         })
@@ -899,9 +958,7 @@ impl OrganizeFilter {
     ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |f| {
-                let Ok(sys_time) = f.created() else {
-                        return false
-                    };
+                let Ok(sys_time) = f.created() else { return false };
                 Self::matches_date(&sys_time, &range.clone())
             })
         })
@@ -927,9 +984,7 @@ impl OrganizeFilter {
         mimetype: &'args [String],
     ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
         Box::new(|entry| {
-            let Ok(Some(file_kind)) = infer::get_from_path(entry.path()) else {
-                return false
-            };
+            let Ok(Some(file_kind)) = infer::get_from_path(entry.path()) else { return false };
 
             let file_mime_type = match file_kind.mime_type().parse::<mime::Mime>() {
                 Ok(it) => it,
@@ -955,31 +1010,48 @@ impl OrganizeFilter {
         range: &'args SizeRange,
     ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
         Box::new(|entry| {
-            if let Ok(metadata) = entry.metadata() {
-                range.in_range(metadata.len() as f64)
-            } else {
-                false
-            }
+            let Ok(metadata) = entry.metadata() else { return false };
+            range.in_range(metadata.len() as f64)
         })
     }
 
-    fn filter_ignore_by_str_in_name<'a, 'args>(
+    fn filter_ignore_str_is_in_name<'a, 'args>(
         &'a self,
         ignore_name: &'args [String],
     ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
         Box::new(|entry| {
             let Some(file_name) = entry.file_name().to_str() else { return false };
-            !ignore_name.iter().any(|pat| file_name.contains(pat))
+            ignore_name
+                .iter()
+                .any(|pat| file_name.to_lowercase().contains(&pat.to_lowercase()))
         })
     }
 
-    fn filter_ignore_by_str_in_path<'a, 'args>(
+    fn filter_ignore_str_is_in_path<'a, 'args>(
         &'a self,
         ignore_path: &'args [String],
     ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
         Box::new(|entry| {
             let Some(path) = entry.path().to_str() else { return false };
-            !ignore_path.iter().any(|pat| path.contains(pat))
+            ignore_path
+                .iter()
+                .any(|pat| path.to_lowercase().contains(&pat.to_lowercase()))
         })
+    }
+
+    /// Returns `true` if the organize filter is [`IgnoreName`].
+    ///
+    /// [`IgnoreName`]: OrganizeFilter::IgnoreName
+    #[must_use]
+    pub fn is_ignore_name(&self) -> bool {
+        matches!(self, Self::IgnoreName { .. })
+    }
+
+    /// Returns `true` if the organize filter is [`IgnorePath`].
+    ///
+    /// [`IgnorePath`]: OrganizeFilter::IgnorePath
+    #[must_use]
+    pub fn is_ignore_path(&self) -> bool {
+        matches!(self, Self::IgnorePath { .. })
     }
 }
