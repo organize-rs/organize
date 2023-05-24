@@ -2,9 +2,6 @@
 
 ## General
 
-- think about how to combine filters with actions
-  - maybe something like an `ActionPack` where `filters` and their corresponding `actions` are stored
-  - what is a good data type for that?
 - how can we do a single run over a directory/files and apply many filters and actions?
   - how to safe guard against the case, that one filter can match a file/folder and multiple actions would want to do different things to them?
     - maybe the solution is to execute each action immediately
