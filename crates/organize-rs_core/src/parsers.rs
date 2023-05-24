@@ -1,4 +1,4 @@
-use std::{ops::Range, str::FromStr};
+use std::{fmt::Display, ops::Range, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 use winnow::{
@@ -63,9 +63,20 @@ impl PeriodRange {
     }
 }
 
+impl Display for PeriodRange {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "PeriodRange({:?})", self.0)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct SizeRange(Range<f64>);
 
+impl Display for SizeRange {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "SizeRange({:?})", self.0)
+    }
+}
 impl SizeRange {
     pub fn in_range(&self, size: f64) -> bool {
         self.0.contains(&size)

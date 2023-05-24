@@ -1,0 +1,284 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'organize-rs_core'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=organize-rs_core"
+                ],
+                "filter": {
+                    "name": "organize-rs_core",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'size_parser'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=size_parser",
+                    "--package=organize-rs_core"
+                ],
+                "filter": {
+                    "name": "size_parser",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'size_parser'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=size_parser",
+                    "--package=organize-rs_core"
+                ],
+                "filter": {
+                    "name": "size_parser",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'period_parser'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=period_parser",
+                    "--package=organize-rs_core"
+                ],
+                "filter": {
+                    "name": "period_parser",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'period_parser'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=period_parser",
+                    "--package=organize-rs_core"
+                ],
+                "filter": {
+                    "name": "period_parser",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'public_api'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=public_api",
+                    "--package=organize-rs_core"
+                ],
+                "filter": {
+                    "name": "public_api",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'organize-rs_testing'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=organize-rs_testing"
+                ],
+                "filter": {
+                    "name": "organize-rs_testing",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'xtask'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=xtask"
+                ],
+                "filter": {
+                    "name": "xtask",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'xtask'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=xtask",
+                    "--package=xtask"
+                ],
+                "filter": {
+                    "name": "xtask",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'xtask'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=xtask",
+                    "--package=xtask"
+                ],
+                "filter": {
+                    "name": "xtask",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'organize-rs'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=organize-rs"
+                ],
+                "filter": {
+                    "name": "organize-rs",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'organize'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=organize",
+                    "--package=organize-rs"
+                ],
+                "filter": {
+                    "name": "organize",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "filter",
+                "empty",
+                "-r",
+                "-m",
+                "4",
+                "-l",
+                "C:\\Users\\dailyuse\\dev-src\\organize\\tests",
+                "--ignore-path",
+                ".git",
+                "--ignore-name",
+                "toml",
+                "--ignore-path",
+                "fixtures"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'organize'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=organize",
+                    "--package=organize-rs"
+                ],
+                "filter": {
+                    "name": "organize",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'completions'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=completions",
+                    "--package=organize-rs"
+                ],
+                "filter": {
+                    "name": "completions",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
