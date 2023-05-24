@@ -58,6 +58,9 @@ pub fn parse_units(input: &str) -> IResult<&str, &str> {
 pub struct PeriodRange(Range<f64>);
 
 impl PeriodRange {
+    pub const MIN: f64 = 0f64;
+    pub const MAX: f64 = 9.467e+8f64; // 30 years in seconds
+
     pub fn in_range(&self, value: f64) -> bool {
         self.0.contains(&value)
     }
@@ -78,6 +81,9 @@ impl Display for SizeRange {
     }
 }
 impl SizeRange {
+    pub const MIN: f64 = 1f64; // 1 byte
+    pub const MAX: f64 = 4e+12f64; // 4 TB in bytes
+
     pub fn in_range(&self, size: f64) -> bool {
         self.0.contains(&size)
     }
@@ -90,19 +96,16 @@ pub enum BoundarySide {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct SingleSizeCondition<T> {
+pub struct SingleCondition<T> {
     value: T,
     side: BoundarySide,
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct Condition<T>(
-    Option<SingleSizeCondition<T>>,
-    Option<SingleSizeCondition<T>>,
-);
+pub struct Condition<T>(Option<SingleCondition<T>>, Option<SingleCondition<T>>);
 
 impl<T> Condition<T> {
-    pub fn set_condition(&mut self, condition: SingleSizeCondition<T>) {
+    pub fn set_condition(&mut self, condition: SingleCondition<T>) {
         match condition.side {
             BoundarySide::Left => self.0 = Some(condition),
             BoundarySide::Right => self.1 = Some(condition),
@@ -124,7 +127,7 @@ impl FromStr for PeriodRange {
             (Ok(left_boundary), Err(_), Err(_)) => {
                 let (_, (value, unit, _)) = left_boundary;
 
-                condition.set_condition(SingleSizeCondition {
+                condition.set_condition(SingleCondition {
                     value: DateUnitKind::from((value, unit)).into_seconds(),
                     side: BoundarySide::Left,
                 });
@@ -132,7 +135,7 @@ impl FromStr for PeriodRange {
             (Err(_), Ok(right_boundary), Err(_)) => {
                 let (_, (_, value, unit)) = right_boundary;
 
-                condition.set_condition(SingleSizeCondition {
+                condition.set_condition(SingleCondition {
                     value: DateUnitKind::from((value, unit)).into_seconds(),
                     side: BoundarySide::Right,
                 });
@@ -152,12 +155,12 @@ impl FromStr for PeriodRange {
                     });
                 }
 
-                condition.set_condition(SingleSizeCondition {
+                condition.set_condition(SingleCondition {
                     value: DateUnitKind::from((value_left, unit_left)).into_seconds(),
                     side: BoundarySide::Left,
                 });
 
-                condition.set_condition(SingleSizeCondition {
+                condition.set_condition(SingleCondition {
                     value: DateUnitKind::from((value_right, unit_right)).into_seconds(),
                     side: BoundarySide::Right,
                 });
@@ -173,10 +176,10 @@ impl FromStr for PeriodRange {
         match condition {
             Condition(Some(left), None) => Ok(Self(Range {
                 start: left.value,
-                end: f64::MAX,
+                end: PeriodRange::MAX,
             })),
             Condition(None, Some(right)) => Ok(Self(Range {
-                start: 0f64,
+                start: PeriodRange::MIN,
                 end: right.value,
             })),
             Condition(Some(left), Some(right)) if left.value < right.value => Ok(Self(Range {
@@ -202,7 +205,7 @@ impl FromStr for SizeRange {
             (Ok(left_boundary), Err(_), Err(_)) => {
                 let (_, (size, unit, _)) = left_boundary;
 
-                condition.set_condition(SingleSizeCondition {
+                condition.set_condition(SingleCondition {
                     value: Byte::from_str(format!("{size} {unit}")).map_err(|err| Error {
                         input: format!("Couldn't convert {size} {unit} to bytes: {err}"),
                         kind: ErrorKind::Fail,
@@ -213,7 +216,7 @@ impl FromStr for SizeRange {
             (Err(_), Ok(right_boundary), Err(_)) => {
                 let (_, (_, size, unit)) = right_boundary;
 
-                condition.set_condition(SingleSizeCondition {
+                condition.set_condition(SingleCondition {
                     value: Byte::from_str(format!("{size} {unit}")).map_err(|err| Error {
                         input: format!("Couldn't convert {size} {unit} to bytes: {err}"),
                         kind: ErrorKind::Fail,
@@ -224,7 +227,7 @@ impl FromStr for SizeRange {
             (_, _, Ok(whole_condition)) => {
                 let (_, (size_left, unit_left, _, size_right, unit_right)) = whole_condition;
 
-                condition.set_condition(SingleSizeCondition {
+                condition.set_condition(SingleCondition {
                     value: Byte::from_str(format!("{size_left} {unit_left}")).map_err(|err| {
                         Error {
                             input: format!(
@@ -236,7 +239,7 @@ impl FromStr for SizeRange {
                     side: BoundarySide::Left,
                 });
 
-                condition.set_condition(SingleSizeCondition {
+                condition.set_condition(SingleCondition {
                     value: Byte::from_str(format!("{size_right} {unit_right}")).map_err(|err| {
                         Error {
                             input: format!(
@@ -259,10 +262,10 @@ impl FromStr for SizeRange {
         match condition {
             Condition(Some(left), None) => Ok(Self(Range {
                 start: left.value.get_bytes() as f64,
-                end: f64::MAX,
+                end: SizeRange::MAX,
             })),
             Condition(None, Some(right)) => Ok(Self(Range {
-                start: 0f64,
+                start: SizeRange::MIN,
                 end: right.value.get_bytes() as f64,
             })),
             Condition(Some(left), Some(right))
@@ -305,7 +308,7 @@ mod tests {
             range.0,
             Range {
                 start: 5f64 * 1_024f64 * 1_024f64 * 1_024f64,
-                end: f64::MAX
+                end: SizeRange::MAX
             }
         );
     }
@@ -317,7 +320,7 @@ mod tests {
         assert_eq!(
             range.0,
             Range {
-                start: 0f64,
+                start: SizeRange::MIN,
                 end: 0.5f64 * 1024f64 * 1_024f64 * 1_024f64
             }
         );
@@ -357,7 +360,7 @@ mod tests {
             range.0,
             Range {
                 start: 1.0f64 * 24f64 * 60f64 * 60f64,
-                end: f64::MAX
+                end: PeriodRange::MAX
             }
         );
     }
@@ -369,7 +372,7 @@ mod tests {
         assert_eq!(
             range.0,
             Range {
-                start: 0f64,
+                start: PeriodRange::MIN,
                 end: 1.0f64 * 24f64 * 60f64 * 60f64,
             }
         );
