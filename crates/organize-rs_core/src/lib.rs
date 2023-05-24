@@ -47,6 +47,9 @@ impl FilterWalker {
         locations: Vec<LocationKind>,
         filters: FilterCollection,
     ) {
+        // print out filters that will be applied
+        println!("{filters}");
+
         // extract ignore filters
         let (mut ignore_filters, other_filters): (Vec<_>, Vec<_>) = filters
             .decompose()

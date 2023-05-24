@@ -1,6 +1,8 @@
 //! Actions that can be used in the config file and
 //! `organize` applieds to matching rules
 
+use std::fmt::Display;
+
 #[cfg(feature = "cli")]
 use clap::{Subcommand, ValueEnum};
 
@@ -223,6 +225,16 @@ pub enum WriteModeKind {
     Prepend,
     /// overwrite content with text
     Overwrite,
+}
+
+impl Display for WriteModeKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            WriteModeKind::Append => write!(f, "Append"),
+            WriteModeKind::Prepend => write!(f, "Prepend"),
+            WriteModeKind::Overwrite => write!(f, "Overwrite"),
+        }
+    }
 }
 
 impl WriteModeKind {
@@ -695,6 +707,163 @@ impl ActionKind {
             trash::delete(entry.path())
                 .map(|_op| None)
                 .map_err(std::convert::Into::into)
+        }
+    }
+}
+
+impl Display for ActionKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ActionKind::NoAction => {
+                write!(
+                    f,
+                    "
+    Filter: NoAction
+    "
+                )
+            }
+            ActionKind::Confirm { text, vars } => {
+                write!(
+                    f,
+                    "
+    Filter: Confirm
+    
+    Arguments:
+    text: {text:?},
+    vars: {vars:?}
+            "
+                )
+            }
+            ActionKind::Copy {
+                src,
+                dst,
+                on_conflict,
+                rename_template,
+                filesystem,
+            } => {
+                write!(
+                    f,
+                    "
+    Filter: Copy
+                
+    Arguments: 
+    src: {src},
+    dst: {dst},
+    on_conflict: {on_conflict},
+    rename_template: {rename_template:?},
+    filesystem: {filesystem:?}
+            "
+                )
+            }
+            ActionKind::Delete { src } => {
+                write!(
+                    f,
+                    "
+    Filter: Delete 
+                
+    Arguments: 
+    src: {src}
+            "
+                )
+            }
+            ActionKind::Echo { msg } => {
+                write!(
+                    f,
+                    "
+    Filter: Echo 
+                
+    Arguments: 
+    msg: {msg}
+            "
+                )
+            }
+            ActionKind::Move {
+                src,
+                dst,
+                on_conflict,
+                rename_template,
+                filesystem,
+            } => {
+                write!(
+                    f,
+                    "
+    Filter: Move
+                
+    Arguments: 
+    src: {src},
+    dst: {dst},
+    on_conflict: {on_conflict},
+    rename_template: {rename_template:?},
+    filesystem: {filesystem:?}
+            "
+                )
+            }
+            ActionKind::Rename {
+                src,
+                name,
+                on_conflict,
+                rename_template,
+            } => {
+                write!(
+                    f,
+                    "
+    Filter: Rename 
+                
+    Arguments: 
+    src: {src},
+    name: {name},
+    on_conflict: {on_conflict},
+    rename_template: {rename_template:?}
+            "
+                )
+            }
+            ActionKind::Symlink { src, dst } => {
+                write!(
+                    f,
+                    "
+    Filter: Symlink 
+                
+    Arguments: 
+    src: {src},
+    dst: {dst},
+            "
+                )
+            }
+            ActionKind::Trash => {
+                write!(
+                    f,
+                    "
+    Filter: Symlink 
+            "
+                )
+            }
+            ActionKind::Write {
+                txt,
+                file,
+                mode,
+                newline,
+                clear_before_first_write,
+                filesystem,
+            } => write!(
+                f,
+                "
+    Filter: Write
+
+    Arguments:
+    txt: {txt},
+    file: {file},
+    mode: {mode},
+    newline: {newline:?},
+    clear_before_first_write: {clear_before_first_write:?},
+    filesystem: {filesystem:?}
+            "
+            ),
+            ActionKind::Shell => write!(
+                f,
+                "
+    Filter: Shell
+            "
+            ),
         }
     }
 }
