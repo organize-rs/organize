@@ -5,13 +5,13 @@ pub mod rules;
 
 use crate::{
     error::OrganizeResult,
-    locations::{MaxDepth, OrganizeLocation, OrganizeTarget},
-    rules::filters::OrganizeFilter,
+    locations::{LocationKind, MaxDepth, TargetKind},
+    rules::filters::{FilterApplicationKind, FilterCollection, FilterModeGroupKind, FilterSliceMut},
 };
 
-use std::{fmt::Display, fs::FileType, path::Path};
+use std::{fmt::Display, fs::FileType, ops::Not, path::Path};
 
-use itertools::Itertools;
+use itertools::{Either, Itertools};
 use walkdir::{DirEntry, WalkDir};
 
 pub mod constants {
@@ -42,52 +42,40 @@ impl FilterWalker {
 
     pub fn get_applicable_items(
         &mut self,
-        locations: Vec<OrganizeLocation>,
-        filters: Vec<OrganizeFilter>,
+        locations: Vec<LocationKind>,
+        filters: FilterCollection,
     ) {
         // extract ignore filters
-        let (ignore_filters, other_filters): (Vec<_>, Vec<_>) = filters
+        let (mut ignore_filters, other_filters): (Vec<_>, Vec<_>) = filters
+            .decompose()
             .into_iter()
-            .partition(|filter| filter.is_ignore_name() | filter.is_ignore_path());
+            .partition_map(|filter| match filter {
+                (FilterModeGroupKind::None, value) => Either::Left(value),
+                other => Either::Right(other),
+            });
 
-        self.entries = locations
+        // split off any / all filters
+        let (mut any_filters, mut all_filters): (Vec<_>, Vec<_>) = other_filters
             .into_iter()
-            .map(|location| match location {
-                OrganizeLocation::RecursiveWithMaxDepth {
-                    path,
-                    max_depth,
-                    target,
-                } => Self::populate_entries(path, max_depth, target),
-                OrganizeLocation::NonRecursive { path, target } => {
-                    Self::populate_entries(path, None, target)
-                }
-            })
-            // .inspect(|f| println!("filter matched: {f:?}"))
-            .flatten_ok()
-            .filter_map(std::result::Result::ok)
-            .filter_map(|entry| {
-                ignore_filters
-                    .iter()
-                    // .inspect(|f| println!("Applying ignore filter: {f}"))
-                    .map(|filter| filter.get_filter()(&entry))
-                    .all(|f| matches!(f, false))
-                    .then_some(entry)
-            })
-            .filter_map(|entry| {
-                other_filters
-                    .iter()
-                    // .inspect(|f| println!("Applying filter: {f}"))
-                    .map(|filter| filter.get_filter()(&entry))
-                    .any(|f| matches!(f, true))
-                    .then_some(entry)
-            })
-            .collect();
+            .partition_map(|filter| match filter {
+                (FilterModeGroupKind::Any, value_any) => Either::Left(value_any),
+                (FilterModeGroupKind::All, value_all) => Either::Right(value_all),
+                _ => unreachable!("There should be no items left in `FilterModeGroupKind::None`!"),
+            });
+
+        self.entries = Self::get_filtered_iterator(
+            locations,
+            &mut ignore_filters,
+            &mut any_filters,
+            &mut all_filters,
+        )
+        .collect();
     }
 
     fn populate_entries<A>(
         path: A,
         max_depth: impl Into<Option<MaxDepth>>,
-        targets: OrganizeTarget,
+        targets: TargetKind,
     ) -> OrganizeResult<Vec<DirEntry>>
     where
         A: AsRef<Path>,
@@ -106,9 +94,9 @@ impl FilterWalker {
             .into_iter()
             .filter_map(|f| f.ok())
             .filter(|f| match targets {
-                OrganizeTarget::Dirs => FileType::is_dir(&f.file_type()),
-                OrganizeTarget::Files => FileType::is_file(&f.file_type()),
-                OrganizeTarget::Both => true,
+                TargetKind::Dirs => FileType::is_dir(&f.file_type()),
+                TargetKind::Files => FileType::is_file(&f.file_type()),
+                TargetKind::Both => true,
             })
             .collect();
 
@@ -127,7 +115,7 @@ impl FilterWalker {
 
     pub fn apply_filters(
         entries: Vec<DirEntry>,
-        filters: &mut [Box<dyn FnMut(&DirEntry) -> bool>],
+        filters: FilterSliceMut,
     ) -> Vec<DirEntry> {
         entries
             .into_iter()
@@ -139,6 +127,60 @@ impl FilterWalker {
                 results.contains(&true)
             })
             .collect_vec()
+    }
+
+    fn filter_applies(filter: &FilterApplicationKind, entry: &DirEntry) -> bool {
+        match filter {
+            FilterApplicationKind::Retain(filt) => filt.get_filter()(entry),
+            FilterApplicationKind::Invert(inv_filt) => inv_filt.get_filter()(entry).not(),
+        }
+    }
+
+    fn get_filtered_iterator<'a>(
+        locations: Vec<LocationKind>,
+        ignore_filters: &'a mut [FilterApplicationKind],
+        any_filters: &'a mut [FilterApplicationKind],
+        all_filters: &'a mut [FilterApplicationKind],
+    ) -> impl Iterator<Item = DirEntry> + 'a {
+        locations
+            .into_iter()
+            .map(|location| match location {
+                LocationKind::RecursiveWithMaxDepth {
+                    path,
+                    max_depth,
+                    target,
+                } => Self::populate_entries(path, max_depth, target),
+                LocationKind::NonRecursive { path, target } => {
+                    Self::populate_entries(path, None, target)
+                }
+            })
+            // .inspect(|f| println!("filter matched: {f:?}"))
+            .flatten_ok()
+            .filter_map(std::result::Result::ok)
+            .filter_map(|entry| {
+                ignore_filters
+                    .iter()
+                    // .inspect(|f| println!("Applying ignore filter: {f}"))
+                    .map(|filter| Self::filter_applies(filter, &entry))
+                    .all(|f| matches!(f, false))
+                    .then_some(entry)
+            })
+            .filter_map(|entry| {
+                any_filters
+                    .iter()
+                    // .inspect(|f| println!("Applying filter: {f}"))
+                    .map(|filter| Self::filter_applies(filter, &entry))
+                    .any(|f| matches!(f, true))
+                    .then_some(entry)
+            })
+            .filter_map(|entry| {
+                all_filters
+                    .iter()
+                    // .inspect(|f| println!("Applying filter: {f}"))
+                    .map(|filter| Self::filter_applies(filter, &entry))
+                    .all(|f| matches!(f, true))
+                    .then_some(entry)
+            })
     }
 }
 

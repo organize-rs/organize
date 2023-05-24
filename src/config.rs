@@ -4,7 +4,7 @@
 //! application's configuration file and/or command-line options
 //! for specifying it.
 
-use organize_rs_core::rules::{aliases::Reference, OrganizeRule};
+use organize_rs_core::rules::{aliases::Reference, Rule};
 use serde::{Deserialize, Serialize};
 
 /// Organize Configuration
@@ -12,5 +12,5 @@ use serde::{Deserialize, Serialize};
 #[serde(deny_unknown_fields)]
 pub struct OrganizeConfig {
     aliases: Vec<Reference>,
-    rules: Vec<OrganizeRule>,
+    rules: Vec<Rule>,
 }

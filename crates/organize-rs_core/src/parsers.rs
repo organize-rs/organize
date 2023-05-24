@@ -11,7 +11,7 @@ use winnow::{
 
 use byte_unit::Byte;
 
-use crate::rules::filters::DateUnit;
+use crate::rules::filters::DateUnitKind;
 
 pub fn parse_garbage(input: &str) -> IResult<&str, &str> {
     take_while(1.., " ,").parse_next(input)
@@ -125,7 +125,7 @@ impl FromStr for PeriodRange {
                 let (_, (value, unit, _)) = left_boundary;
 
                 condition.set_condition(SingleSizeCondition {
-                    value: DateUnit::from((value, unit)).into_seconds(),
+                    value: DateUnitKind::from((value, unit)).into_seconds(),
                     side: BoundarySide::Left,
                 });
             }
@@ -133,7 +133,7 @@ impl FromStr for PeriodRange {
                 let (_, (_, value, unit)) = right_boundary;
 
                 condition.set_condition(SingleSizeCondition {
-                    value: DateUnit::from((value, unit)).into_seconds(),
+                    value: DateUnitKind::from((value, unit)).into_seconds(),
                     side: BoundarySide::Right,
                 });
             }
@@ -153,12 +153,12 @@ impl FromStr for PeriodRange {
                 }
 
                 condition.set_condition(SingleSizeCondition {
-                    value: DateUnit::from((value_left, unit_left)).into_seconds(),
+                    value: DateUnitKind::from((value_left, unit_left)).into_seconds(),
                     side: BoundarySide::Left,
                 });
 
                 condition.set_condition(SingleSizeCondition {
-                    value: DateUnit::from((value_right, unit_right)).into_seconds(),
+                    value: DateUnitKind::from((value_right, unit_right)).into_seconds(),
                     side: BoundarySide::Right,
                 });
             }
