@@ -28,6 +28,10 @@ pub struct FilterCmd {
     #[arg(long, global = true)]
     ignore_path: Option<Vec<String>>,
 
+    /// Mode, how the filters should apply
+    #[arg(short, long, global = true, default_value_t = FilterModeGroupKind::Any, value_enum)]
+    filter_mode: FilterModeGroupKind,
+
     #[command(flatten)]
     location_opts: LocationOpts,
 }
@@ -50,7 +54,7 @@ pub struct LocationOpts {
 impl Runnable for FilterCmd {
     fn run(&self) {
         let mut filter_collection = FilterCollection::with_vec(vec![(
-            FilterModeGroupKind::Any,
+            self.filter_mode,
             FilterApplicationKind::Retain(self.filters.clone()),
         )]);
 

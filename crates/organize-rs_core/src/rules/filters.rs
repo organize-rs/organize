@@ -107,6 +107,8 @@ impl FilterApplicationKind {
 
 /// Application of filters, so whether "all", "any" or "none"
 /// of the filters must apply
+
+#[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Copy)]
 #[non_exhaustive]
 pub enum FilterModeGroupKind {
