@@ -6,7 +6,9 @@ pub mod rules;
 use crate::{
     error::OrganizeResult,
     locations::{LocationKind, MaxDepth, TargetKind},
-    rules::filters::{FilterApplicationKind, FilterCollection, FilterModeGroupKind, FilterSliceMut},
+    rules::filters::{
+        FilterApplicationKind, FilterCollection, FilterModeGroupKind, FilterSliceMut,
+    },
 };
 
 use std::{fmt::Display, fs::FileType, ops::Not, path::Path};
@@ -113,10 +115,7 @@ impl FilterWalker {
     //         .collect_vec()
     // }
 
-    pub fn apply_filters(
-        entries: Vec<DirEntry>,
-        filters: FilterSliceMut,
-    ) -> Vec<DirEntry> {
+    pub fn apply_filters(entries: Vec<DirEntry>, filters: FilterSliceMut) -> Vec<DirEntry> {
         entries
             .into_iter()
             .filter(|entry| {
