@@ -35,7 +35,11 @@ impl FilteredFileWalker {
     }
 
     pub fn print_entries(&self) {
-        self.entries().iter().for_each(|f| println!("{f:?}"));
+        let count = self.entries.len();
+        self.entries().iter().for_each(|f| {
+            println!("{f:?}");
+        });
+        println!("Total entry count: {count}");
     }
 
     pub fn entries(&self) -> &[DirEntry<((), ())>] {
