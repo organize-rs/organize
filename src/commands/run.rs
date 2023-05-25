@@ -3,22 +3,13 @@
 mod config;
 mod script;
 
+use abscissa_core::{Command, Runnable};
 
-
-use abscissa_core::{status_err, Application, Command, Runnable, Shutdown};
-use anyhow::Result;
 use clap::{Parser, Subcommand};
 
+use crate::commands::run::{config::RunConfigCmd, script::RunScriptCmd};
 
-
-
-
-use crate::{
-    application::ORGANIZE_APP,
-    commands::run::{config::RunConfigCmd, script::RunScriptCmd},
-};
-
-#[derive(Debug, Subcommand)]
+#[derive(Subcommand, Command, Debug, Runnable)]
 pub enum RunSubCmd {
     /// Run a *.ron config with organize
     Config(RunConfigCmd),
@@ -39,18 +30,6 @@ pub struct RunCmd {
 
 impl Runnable for RunCmd {
     fn run(&self) {
-        match self.inner_run() {
-            Ok(_) => {}
-            Err(err) => {
-                status_err!("{}", err);
-                ORGANIZE_APP.shutdown(Shutdown::Crash)
-            }
-        };
-    }
-}
-
-impl RunCmd {
-    fn inner_run(&self) -> Result<()> {
-        todo!()
+        self.commands.run();
     }
 }
