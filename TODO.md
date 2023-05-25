@@ -4,7 +4,7 @@
 
 - how can we do a single run over a directory/files and apply many filters and actions?
   - how to safe guard against the case, that one filter can match a file/folder and multiple actions would want to do different things to them?
-    - maybe the solution is to execute each action immediately
+    - maybe the solution is to execute each rule + action immediately
       - maybe have a separate worker that just gets the `location` + `action_fn` and executes it
       - would also make more sense for `conflict handling`, because the files are actually already known to be there
     - or would it make more sense to apply the new `path` for each `location` and then do `conflict handling` before an action is even started?

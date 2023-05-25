@@ -1,0 +1,31 @@
+(
+    name: "test",
+    tags: [
+        Custom("my_test_rule"),
+    ],
+    enabled: false,
+    locations: [
+        RecursiveWithMaxDepth(
+            path: "C:\\Users\\dailyuse\\dev-src\\organize",
+            max_depth: 10,
+            target: Files,
+        ),
+    ],
+    filter_mode: All,
+    filters: [
+        Retain(extension(
+            exts: [
+                "toml",
+            ],
+        )),
+        Retain(size(
+            range: ((
+                start: 1024.0,
+                end: 4000000000000.0,
+            )),
+        )),
+    ],
+    actions: [
+        Preview(trash),
+    ],
+)

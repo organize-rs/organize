@@ -1,6 +1,6 @@
 //! Filters that `organize` operates with
 
-use std::{collections::HashMap, fmt::Display};
+use std::fmt::Display;
 
 use chrono::{DateTime, Utc};
 #[cfg(feature = "cli")]
@@ -9,23 +9,20 @@ use clap::{Args, Subcommand, ValueEnum};
 use displaydoc::Display;
 
 use itertools::{Either, Itertools};
+use jwalk::{ClientState, DirEntry};
 use serde::{Deserialize, Serialize};
-use walkdir::DirEntry;
 
 use crate::parsers::{PeriodRange, SizeRange};
 
-pub type FilterClosure<'a> = Box<dyn FnMut(&DirEntry) -> bool + 'a>;
-pub type RawFilterFnCollection<'a> = Vec<Box<dyn FnMut(&DirEntry) -> bool + 'a>>;
-pub type FilterSliceMut<'a> = &'a mut [Box<dyn FnMut(&DirEntry) -> bool>];
+pub type FilterClosure<'a, C> = Box<dyn FnMut(&DirEntry<C>) -> bool + 'a>;
+pub type FilterClosureCollection<'a, C> = Vec<FilterClosure<'a, C>>;
+pub type FilterFilterClosureSliceMut<'a, C> = &'a mut [Box<dyn FnMut(&DirEntry<C>) -> bool>];
 
 #[derive(Debug, Clone, Default)]
 pub struct FilterCollection(Vec<(FilterModeGroupKind, FilterApplicationKind)>);
 
 impl Display for FilterCollection {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut collection: HashMap<&FilterModeGroupKind, Vec<&FilterApplicationKind>> =
-            HashMap::new();
-
         write!(
             f,
             "
@@ -95,10 +92,6 @@ impl FilterCollection {
 
     pub fn push(&mut self, filter_collection: (FilterModeGroupKind, FilterApplicationKind)) {
         self.0.push(filter_collection)
-    }
-
-    pub fn print_filters(&self) {
-        self.0.iter().for_each(|filter| {})
     }
 }
 
@@ -1049,12 +1042,12 @@ impl Default for FilterKind {
 }
 
 impl FilterKind {
-    pub fn get_filter(&self) -> FilterClosure {
+    pub fn get_filter<C: ClientState>(&self) -> FilterClosure<C> {
         match self {
-            FilterKind::NoFilter => Box::new(|_entry: &DirEntry| false),
+            FilterKind::NoFilter => Box::new(|_entry| false),
             FilterKind::AllItems {
                 i_agree_it_is_dangerous,
-            } => Box::new(|_entry: &DirEntry| i_agree_it_is_dangerous.to_owned()),
+            } => Box::new(|_entry| i_agree_it_is_dangerous.to_owned()),
             FilterKind::IgnorePath { in_path } => self.filter_ignore_str_is_in_path(in_path),
             FilterKind::IgnoreName { in_name } => self.filter_ignore_str_is_in_name(in_name),
             FilterKind::Extension { exts } => self.filter_by_extension(exts),
@@ -1082,10 +1075,10 @@ impl FilterKind {
         }
     }
 
-    fn filter_by_extension<'a, 'args>(
+    fn filter_by_extension<'a, 'args, C: ClientState>(
         &'a self,
         exts: &'args [String],
-    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+    ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             let file_path = entry.path();
             let Some(extension) = file_path.extension() else {
@@ -1098,11 +1091,11 @@ impl FilterKind {
         })
     }
 
-    fn filter_by_name<'a, 'args>(
+    fn filter_by_name<'a, 'args, C: ClientState>(
         &'a self,
         arguments: &'args NameFilterArgs,
         case_insensitive: &'args bool,
-    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+    ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             let arguments = arguments.clone();
             let file_path = entry.path();
@@ -1167,7 +1160,7 @@ impl FilterKind {
         })
     }
 
-    fn filter_by_empty(&self) -> Box<dyn FnMut(&DirEntry) -> bool + '_> {
+    fn filter_by_empty<C: ClientState>(&self) -> Box<dyn FnMut(&DirEntry<C>) -> bool + '_> {
         Box::new(|entry| {
             entry
                 .metadata()
@@ -1184,10 +1177,10 @@ impl FilterKind {
         })
     }
 
-    fn filter_by_last_accessed<'a, 'args>(
+    fn filter_by_last_accessed<'a, 'args, C: ClientState>(
         &'a self,
         range: &'args PeriodRange,
-    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+    ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |f| {
                 let Ok(sys_time) = f.accessed() else { return false };
@@ -1195,10 +1188,10 @@ impl FilterKind {
             })
         })
     }
-    fn filter_by_last_modified<'a, 'args>(
+    fn filter_by_last_modified<'a, 'args, C: ClientState>(
         &'a self,
         range: &'args PeriodRange,
-    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+    ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |f| {
                 let Ok(sys_time) = f.modified() else { return false };
@@ -1206,10 +1199,10 @@ impl FilterKind {
             })
         })
     }
-    fn filter_by_created<'a, 'args>(
+    fn filter_by_created<'a, 'args, C: ClientState>(
         &'a self,
         range: &'args PeriodRange,
-    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+    ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |f| {
                 let Ok(sys_time) = f.created() else { return false };
@@ -1233,10 +1226,10 @@ impl FilterKind {
         range.in_range(seconds_since_created)
     }
 
-    fn filter_by_mimetype<'a, 'args>(
+    fn filter_by_mimetype<'a, 'args, C: ClientState>(
         &'a self,
         mimetype: &'args [String],
-    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+    ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             let Ok(Some(file_kind)) = infer::get_from_path(entry.path()) else { return false };
 
@@ -1259,20 +1252,20 @@ impl FilterKind {
         })
     }
 
-    fn filter_by_size<'a, 'args>(
+    fn filter_by_size<'a, 'args, C: ClientState>(
         &'a self,
         range: &'args SizeRange,
-    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+    ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             let Ok(metadata) = entry.metadata() else { return false };
             range.in_range(metadata.len() as f64)
         })
     }
 
-    fn filter_ignore_str_is_in_name<'a, 'args>(
+    fn filter_ignore_str_is_in_name<'a, 'args, C: ClientState>(
         &'a self,
         ignore_name: &'args [String],
-    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+    ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             let Some(file_name) = entry.file_name().to_str() else { return false };
             ignore_name
@@ -1281,15 +1274,20 @@ impl FilterKind {
         })
     }
 
-    fn filter_ignore_str_is_in_path<'a, 'args>(
+    fn filter_ignore_str_is_in_path<'a, 'args, C: ClientState>(
         &'a self,
         ignore_path: &'args [String],
-    ) -> Box<dyn FnMut(&DirEntry) -> bool + 'args> {
+    ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            let Some(path) = entry.path().to_str() else { return false };
-            ignore_path
-                .iter()
-                .any(|pat| path.to_lowercase().contains(&pat.to_lowercase()))
+            entry
+                .path()
+                .to_str()
+                .map(|path| {
+                    ignore_path
+                        .iter()
+                        .any(|pat| path.to_lowercase().contains(&pat.to_lowercase()))
+                })
+                .unwrap_or(false)
         })
     }
 

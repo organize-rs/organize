@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     locations::LocationKind,
     rules::{
-        actions::ActionKind,
+        actions::ActionApplicationKind,
         filters::{FilterApplicationKind, FilterModeGroupKind},
     },
 };
@@ -88,7 +88,7 @@ pub struct Rule {
     /// supported filters
     filters: Vec<FilterApplicationKind>,
     /// supported actions
-    actions: Vec<ActionKind>,
+    actions: Vec<ActionApplicationKind>,
 }
 
 impl Display for Rule {
@@ -125,6 +125,14 @@ impl Rule {
     pub fn builder() -> RuleBuilder {
         RuleBuilder::default()
     }
+
+    pub fn preview(&self) {
+        todo!()
+    }
+
+    pub fn execute(&self) {
+        todo!()
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
@@ -142,7 +150,7 @@ pub struct RuleBuilder {
     /// supported filters
     filters: Vec<FilterApplicationKind>,
     /// supported actions
-    actions: Vec<ActionKind>,
+    actions: Vec<ActionApplicationKind>,
 }
 
 impl RuleBuilder {
@@ -208,13 +216,13 @@ impl RuleBuilder {
     }
 
     /// Add single action
-    pub fn action(mut self, action: ActionKind) -> RuleBuilder {
+    pub fn action(mut self, action: ActionApplicationKind) -> RuleBuilder {
         self.actions.push(action);
         self
     }
 
     /// Add multiple actions
-    pub fn actions(mut self, mut actions: Vec<ActionKind>) -> RuleBuilder {
+    pub fn actions(mut self, mut actions: Vec<ActionApplicationKind>) -> RuleBuilder {
         self.actions.append(&mut actions);
         self
     }
@@ -225,7 +233,7 @@ impl RuleBuilder {
         self
     }
 
-    /// Add multiple actions
+    /// Add multiple tags
     pub fn tags(mut self, mut tags: Vec<Tag>) -> RuleBuilder {
         self.tags.append(&mut tags);
         self

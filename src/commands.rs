@@ -2,21 +2,15 @@
 
 mod action;
 mod completions;
+mod config;
 mod docs;
 mod filter;
-mod rule;
-
-// Old approach
-// mod edit;
-// mod reveal;
-// mod run;
-// mod schema;
-// mod sim;
+mod run;
 
 use crate::{
     commands::{
-        action::ActionCmd, completions::CompletionsCmd, docs::DocsCmd, filter::FilterCmd,
-        rule::RuleCmd,
+        action::ActionCmd, completions::CompletionsCmd, config::ConfigCmd, docs::DocsCmd,
+        filter::FilterCmd, run::RunCmd,
     },
     config::OrganizeConfig,
 };
@@ -46,14 +40,16 @@ pub const CONFIG_FILE: &str = "organize.toml";
 pub enum OrganizeCmd {
     /// Actions that organize can apply
     Action(ActionCmd),
+    /// Generate Completions for your shell
+    Completions(CompletionsCmd),
+    /// Generate new configs and check existing ones
+    Config(ConfigCmd),
     /// Show the documentation
     Docs(DocsCmd),
     /// Filters that organize can apply
     Filter(FilterCmd),
-    /// Generate Completions for your shell
-    Completions(CompletionsCmd),
-    /// Run a
-    Rule(RuleCmd),
+    /// Run predefined rules from config or scripts
+    Run(RunCmd),
 }
 
 #[allow(clippy::struct_excessive_bools)]
