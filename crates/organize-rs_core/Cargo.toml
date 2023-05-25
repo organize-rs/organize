@@ -28,6 +28,15 @@ doc = true
 harness = true
 edition = "2021"
 
+[[example]]
+name = "yaml_parser"
+path = "examples/yaml_parser.rs"
+test = true
+bench = true
+doc = true
+harness = true
+edition = "2021"
+
 [features]
 default = []
 cli = ["dep:clap", "dep:indicatif"]

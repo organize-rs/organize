@@ -14,6 +14,8 @@
 - support batch renaming (e.g. rename all images in a directory to image_n where n is a number
 
 - remove some prefix from filenames
+  - we want to have filename tags as well e.g. `dnt_` (do not touch) or `wip_` so these things are treated differently
+  - also we want to have `{project_name}_` that we can remove after moving to a project folder
 
 ## Filters
 
@@ -21,7 +23,7 @@
   - .py
   - .js
   - .ini
-  - 
+  -
 
 ### Filters impl
 

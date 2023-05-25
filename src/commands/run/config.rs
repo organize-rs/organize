@@ -1,10 +1,10 @@
 //! `RunConfig` Subcommand
 
-use std::{path::PathBuf};
+use std::path::PathBuf;
 
 use abscissa_core::{Command, Runnable};
 
-use clap::{Parser};
+use clap::Parser;
 
 /// Run a *.ron config with organize
 #[derive(Command, Debug, Parser)]

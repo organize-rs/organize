@@ -1,18 +1,15 @@
 //! `RunScript` Subcommand
 
-use std::{path::PathBuf};
+use std::path::PathBuf;
 
 use abscissa_core::{status_err, Application, Command, Runnable, Shutdown};
 use anyhow::Result;
-use clap::{Parser};
+use clap::Parser;
 
 use rhai::{Engine, EvalAltResult};
 
-
+use crate::application::ORGANIZE_APP;
 use crate::scripting::add;
-use crate::{
-    application::ORGANIZE_APP,
-};
 
 /// Run a *.rhai script with organize
 #[derive(Command, Debug, Parser)]

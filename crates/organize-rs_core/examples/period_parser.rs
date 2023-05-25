@@ -47,8 +47,8 @@ pub fn parse_units(input: &str) -> IResult<&str, &str> {
 
 fn main() {
     let input = "1d..7d";
-    let input2 = "7d..";
-    let input3 = "..7d";
+    let _input2 = "7d..";
+    let _input3 = "..7d";
 
     let (remainder, result) = (parse_whole_condition).parse_next(input).unwrap();
     // let (_, _result) = (parse_left_boundary).parse_next(input2).unwrap();

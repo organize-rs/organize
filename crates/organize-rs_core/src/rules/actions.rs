@@ -15,7 +15,7 @@ type ActionClosure<C> =
     Box<dyn FnMut(&DirEntry<C>) -> Result<Option<bool>, Box<dyn std::error::Error>>>;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
-
+#[serde(transparent)]
 pub struct ActionApplicationCollection(Vec<ActionApplicationKind>);
 
 impl std::ops::DerefMut for ActionApplicationCollection {

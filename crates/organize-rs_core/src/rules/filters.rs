@@ -1,6 +1,9 @@
 //! Filters that `organize` operates with
 
-use std::fmt::Display;
+use std::{
+    fmt::{Debug, Display},
+    ops::Not,
+};
 
 use chrono::{DateTime, Utc};
 #[cfg(feature = "cli")]
@@ -18,9 +21,15 @@ pub type FilterClosure<'a, C> = Box<dyn FnMut(&DirEntry<C>) -> bool + 'a>;
 pub type FilterClosureCollection<'a, C> = Vec<FilterClosure<'a, C>>;
 pub type FilterFilterClosureSliceMut<'a, C> = &'a mut [Box<dyn FnMut(&DirEntry<C>) -> bool>];
 
-#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum CullKind {
+    Retain,
+    Bump,
+}
 
-pub struct FilterApplicationCollection(Vec<FilterApplicationKind>);
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+#[serde(transparent)]
+pub struct FilterApplicationCollection(Vec<FilterApplicationKind<FilterKind>>);
 
 impl std::ops::DerefMut for FilterApplicationCollection {
     fn deref_mut(&mut self) -> &mut Self::Target {
@@ -35,7 +44,7 @@ impl Default for FilterApplicationCollection {
 }
 
 impl std::ops::Deref for FilterApplicationCollection {
-    type Target = Vec<FilterApplicationKind>;
+    type Target = Vec<FilterApplicationKind<FilterKind>>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -43,7 +52,7 @@ impl std::ops::Deref for FilterApplicationCollection {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct FilterCollection(Vec<(FilterModeGroupKind, FilterApplicationKind)>);
+pub struct FilterCollection(Vec<(FilterModeGroupKind, FilterApplicationKind<FilterKind>)>);
 
 impl Display for FilterCollection {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -106,21 +115,26 @@ impl FilterCollection {
         Self::default()
     }
 
-    pub fn with_vec(filter_collection: Vec<(FilterModeGroupKind, FilterApplicationKind)>) -> Self {
+    pub fn with_vec(
+        filter_collection: Vec<(FilterModeGroupKind, FilterApplicationKind<FilterKind>)>,
+    ) -> Self {
         Self(filter_collection)
     }
 
-    pub fn decompose(self) -> Vec<(FilterModeGroupKind, FilterApplicationKind)> {
+    pub fn decompose(self) -> Vec<(FilterModeGroupKind, FilterApplicationKind<FilterKind>)> {
         self.0
     }
 
-    pub fn push(&mut self, filter_collection: (FilterModeGroupKind, FilterApplicationKind)) {
+    pub fn push(
+        &mut self,
+        filter_collection: (FilterModeGroupKind, FilterApplicationKind<FilterKind>),
+    ) {
         self.0.push(filter_collection)
     }
 }
 
 impl std::ops::Deref for FilterCollection {
-    type Target = Vec<(FilterModeGroupKind, FilterApplicationKind)>;
+    type Target = Vec<(FilterModeGroupKind, FilterApplicationKind<FilterKind>)>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -129,38 +143,41 @@ impl std::ops::Deref for FilterCollection {
 
 /// Should filters be negated
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
-pub enum FilterApplicationKind {
-    /// Negate {0}
-    Invert(FilterKind),
+pub enum FilterApplicationKind<T> {
+    /// Invert {0}
+    Invert(T),
     /// Apply {0}
-    Retain(FilterKind),
+    Apply(T),
 }
 
-impl Default for FilterApplicationKind {
+impl<T> Default for FilterApplicationKind<T>
+where
+    T: Default,
+{
     fn default() -> Self {
-        Self::Retain(FilterKind::default())
+        Self::Apply(T::default())
     }
 }
 
-impl FilterApplicationKind {
+impl<T> FilterApplicationKind<T> {
     /// Returns `true` if the apply or negate filter is [`Apply`].
     ///
     /// [`Apply`]: ApplyOrNegateFilter::Apply
     #[must_use]
     pub fn is_apply(&self) -> bool {
-        matches!(self, Self::Retain(..))
+        matches!(self, Self::Apply(..))
     }
 
-    pub fn as_apply(&self) -> Option<&FilterKind> {
-        if let Self::Retain(v) = self {
+    pub fn as_apply(&self) -> Option<&T> {
+        if let Self::Apply(v) = self {
             Some(v)
         } else {
             None
         }
     }
 
-    pub fn try_into_apply(self) -> Result<FilterKind, Self> {
-        if let Self::Retain(v) = self {
+    pub fn try_into_apply(self) -> Result<T, Self> {
+        if let Self::Apply(v) = self {
             Ok(v)
         } else {
             Err(self)
@@ -175,7 +192,7 @@ impl FilterApplicationKind {
         matches!(self, Self::Invert(..))
     }
 
-    pub fn as_invert(&self) -> Option<&FilterKind> {
+    pub fn as_invert(&self) -> Option<&T> {
         if let Self::Invert(v) = self {
             Some(v)
         } else {
@@ -183,7 +200,7 @@ impl FilterApplicationKind {
         }
     }
 
-    pub fn try_into_invert(self) -> Result<FilterKind, Self> {
+    pub fn try_into_invert(self) -> Result<T, Self> {
         if let Self::Invert(v) = self {
             Ok(v)
         } else {
@@ -336,16 +353,16 @@ pub struct NameFilterArgs {
     // TODO: Not implemented, searching for alternatives
     /// A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
     #[cfg_attr(feature = "cli", arg(long))]
-    simple_match: Option<String>,
+    simple_match: Vec<String>,
     /// The filename must begin with the given string
     #[cfg_attr(feature = "cli", arg(long))]
-    starts_with: Option<String>,
+    starts_with: Vec<String>,
     /// The filename must contain the given string
     #[cfg_attr(feature = "cli", arg(long))]
-    contains: Option<String>,
+    contains: Vec<String>,
     /// The filename (without extension) must end with the given string
     #[cfg_attr(feature = "cli", arg(long))]
-    ends_with: Option<String>,
+    ends_with: Vec<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
@@ -408,6 +425,7 @@ impl From<(f64, &str)> for DateUnitKind {
 /// use to apply to locations.
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(untagged)]
 pub enum FilterKind {
     /// Match locations by the time they were added to a folder
     ///
@@ -811,11 +829,13 @@ pub enum FilterKind {
     #[serde(rename = "name")]
     Name {
         #[cfg_attr(feature = "cli", command(flatten))]
+        #[serde(flatten)]
         arguments: NameFilterArgs,
         /// By default, the matching is case sensitive.
         ///
         /// Change this to `False` to use case insensitive matching.
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(rename = "case_sensitive")]
         case_insensitive: bool,
     },
     /// Don't use any filter
@@ -1074,6 +1094,8 @@ impl Default for FilterKind {
 }
 
 impl FilterKind {
+    const NEGATE_STRING: &str = "#!";
+
     pub fn get_filter<C: ClientState>(&self) -> FilterClosure<C> {
         match self {
             FilterKind::NoFilter => Box::new(|_entry| false),
@@ -1130,13 +1152,6 @@ impl FilterKind {
         Box::new(|entry| {
             let arguments = arguments.clone();
             let file_path = entry.path();
-            let file_stem = file_path.file_stem().and_then(|f| f.to_str()).map(|f| {
-                if *case_insensitive {
-                    f.to_lowercase()
-                } else {
-                    f.to_owned()
-                }
-            });
 
             let file_name_str = file_path
                 .file_name()
@@ -1150,42 +1165,121 @@ impl FilterKind {
                 })
                 .expect("should be able to unpack file name.");
 
-            match &arguments {
+            match arguments {
                 NameFilterArgs {
-                    starts_with: Some(sw),
-                    ..
-                } => {
-                    let mut sw = sw.clone();
-                    if *case_insensitive {
-                        sw = sw.to_lowercase();
-                    }
+                    starts_with: sw, ..
+                } if !sw.is_empty() => sw
+                    .into_iter()
+                    .unique()
+                    .map(|string| {
+                        let mut str = string;
+                        if *case_insensitive {
+                            str = str.to_lowercase();
+                        }
+                        str
+                    })
+                    .map(|string| {
+                        if string.starts_with(Self::NEGATE_STRING) {
+                            FilterApplicationKind::Invert({
+                                string
+                                    .strip_prefix(Self::NEGATE_STRING)
+                                    .map(|f| f.to_owned())
+                            })
+                        } else {
+                            FilterApplicationKind::Apply(Some(string))
+                        }
+                    })
+                    .map(|unique_string| match unique_string {
+                        FilterApplicationKind::Invert(Some(invert)) => {
+                            file_name_str.starts_with(&invert).then_some(CullKind::Bump)
+                        }
+                        FilterApplicationKind::Apply(Some(apply)) => file_name_str
+                            .starts_with(&apply)
+                            .then_some(CullKind::Retain),
+                        _ => Some(CullKind::Retain),
+                    })
+                    .any(Self::is_bump)
+                    .not(),
+                NameFilterArgs { contains: c, .. } if !c.is_empty() => c
+                    .into_iter()
+                    .unique()
+                    .map(|string| {
+                        let mut str = string;
+                        if *case_insensitive {
+                            str = str.to_lowercase();
+                        }
+                        str
+                    })
+                    .map(|string| {
+                        if string.starts_with(Self::NEGATE_STRING) {
+                            FilterApplicationKind::Invert({
+                                string
+                                    .strip_prefix(Self::NEGATE_STRING)
+                                    .map(|f| f.to_owned())
+                            })
+                        } else {
+                            FilterApplicationKind::Apply(Some(string))
+                        }
+                    })
+                    .map(|unique_string| match unique_string {
+                        FilterApplicationKind::Invert(Some(invert)) => {
+                            file_name_str.contains(&invert).then_some(CullKind::Bump)
+                        }
+                        FilterApplicationKind::Apply(Some(apply)) => {
+                            file_name_str.contains(&apply).then_some(CullKind::Retain)
+                        }
+                        _ => Some(CullKind::Retain),
+                    })
+                    .any(Self::is_bump)
+                    .not(),
+                NameFilterArgs { ends_with: ew, .. } if !ew.is_empty() => ew
+                    .into_iter()
+                    .unique()
+                    .map(|string| {
+                        let mut str = string;
+                        if *case_insensitive {
+                            str = str.to_lowercase();
+                        }
+                        str
+                    })
+                    .map(|string| {
+                        if string.starts_with(Self::NEGATE_STRING) {
+                            FilterApplicationKind::Invert({
+                                string
+                                    .strip_prefix(Self::NEGATE_STRING)
+                                    .map(|f| f.to_owned())
+                            })
+                        } else {
+                            FilterApplicationKind::Apply(Some(string))
+                        }
+                    })
+                    .map(|unique_string| {
+                        let file_stem = file_path.file_stem().and_then(|f| f.to_str()).map(|f| {
+                            if *case_insensitive {
+                                f.to_lowercase()
+                            } else {
+                                f.to_owned()
+                            }
+                        });
 
-                    file_name_str.starts_with(&sw)
-                }
-                NameFilterArgs {
-                    contains: Some(c), ..
-                } => {
-                    let mut c = c.clone();
-                    if *case_insensitive {
-                        c = c.to_lowercase();
-                    }
-                    file_name_str.contains(&c)
-                }
-                NameFilterArgs {
-                    ends_with: Some(ew),
-                    ..
-                } => {
-                    let mut ew = ew.clone();
-                    if *case_insensitive {
-                        ew = ew.to_lowercase();
-                    }
-
-                    if let Some(stem) = file_stem {
-                        stem.ends_with(&ew)
-                    } else {
-                        file_name_str.ends_with(&ew)
-                    }
-                }
+                        match (unique_string, file_stem) {
+                            (FilterApplicationKind::Invert(Some(invert)), None) => {
+                                file_name_str.ends_with(&invert).then_some(CullKind::Bump)
+                            }
+                            (FilterApplicationKind::Apply(Some(apply)), None) => {
+                                file_name_str.ends_with(&apply).then_some(CullKind::Retain)
+                            }
+                            (FilterApplicationKind::Invert(Some(invert)), Some(stem)) => {
+                                stem.ends_with(&invert).then_some(CullKind::Bump)
+                            }
+                            (FilterApplicationKind::Apply(Some(apply)), Some(stem)) => {
+                                stem.ends_with(&apply).then_some(CullKind::Retain)
+                            }
+                            _ => Some(CullKind::Retain),
+                        }
+                    })
+                    .any(Self::is_bump)
+                    .not(),
                 NameFilterArgs { .. } => false,
             }
         })
@@ -1334,5 +1428,10 @@ impl FilterKind {
     #[must_use]
     pub fn is_ignore_path(&self) -> bool {
         matches!(self, Self::IgnorePath { .. })
+    }
+
+    #[must_use]
+    pub fn is_bump(f: Option<CullKind>) -> bool {
+        matches!(f, Some(CullKind::Bump))
     }
 }

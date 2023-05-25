@@ -55,13 +55,13 @@ impl Runnable for FilterCmd {
     fn run(&self) {
         let mut filter_collection = FilterCollection::with_vec(vec![(
             self.filter_mode,
-            FilterApplicationKind::Retain(self.filters.clone()),
+            FilterApplicationKind::Apply(self.filters.clone()),
         )]);
 
         if let Some(ignore_names) = self.ignore_name.clone() {
             filter_collection.push((
                 FilterModeGroupKind::None,
-                FilterApplicationKind::Retain(FilterKind::IgnoreName {
+                FilterApplicationKind::Apply(FilterKind::IgnoreName {
                     in_name: ignore_names,
                 }),
             ));
@@ -70,7 +70,7 @@ impl Runnable for FilterCmd {
         if let Some(ignore_paths) = self.ignore_path.clone() {
             filter_collection.push((
                 FilterModeGroupKind::None,
-                FilterApplicationKind::Retain(FilterKind::IgnorePath {
+                FilterApplicationKind::Apply(FilterKind::IgnorePath {
                     in_path: ignore_paths,
                 }),
             ));

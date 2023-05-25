@@ -8,6 +8,7 @@ use clap::ValueEnum;
 use displaydoc::Display;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
+#[serde(transparent)]
 pub struct LocationCollection(Vec<LocationKind>);
 
 impl std::ops::DerefMut for LocationCollection {
@@ -35,7 +36,9 @@ impl std::ops::Deref for LocationCollection {
 /// When targets is set to dirs, organize will work on
 /// the folders, not on files.
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
-#[derive(Debug, Clone, Deserialize, Serialize, Display, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Deserialize, Serialize, Display, Copy, PartialEq, Eq, PartialOrd, Ord, Hash,
+)]
 pub enum TargetKind {
     /// operate on both
     Both,
@@ -69,7 +72,7 @@ impl TargetKind {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Copy)]
+#[derive(Debug, Clone, Deserialize, Copy, PartialEq, Eq, Hash)]
 pub struct MaxDepth(pub(crate) u64);
 
 impl Display for MaxDepth {
@@ -105,7 +108,8 @@ impl Default for MaxDepth {
 }
 /// [`OrganizeLocation] contains the directories and files
 /// organize should include in the entry discovery
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
+#[serde(untagged)]
 pub enum LocationKind {
     /// Non-recursive discovery of directory entries
     NonRecursive {
@@ -125,6 +129,8 @@ pub enum LocationKind {
         /// the folders, not on files
         target: TargetKind,
     },
+    /// Just a bare path, takes default settings
+    BarePath(PathBuf),
 }
 
 impl Default for LocationKind {
@@ -149,12 +155,10 @@ impl Display for LocationKind {
                     "
     Recursive Location with max-depth
         location: {}
-        max-depth: {}
-        target: {}
+        max-depth: {max_depth}
+        target: {target}
             ",
-                    path.display(),
-                    max_depth,
-                    target
+                    path.display()
                 )
             }
             LocationKind::NonRecursive { path, target } => write!(
@@ -162,10 +166,19 @@ impl Display for LocationKind {
                 "
     Non-Recursive Location
         location: {}
+        target: {target}
+            ",
+                path.display()
+            ),
+            LocationKind::BarePath(path) => write!(
+                f,
+                "
+    Bare Location
+        location: {}
         target: {}
             ",
                 path.display(),
-                target
+                TargetKind::default()
             ),
         }
     }

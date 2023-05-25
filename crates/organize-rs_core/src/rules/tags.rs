@@ -2,7 +2,7 @@ use displaydoc::Display;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord)]
-
+#[serde(transparent)]
 pub struct TagCollection(Vec<Tag>);
 
 impl std::ops::DerefMut for TagCollection {

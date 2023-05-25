@@ -1,3 +1,4 @@
+pub mod config;
 pub mod error;
 pub mod locations;
 pub mod parsers;
@@ -7,7 +8,8 @@ use crate::{
     error::OrganizeResult,
     locations::{LocationKind, MaxDepth, TargetKind},
     rules::filters::{
-        FilterApplicationKind, FilterCollection, FilterFilterClosureSliceMut, FilterModeGroupKind,
+        FilterApplicationKind, FilterCollection, FilterFilterClosureSliceMut, FilterKind,
+        FilterModeGroupKind,
     },
 };
 
@@ -137,21 +139,25 @@ impl FilteredFileWalker {
             .collect_vec()
     }
 
-    fn filter_applies(filter: &FilterApplicationKind, entry: &DirEntry<((), ())>) -> bool {
+    fn filter_applies(
+        filter: &FilterApplicationKind<FilterKind>,
+        entry: &DirEntry<((), ())>,
+    ) -> bool {
         match filter {
-            FilterApplicationKind::Retain(filt) => filt.get_filter()(entry),
+            FilterApplicationKind::Apply(filt) => filt.get_filter()(entry),
             FilterApplicationKind::Invert(inv_filt) => inv_filt.get_filter()(entry).not(),
         }
     }
 
     fn get_filtered_iterator<'a>(
         locations: Vec<LocationKind>,
-        ignore_filters: &'a mut [FilterApplicationKind],
-        any_filters: &'a mut [FilterApplicationKind],
-        all_filters: &'a mut [FilterApplicationKind],
+        ignore_filters: &'a mut [FilterApplicationKind<FilterKind>],
+        any_filters: &'a mut [FilterApplicationKind<FilterKind>],
+        all_filters: &'a mut [FilterApplicationKind<FilterKind>],
     ) -> impl Iterator<Item = DirEntry<((), ())>> + 'a {
         locations
             .into_iter()
+            .unique()
             .map(|location| match location {
                 LocationKind::RecursiveWithMaxDepth {
                     path,
@@ -160,6 +166,9 @@ impl FilteredFileWalker {
                 } => Self::populate_entries(path, max_depth, target),
                 LocationKind::NonRecursive { path, target } => {
                     Self::populate_entries(path, None, target)
+                }
+                LocationKind::BarePath(path) => {
+                    Self::populate_entries(path, None, TargetKind::default())
                 }
             })
             // .inspect(|f| println!("filter matched: {f:?}"))

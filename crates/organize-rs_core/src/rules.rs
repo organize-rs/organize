@@ -16,14 +16,43 @@ use crate::{
     locations::{LocationCollection, LocationKind},
     rules::{
         actions::{ActionApplicationCollection, ActionApplicationKind},
-        filters::{FilterApplicationCollection, FilterApplicationKind, FilterModeGroupKind},
+        filters::{
+            FilterApplicationCollection, FilterApplicationKind, FilterKind, FilterModeGroupKind,
+        },
         tags::{Tag, TagCollection},
     },
 };
 
-/// [`Rule`] contains a list of objects with the required keys
-/// "locations" and "actions". One config can have many [`Rule`]s.
+/// [`Rules`] contains a list of [`Rule`] objects with the required keys
+/// "locations" and "actions". One config can have many [`Rules`].
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(transparent)]
+pub struct Rules(Vec<Rule>);
+
+impl Default for Rules {
+    fn default() -> Self {
+        Self(vec![Rule::default()])
+    }
+}
+
+impl std::ops::DerefMut for Rules {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl std::ops::Deref for Rules {
+    type Target = Vec<Rule>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+/// [`Rule`] contains a objects with the required keys
+/// "locations" and "actions". One config can have many [`Rules].
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+#[serde(default, rename = "rule")]
 pub struct Rule {
     /// rule name
     name: String,
@@ -154,7 +183,7 @@ impl RuleBuilder {
     }
 
     /// Add a single filter
-    pub fn filter(mut self, filter: FilterApplicationKind) -> RuleBuilder {
+    pub fn filter(mut self, filter: FilterApplicationKind<FilterKind>) -> RuleBuilder {
         self.filters.push(filter);
         self
     }

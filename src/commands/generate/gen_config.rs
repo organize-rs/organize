@@ -50,10 +50,10 @@ impl GenConfigCmd {
 
         let rule = rule_builder
             .name("test")
-            .filter(FilterApplicationKind::Retain(FilterKind::Extension {
+            .filter(FilterApplicationKind::Apply(FilterKind::Extension {
                 exts: vec!["toml".to_string()],
             }))
-            .filter(FilterApplicationKind::Retain(FilterKind::Size {
+            .filter(FilterApplicationKind::Apply(FilterKind::Size {
                 range: SizeRange::from_str("1KiB..")?,
             }))
             .filter_mode(FilterModeGroupKind::All)
