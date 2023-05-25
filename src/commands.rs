@@ -1,17 +1,16 @@
 //! Organize Subcommands
 
 pub mod action;
-mod completions;
-mod config;
+mod check;
 mod docs;
 pub mod filter;
+mod generate;
 mod run;
-mod run_script;
 
 use crate::{
     commands::{
-        action::ActionCmd, completions::CompletionsCmd, config::ConfigCmd, docs::DocsCmd,
-        filter::FilterCmd, run::RunCmd, run_script::RunScriptCmd,
+        action::ActionCmd, check::CheckCmd, docs::DocsCmd, filter::FilterCmd,
+        generate::GenerateCmd, run::RunCmd,
     },
     config::OrganizeConfig,
 };
@@ -41,20 +40,16 @@ pub const CONFIG_FILE: &str = "organize.toml";
 pub enum OrganizeCmd {
     /// Actions that organize can apply
     Action(ActionCmd),
-    /// Generate Completions for your shell
-    Completions(CompletionsCmd),
-    /// Generate new configs and check existing ones
-    Config(ConfigCmd),
+    /// Check configs and scripts for errors
+    Check(CheckCmd),
     /// Show the documentation
     Docs(DocsCmd),
     /// Filters that organize can apply
     Filter(FilterCmd),
-    /// Run a `rhai` script
-    RunScript(RunScriptCmd),
-    /// Run predefined rules from config or scripts
+    /// Generate completions for your shell, and organize config and script files
+    Generate(GenerateCmd),
+    /// Run predefined rules from configs or scripts
     Run(RunCmd),
-    /// Run a `rhai` script
-    RunScript(RunScriptCmd),
 }
 
 #[allow(clippy::struct_excessive_bools)]

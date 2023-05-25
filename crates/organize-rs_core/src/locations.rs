@@ -14,12 +14,12 @@ use displaydoc::Display;
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Deserialize, Serialize, Display, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TargetKind {
+    /// operate on both
+    Both,
     /// operate only on directories
     Dirs,
     /// operate only on files
     Files,
-    /// operate on both
-    Both,
 }
 
 impl Default for TargetKind {
@@ -93,20 +93,20 @@ impl Default for MaxDepth {
 /// organize should include in the entry discovery
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum LocationKind {
+    /// Non-recursive discovery of directory entries
+    NonRecursive {
+        /// path to the location that should be filtered
+        path: PathBuf,
+        /// when targets is set to dirs, organize will work on
+        /// the folders, not on files
+        target: TargetKind,
+    },
     /// Recursive discovery of directory entries
     RecursiveWithMaxDepth {
         /// path to the location that should be filtered
         path: PathBuf,
         /// maximum recursion depth
         max_depth: MaxDepth,
-        /// when targets is set to dirs, organize will work on
-        /// the folders, not on files
-        target: TargetKind,
-    },
-    /// Non-recursive discovery of directory entries
-    NonRecursive {
-        /// path to the location that should be filtered
-        path: PathBuf,
         /// when targets is set to dirs, organize will work on
         /// the folders, not on files
         target: TargetKind,

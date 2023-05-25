@@ -23,10 +23,10 @@ use crate::{
 pub enum Tag {
     /// Always run filters/actions with this tag
     Always,
-    /// Never run filters/actions with this tag
-    Never,
     /// Custom tag for running filters/actions
     Custom(String),
+    /// Never run filters/actions with this tag
+    Never,
 }
 
 impl Tag {

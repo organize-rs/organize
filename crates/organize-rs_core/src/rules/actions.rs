@@ -286,9 +286,7 @@ impl Default for WriteModeKind {
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum ActionKind {
-    /// Do nothing.
-    NoAction,
-    /// Confirm before deleting a duplicate.
+    /// Confirm before deleting a duplicate
     ///
     /// Supports placeholders
     /// e.g. `confirm: "Delete {name}?"`
@@ -319,7 +317,7 @@ pub enum ActionKind {
         #[cfg_attr(feature = "cli", arg(long))]
         vars: Option<Vec<String>>,
     },
-    /// Copy a file or dir to a new location.
+    /// Copy a file or directory to a new location
     ///
     /// If the specified path does not exist it will be created.
     ///
@@ -372,7 +370,7 @@ pub enum ActionKind {
         #[cfg_attr(feature = "cli", arg(long))]
         filesystem: Option<String>,
     },
-    /// Delete a file from disk.
+    /// Delete a file from disk
     ///
     /// Deleted files have no recovery option!
     /// Using the `Trash` action is strongly advised for most use-cases!
@@ -402,7 +400,7 @@ pub enum ActionKind {
         #[cfg_attr(feature = "cli", arg(long))]
         src: String,
     },
-    /// Prints the given message.
+    /// Print a given message
     ///
     /// This can be useful to test your rules, especially in combination
     /// with placeholder variables.
@@ -427,7 +425,7 @@ pub enum ActionKind {
         #[cfg_attr(feature = "cli", arg(long))]
         msg: String,
     },
-    /// Add macOS tags.
+    /// Add macOS tags
     ///
     /// The color can be specified in brackets after the tag name.
     ///
@@ -467,7 +465,7 @@ pub enum ActionKind {
         #[cfg_attr(feature = "cli", arg(long))]
         tags: Vec<String>,
     },
-    /// Move a file to a new location.
+    /// Move a file to a new location
     ///
     /// The file can also be renamed. If the specified path does
     /// not exist it will be created.
@@ -525,7 +523,9 @@ pub enum ActionKind {
         #[cfg_attr(feature = "cli", arg(long))]
         filesystem: Option<String>,
     },
-    /// Renames a file.
+    /// Do nothing
+    NoAction,
+    /// Rename a file
     ///
     /// # Example
     ///
@@ -564,6 +564,42 @@ pub enum ActionKind {
         #[cfg_attr(feature = "cli", arg(long))]
         rename_template: Vec<TemplateStringKind>,
     },
+    /// Execute a shell command
+    ///
+    /// # Result
+    ///
+    /// `{shell.output}`: The stdout of the executed process.
+    /// `{shell.returncode}`: The returncode of the executed process.
+    ///
+    /// # Example
+    ///
+    /// ```yaml
+    /// rules:
+    ///   - name: "On macOS: Open all pdfs on your desktop"
+    ///     locations: "~/Desktop"
+    ///     filters:
+    ///       - extension: pdf
+    ///     actions:
+    ///       - shell: 'open "{path}"'
+    /// ```
+    #[serde(rename = "shell")]
+    Shell {
+        /// The command to execute.
+        #[cfg_attr(feature = "cli", arg(long))]
+        command: String,
+        /// Whether to execute in simulation mode
+        #[cfg_attr(feature = "cli", arg(long))]
+        run_in_simulation: bool,
+        /// Whether to continue on erros (return codes !=0)
+        #[cfg_attr(feature = "cli", arg(long))]
+        ignore_errors: bool,
+        /// The value of `{shell.output}` if run in simulation
+        #[cfg_attr(feature = "cli", arg(long))]
+        simulation_output: String,
+        /// The value of `{shell.returncode}` if run in simulation
+        #[cfg_attr(feature = "cli", arg(long))]
+        simulation_returncode: u64,
+    },
     /// Create a symbolic link.
     #[serde(rename = "symlink")]
     Symlink {
@@ -583,7 +619,7 @@ pub enum ActionKind {
         #[cfg_attr(feature = "cli", arg(long))]
         dst: String,
     },
-    /// Move a file or dir into the trash.
+    /// Move a file or directory into the trash
     ///
     /// # Example
     ///
@@ -606,7 +642,7 @@ pub enum ActionKind {
     /// ```
     #[serde(rename = "trash")]
     Trash,
-    /// Write text to a file.
+    /// Write text to a file
     ///
     /// If the specified path does not exist it will be created.
     ///
@@ -663,8 +699,6 @@ pub enum ActionKind {
         #[cfg_attr(feature = "cli", arg(long))]
         filesystem: Option<String>,
     },
-    #[serde(rename = "shell")]
-    Shell,
 }
 
 impl ActionKind {
@@ -704,7 +738,13 @@ impl ActionKind {
                 clear_before_first_write: _,
                 filesystem: _,
             } => todo!("not implemented (yet)!"),
-            ActionKind::Shell => todo!("not implemented (yet)!"),
+            ActionKind::Shell {
+                command: _,
+                run_in_simulation: _,
+                ignore_errors: _,
+                simulation_output: _,
+                simulation_returncode: _,
+            } => todo!(),
             #[cfg(target_os = "osx")]
             ActionKind::MacOsTags { tags } => todo!(),
         }
@@ -868,10 +908,23 @@ impl Display for ActionKind {
     filesystem: {filesystem:?}
             "
             ),
-            ActionKind::Shell => write!(
+            ActionKind::Shell {
+                command,
+                run_in_simulation,
+                ignore_errors,
+                simulation_output,
+                simulation_returncode,
+            } => write!(
                 f,
                 "
     Filter: Shell
+
+    Arguments:
+    command: {command},
+    run_in_simulation: {run_in_simulation},
+    ignore_errors: {ignore_errors},
+    simulation_output: {simulation_output},
+    simulation_returncode: {simulation_returncode},
             "
             ),
         }

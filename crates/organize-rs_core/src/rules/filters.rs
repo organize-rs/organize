@@ -106,10 +106,10 @@ impl std::ops::Deref for FilterCollection {
 /// Should filters be negated
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub enum FilterApplicationKind {
-    /// Apply {0}
-    Retain(FilterKind),
     /// Negate {0}
     Invert(FilterKind),
+    /// Apply {0}
+    Retain(FilterKind),
 }
 
 impl FilterApplicationKind {
@@ -215,18 +215,18 @@ impl FilterModeGroupKind {
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum DuplicateKind {
+    /// The first entry sorted by creation date is the original.
+    Created,
     /// Whatever file is visited first is the original.
     ///
     /// This depends on the order of your location entries.
     FirstSeen,
-    /// The first entry sorted by name is the original.
-    Name,
-    /// The first entry sorted by creation date is the original.
-    Created,
+    // TODO
+    Hash,
     /// The first file sorted by date of last modification is the original.
     LastModified,
-    // TODO
-    // Hash,
+    /// The first entry sorted by name is the original.
+    Name,
 }
 
 impl Default for DuplicateKind {
@@ -320,15 +320,6 @@ pub struct NameFilterArgs {
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub enum DateUnitKind {
-    /// specify number of years
-    #[serde(rename = "years")]
-    Years(f64),
-    /// specify number of months
-    #[serde(rename = "months")]
-    Months(f64),
-    /// specify number of weeks
-    #[serde(rename = "weeks")]
-    Weeks(f64),
     /// specify number of days
     #[serde(rename = "days")]
     Days(f64),
@@ -338,9 +329,18 @@ pub enum DateUnitKind {
     /// specify number of minutes
     #[serde(rename = "minutes")]
     Minutes(f64),
+    /// specify number of months
+    #[serde(rename = "months")]
+    Months(f64),
     /// specify number of seconds
     #[serde(rename = "seconds")]
     Seconds(f64),
+    /// specify number of weeks
+    #[serde(rename = "weeks")]
+    Weeks(f64),
+    /// specify number of years
+    #[serde(rename = "years")]
+    Years(f64),
 }
 
 impl DateUnitKind {
@@ -379,58 +379,7 @@ impl From<(f64, &str)> for DateUnitKind {
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum FilterKind {
-    /// Don't use any filter.
-    ///
-    /// # Result
-    ///
-    /// Empty / no items due to the risk otherwise if it's used in
-    /// combination with an action, that the action will be applied
-    /// to all results.
-    NoFilter,
-    /// Output all items.
-    ///
-    /// # Result
-    ///
-    /// Careful! All items are returned, meaning in combination with
-    /// an action like `Trash` it would move *all* files/folders to
-    /// the trash bin.
-    AllItems {
-        #[cfg_attr(feature = "cli", arg(long))]
-        i_agree_it_is_dangerous: bool,
-    },
-    /// Matches locations by created date
-    ///
-    /// # Result
-    ///
-    /// The datetime the location was created.
-    ///
-    /// # Example
-    ///
-    /// Sort pdfs by year of creation
-    ///
-    /// ```yaml
-    /// rules:
-    ///    - name: Sort pdfs by year of creation
-    ///      locations: "~/Documents"
-    ///      filters:
-    ///        - extension: pdf
-    ///        - created
-    ///      actions:
-    ///        - move: "~/Documents/PDF/{created.year}/"
-    /// ```
-    #[serde(rename = "created")]
-    Created {
-        /// This filter uses the `range` syntax (always inclusive) of Rust.
-        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
-        /// between 1 to 2 days old. Left and right boundary need to have the same units.
-        /// [possible values: y, mo, w, d, h, m, s]
-        ///
-        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
-        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
-        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
-        range: PeriodRange,
-    },
-    /// Matches locations by the time the file was added to a folder
+    /// Match locations by the time they were added to a folder
     ///
     /// # Result
     ///
@@ -462,27 +411,39 @@ pub enum FilterKind {
         #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
         range: PeriodRange,
     },
-    /// Matches locations by the time the file was last accessed
+    /// Output all items
     ///
     /// # Result
     ///
-    /// The datetime the location / folders were accessed.
+    /// Careful! All items are returned, meaning in combination with
+    /// an action like `Trash` it would move *all* files/folders to
+    /// the trash bin.
+    AllItems {
+        #[cfg_attr(feature = "cli", arg(long))]
+        i_agree_it_is_dangerous: bool,
+    },
+    /// Match locations by the time they were created
+    ///
+    /// # Result
+    ///
+    /// The datetime the location was created.
     ///
     /// # Example
     ///
-    /// Show the date the location last accessed
+    /// Sort pdfs by year of creation
     ///
     /// ```yaml
     /// rules:
-    ///    - name: Show the date the location was last accessed
-    ///      locations: "~/Desktop"
+    ///    - name: Sort pdfs by year of creation
+    ///      locations: "~/Documents"
     ///      filters:
-    ///        - last_accessed
+    ///        - extension: pdf
+    ///        - created
     ///      actions:
-    ///        - echo: "Date last used: {last_accessed.strftime('%Y-%m-%d')}"
+    ///        - move: "~/Documents/PDF/{created.year}/"
     /// ```
-    #[serde(rename = "last_accessed")]
-    LastAccessed {
+    #[serde(rename = "created")]
+    Created {
         /// This filter uses the `range` syntax (always inclusive) of Rust.
         /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
         /// between 1 to 2 days old. Left and right boundary need to have the same units.
@@ -493,39 +454,7 @@ pub enum FilterKind {
         #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
         range: PeriodRange,
     },
-    /// Matches locations by last modified date
-    ///
-    /// # Result
-    ///
-    /// The datetime the location / folders was last modified.
-    ///
-    /// # Example
-    ///
-    /// Sort pdfs by year of last modification
-    ///
-    /// ```yaml
-    /// rules:
-    ///   - name: "Sort pdfs by year of last modification"
-    ///     locations: "~/Documents"
-    ///     filters:
-    ///       - extension: pdf
-    ///       - lastmodified
-    ///     actions:
-    ///       - move: "~/Documents/PDF/{lastmodified.year}/"
-    /// ```
-    #[serde(rename = "last_modified")]
-    LastModified {
-        /// This filter uses the `range` syntax (always inclusive) of Rust.
-        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
-        /// between 1 to 2 days old. Left and right boundary need to have the same units.
-        /// [possible values: y, mo, w, d, h, m, s]
-        ///
-        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
-        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
-        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
-        range: PeriodRange,
-    },
-    /// A fast duplicate file finder
+    /// Match locations that have duplicates
     ///
     /// This filter compares locations byte by byte and finds identical
     /// locations with potentially different filenames.
@@ -565,7 +494,7 @@ pub enum FilterKind {
         #[cfg_attr(feature = "cli", arg(long))]
         reverse: bool,
     },
-    /// Finds empty locations
+    /// Find empty locations
     ///
     /// # Example
     ///
@@ -584,7 +513,7 @@ pub enum FilterKind {
     /// ```
     #[serde(rename = "empty")]
     Empty,
-    /// Filter by image EXIF data
+    /// Filter images by their EXIF data
     ///
     /// The exif filter can be used as a filter as well as a way to
     /// get exif information into your actions
@@ -617,7 +546,7 @@ pub enum FilterKind {
     /// ```
     #[serde(rename = "exif")]
     Exif,
-    /// Filter by file extension
+    /// Match locations by their file extension
     ///
     /// # Result
     ///
@@ -644,7 +573,7 @@ pub enum FilterKind {
         #[cfg_attr(feature = "cli", arg(long))]
         exts: Vec<String>,
     },
-    /// Matches file content with the given regular expression
+    /// Match file content with the given regular expression
     ///
     /// Any named groups `((?P<groupname>.*))` in your regular
     /// expression will be returned.
@@ -674,7 +603,7 @@ pub enum FilterKind {
     // TODO: Check for available hash algorithms from organize-py
     // TODO: shake_256, sha3_256, sha1, sha3_224, sha384, sha512, blake2b,
     // TODO: blake2s, sha256, sha224, shake_128, sha3_512, sha3_384 and md5
-    /// Calculates the hash of a file
+    /// Calculat the hash of a file
     ///
     /// # Result
     ///
@@ -697,6 +626,81 @@ pub enum FilterKind {
     #[cfg(feature = "research_organize")]
     #[serde(rename = "hash")]
     Hash,
+    /// Defines a string that makes organize skip a location when found in the file name
+    IgnoreName {
+        /// Matches for these Strings in the Filename
+        // #[cfg_attr(feature = "cli", arg(long))]
+        in_name: Vec<String>,
+    },
+    /// Defines a string that makes organize skip a location when found in the full path
+    IgnorePath {
+        /// Matches for these Strings in the whole Path
+        // #[cfg_attr(feature = "cli", arg(long))]
+        in_path: Vec<String>,
+    },
+    /// Match locations by the time they were last accessed
+    ///
+    /// # Result
+    ///
+    /// The datetime the location / folders were accessed.
+    ///
+    /// # Example
+    ///
+    /// Show the date the location last accessed
+    ///
+    /// ```yaml
+    /// rules:
+    ///    - name: Show the date the location was last accessed
+    ///      locations: "~/Desktop"
+    ///      filters:
+    ///        - last_accessed
+    ///      actions:
+    ///        - echo: "Date last used: {last_accessed.strftime('%Y-%m-%d')}"
+    /// ```
+    #[serde(rename = "last_accessed")]
+    LastAccessed {
+        /// This filter uses the `range` syntax (always inclusive) of Rust.
+        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
+        /// between 1 to 2 days old. Left and right boundary need to have the same units.
+        /// [possible values: y, mo, w, d, h, m, s]
+        ///
+        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
+        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
+        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
+        range: PeriodRange,
+    },
+    /// Match locations by the time they were last modified
+    ///
+    /// # Result
+    ///
+    /// The datetime the location / folders was last modified.
+    ///
+    /// # Example
+    ///
+    /// Sort pdfs by year of last modification
+    ///
+    /// ```yaml
+    /// rules:
+    ///   - name: "Sort pdfs by year of last modification"
+    ///     locations: "~/Documents"
+    ///     filters:
+    ///       - extension: pdf
+    ///       - lastmodified
+    ///     actions:
+    ///       - move: "~/Documents/PDF/{lastmodified.year}/"
+    /// ```
+    #[serde(rename = "last_modified")]
+    LastModified {
+        /// This filter uses the `range` syntax (always inclusive) of Rust.
+        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
+        /// between 1 to 2 days old. Left and right boundary need to have the same units.
+        /// [possible values: y, mo, w, d, h, m, s]
+        ///
+        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
+        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
+        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
+        range: PeriodRange,
+    },
     /// Filter by macOS tags
     ///
     /// # Example
@@ -749,7 +753,7 @@ pub enum FilterKind {
         #[cfg_attr(feature = "cli", arg(long))]
         mimetype: Vec<String>,
     },
-    /// Match locations by name
+    /// Match locations by their name
     ///
     /// # Example
     ///
@@ -782,7 +786,15 @@ pub enum FilterKind {
         #[cfg_attr(feature = "cli", arg(long))]
         case_insensitive: bool,
     },
-    /// Matches filenames with the given regular expression
+    /// Don't use any filter
+    ///
+    /// # Result
+    ///
+    /// Empty / no items due to the risk otherwise if it's used in
+    /// combination with an action, that the action will be applied
+    /// to all results.
+    NoFilter,
+    /// Match filenames with the given regular expression
     ///
     /// Any named groups `((?P<groupname>.*))` in your regular
     /// expression will be returned.
@@ -810,7 +822,7 @@ pub enum FilterKind {
         #[cfg_attr(feature = "cli", arg(long))]
         expr: String,
     },
-    /// Matches locations by size
+    /// Match locations by their size
     ///
     /// Accepts file size conditions, e.g: ">= 500 MB", "< 20k", ">0", "= 10 KiB".
     ///
@@ -873,18 +885,6 @@ pub enum FilterKind {
         /// will be **converted** accordingly and are **case-insensitive**.
         #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(SizeRange)))]
         range: SizeRange,
-    },
-    /// Ignore expression in path
-    IgnorePath {
-        /// Matches for these Strings in the whole Path
-        // #[cfg_attr(feature = "cli", arg(long))]
-        in_path: Vec<String>,
-    },
-    /// Ignore expression in file name
-    IgnoreName {
-        /// Matches for these Strings in the Filename
-        // #[cfg_attr(feature = "cli", arg(long))]
-        in_name: Vec<String>,
     },
 }
 

@@ -1,41 +1,40 @@
-//! `rule` subcommand
+//! `run` subcommand
 
-use std::{fs::File, path::PathBuf, str::FromStr};
+mod config;
+mod script;
+
+
 
 use abscissa_core::{status_err, Application, Command, Runnable, Shutdown};
 use anyhow::Result;
-use clap::{Args, Parser};
-use organize_rs_core::{
-    locations::{LocationKind, MaxDepth, TargetKind},
-    parsers::SizeRange,
-    rules::{
-        actions::{ActionApplicationKind, ActionKind},
-        filters::{FilterApplicationKind, FilterKind, FilterModeGroupKind},
-        Rule, Tag,
-    },
+use clap::{Parser, Subcommand};
+
+
+
+
+
+use crate::{
+    application::ORGANIZE_APP,
+    commands::run::{config::RunConfigCmd, script::RunScriptCmd},
 };
-use ron::ser::PrettyConfig;
 
-use crate::application::ORGANIZE_APP;
-
-#[derive(Debug, Args, Clone)]
-#[group(id = "location", required = true, multiple = false)]
-pub struct RunLocationArgs {
-    /// path to a compatible config file containing organize rules
-    config_path: Option<PathBuf>,
-    /// path to a *.rhai script file containing organize rules
-    script_path: Option<PathBuf>,
+#[derive(Debug, Subcommand)]
+pub enum RunSubCmd {
+    /// Run a *.ron config with organize
+    Config(RunConfigCmd),
+    /// Run a *.rhai script with organize
+    Script(RunScriptCmd),
 }
 
 /// `run` subcommand
 #[derive(Command, Debug, Parser)]
 pub struct RunCmd {
+    #[clap(subcommand)]
+    commands: RunSubCmd,
+
     /// flag to apply actions destructively
     #[clap(long)]
     execute: bool,
-
-    #[command(flatten)]
-    location_opts: RunLocationArgs,
 }
 
 impl Runnable for RunCmd {

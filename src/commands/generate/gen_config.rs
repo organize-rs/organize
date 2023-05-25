@@ -4,7 +4,7 @@ use std::{fs::File, path::PathBuf, str::FromStr};
 
 use abscissa_core::{status_err, Application, Command, Runnable, Shutdown};
 use anyhow::{bail, Result};
-use clap::{Args, Parser, Subcommand};
+use clap::Parser;
 use dialoguer::Confirm;
 use organize_rs_core::{
     locations::{LocationKind, MaxDepth, TargetKind},
@@ -19,41 +19,21 @@ use ron::ser::PrettyConfig;
 
 use crate::application::ORGANIZE_APP;
 
-#[derive(Debug, Subcommand)]
-pub enum ConfigSubCmd {
-    /// Generate a new config file
-    Generate(GenerateConfigSubCmd),
-    /// Check given config file
-    Check,
-}
-
-#[derive(Debug, Args)]
-pub struct GenerateConfigSubCmd {
+#[derive(Command, Debug, Parser, Clone)]
+pub struct GenConfigCmd {
     /// generate a config interactively
     #[clap(short, long)]
     interactive: bool,
-}
-
-/// `config` subcommand
-#[derive(Command, Debug, Parser)]
-pub struct ConfigCmd {
-    #[clap(subcommand)]
-    commands: ConfigSubCmd,
 
     /// path to an existing or to be created config file
     #[clap(short, long)]
     config_path: PathBuf,
 }
 
-impl Runnable for ConfigCmd {
+impl Runnable for GenConfigCmd {
     /// Start the application.
     fn run(&self) {
-        let result = match &self.commands {
-            ConfigSubCmd::Generate(config) => self.generate_example_config(config),
-            ConfigSubCmd::Check => todo!(),
-        };
-
-        match result {
+        match self.generate_example_config() {
             Ok(_) => {}
             Err(err) => {
                 status_err!("{}", err);
@@ -63,8 +43,8 @@ impl Runnable for ConfigCmd {
     }
 }
 
-impl ConfigCmd {
-    fn generate_example_config(&self, config: &GenerateConfigSubCmd) -> Result<()> {
+impl GenConfigCmd {
+    fn generate_example_config(&self) -> Result<()> {
         let rule_builder = Rule::builder();
 
         let rule = rule_builder

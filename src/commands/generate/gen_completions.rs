@@ -12,7 +12,7 @@ use clap_complete::{generate, shells, Generator};
 
 /// `completions` subcommand
 #[derive(Args, Command, Debug, Clone)]
-pub struct CompletionsCmd {
+pub struct GenCompletionsCmd {
     /// Shell to generate completions for
     #[arg(value_enum)]
     shell: Variant,
@@ -22,11 +22,11 @@ pub struct CompletionsCmd {
 pub enum Variant {
     Bash,
     Fish,
-    Zsh,
     Powershell,
+    Zsh,
 }
 
-impl Runnable for CompletionsCmd {
+impl Runnable for GenCompletionsCmd {
     fn run(&self) {
         match self.shell {
             Variant::Bash => generate_completion(shells::Bash, &mut std::io::stdout()),

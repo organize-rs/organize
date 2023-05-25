@@ -20,10 +20,6 @@ pub struct FilterCmd {
     #[clap(subcommand)]
     filters: FilterKind,
 
-    /// Locations to operate on
-    #[arg(short, long, global = true)]
-    locations: Vec<PathBuf>,
-
     /// Words in file names to be ignored
     #[arg(long, global = true)]
     ignore_name: Option<Vec<String>>,

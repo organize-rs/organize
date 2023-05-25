@@ -1,5 +1,4 @@
-use crate::commands::filter::FilterCmd;
-use rhai::{CustomType, TypeBuilder};
+// use rhai::{CustomType, TypeBuilder};
 
 // impl CustomType for FilterCmd {
 //     fn build(mut builder: TypeBuilder<'_, Self>) {

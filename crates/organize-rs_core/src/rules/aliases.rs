@@ -5,10 +5,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum ItemKind {
-    #[serde(rename = "folder")]
-    Folder,
     #[serde(rename = "ext")]
     Extension,
+    #[serde(rename = "folder")]
+    Folder,
 }
 
 impl ItemKind {
