@@ -5,6 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.3.1 (2023-05-25)
+
+### New Features
+
+ - <csr-id-1246468f87132a8b52169fd186f3626f357817bd/> docs command opens browser
+ - <csr-id-fea4cc14fe1f64cc9fd91664bf07f8940cba15a1/> adding cli option for filter mode
+ - <csr-id-33fc910001ac35967bc1e424b110c88ace6b9186/> Free the way for applying multiple filters
+
+### Other
+
+ - <csr-id-4757013ebe9fe5d37ea3d7b7cddf155910e0f5b4/> Switch to jwalk to walk the directory tree parallelized
+ - <csr-id-95b9b3cf0ce06a224c0c79782ae7c470c31475d8/> add new run command to run a specified rule from a config or script
+ - <csr-id-36d02df0f52798af534151ea4d3ed4f7876934b2/> add new config command to generate and check configs
+ - <csr-id-09c428cc45bbb348ca08e5fd233c999408ca2500/> apply multiple filters to walkdir iter
+
+### Refactor
+
+ - <csr-id-543150dd96aca886bacd0057bda1957d19b4322d/> improve display
+ - <csr-id-14300ea60bcccf500d813ee267792899a278a9ff/> Make FilterWalker more configurable for upcoming features
+ - <csr-id-c005013d1c49f5d717d635c3ece760bb5c904e09/> make filters use more option/result methods
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 11 commits contributed to the release over the course of 2 calendar days.
+ - 3 days passed between releases.
+ - 10 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Switch to jwalk to walk the directory tree parallelized ([`4757013`](https://github.com/organize-rs/organize/commit/4757013ebe9fe5d37ea3d7b7cddf155910e0f5b4))
+    - Add new run command to run a specified rule from a config or script ([`95b9b3c`](https://github.com/organize-rs/organize/commit/95b9b3cf0ce06a224c0c79782ae7c470c31475d8))
+    - Add new config command to generate and check configs ([`36d02df`](https://github.com/organize-rs/organize/commit/36d02df0f52798af534151ea4d3ed4f7876934b2))
+    - Docs command opens browser ([`1246468`](https://github.com/organize-rs/organize/commit/1246468f87132a8b52169fd186f3626f357817bd))
+    - Improve display ([`543150d`](https://github.com/organize-rs/organize/commit/543150dd96aca886bacd0057bda1957d19b4322d))
+    - Adding cli option for filter mode ([`fea4cc1`](https://github.com/organize-rs/organize/commit/fea4cc14fe1f64cc9fd91664bf07f8940cba15a1))
+    - Make FilterWalker more configurable for upcoming features ([`14300ea`](https://github.com/organize-rs/organize/commit/14300ea60bcccf500d813ee267792899a278a9ff))
+    - Free the way for applying multiple filters ([`33fc910`](https://github.com/organize-rs/organize/commit/33fc910001ac35967bc1e424b110c88ace6b9186))
+    - Fix borrow issues ([`3d1b0a1`](https://github.com/organize-rs/organize/commit/3d1b0a19e71441bdec6a9b609833b91a8ef890d8))
+    - Apply multiple filters to walkdir iter ([`09c428c`](https://github.com/organize-rs/organize/commit/09c428cc45bbb348ca08e5fd233c999408ca2500))
+    - Make filters use more option/result methods ([`c005013`](https://github.com/organize-rs/organize/commit/c005013d1c49f5d717d635c3ece760bb5c904e09))
+</details>
+
 ## 0.3.0 (2023-05-21)
 
 ### Feature
@@ -14,6 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 0.2.6 (2023-05-21)
 
 <csr-id-d2b33280185f68daaff2671d1a4470d9041f3bcb/>
+
+
 
 ### Chore
 

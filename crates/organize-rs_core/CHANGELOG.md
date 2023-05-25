@@ -5,6 +5,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.2.1 (2023-05-25)
+
+### New Features
+
+ - <csr-id-12b5e9cb07d2258ac4a56ce7d38993802e6f7385/> add total entry count to output of filters
+ - <csr-id-fea4cc14fe1f64cc9fd91664bf07f8940cba15a1/> adding cli option for filter mode
+ - <csr-id-33fc910001ac35967bc1e424b110c88ace6b9186/> Free the way for applying multiple filters
+
+### Other
+
+ - <csr-id-4757013ebe9fe5d37ea3d7b7cddf155910e0f5b4/> Switch to jwalk to walk the directory tree parallelized
+ - <csr-id-09c428cc45bbb348ca08e5fd233c999408ca2500/> apply multiple filters to walkdir iter
+
+### Refactor
+
+ - <csr-id-48dd7daf79444deee11134c5c42fe4e9aa4e18ba/> more functional syntax
+ - <csr-id-8504e820eca6dd8be66d707695e56d0c8c8f3be6/> implement custom serializer for MaxDepth
+ - <csr-id-9d55a017ae9ba14b726fe542a9354fcf045b06f3/> Add associated constants for SizeRange and PeriodRange
+ - <csr-id-543150dd96aca886bacd0057bda1957d19b4322d/> improve display
+ - <csr-id-14300ea60bcccf500d813ee267792899a278a9ff/> Make FilterWalker more configurable for upcoming features
+ - <csr-id-c005013d1c49f5d717d635c3ece760bb5c904e09/> make filters use more option/result methods
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 12 commits contributed to the release over the course of 2 calendar days.
+ - 3 days passed between releases.
+ - 11 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Add total entry count to output of filters ([`12b5e9c`](https://github.com/organize-rs/organize/commit/12b5e9cb07d2258ac4a56ce7d38993802e6f7385))
+    - More functional syntax ([`48dd7da`](https://github.com/organize-rs/organize/commit/48dd7daf79444deee11134c5c42fe4e9aa4e18ba))
+    - Switch to jwalk to walk the directory tree parallelized ([`4757013`](https://github.com/organize-rs/organize/commit/4757013ebe9fe5d37ea3d7b7cddf155910e0f5b4))
+    - Implement custom serializer for MaxDepth ([`8504e82`](https://github.com/organize-rs/organize/commit/8504e820eca6dd8be66d707695e56d0c8c8f3be6))
+    - Add associated constants for SizeRange and PeriodRange ([`9d55a01`](https://github.com/organize-rs/organize/commit/9d55a017ae9ba14b726fe542a9354fcf045b06f3))
+    - Improve display ([`543150d`](https://github.com/organize-rs/organize/commit/543150dd96aca886bacd0057bda1957d19b4322d))
+    - Adding cli option for filter mode ([`fea4cc1`](https://github.com/organize-rs/organize/commit/fea4cc14fe1f64cc9fd91664bf07f8940cba15a1))
+    - Make FilterWalker more configurable for upcoming features ([`14300ea`](https://github.com/organize-rs/organize/commit/14300ea60bcccf500d813ee267792899a278a9ff))
+    - Free the way for applying multiple filters ([`33fc910`](https://github.com/organize-rs/organize/commit/33fc910001ac35967bc1e424b110c88ace6b9186))
+    - Fix borrow issues ([`3d1b0a1`](https://github.com/organize-rs/organize/commit/3d1b0a19e71441bdec6a9b609833b91a8ef890d8))
+    - Apply multiple filters to walkdir iter ([`09c428c`](https://github.com/organize-rs/organize/commit/09c428cc45bbb348ca08e5fd233c999408ca2500))
+    - Make filters use more option/result methods ([`c005013`](https://github.com/organize-rs/organize/commit/c005013d1c49f5d717d635c3ece760bb5c904e09))
+</details>
+
 ## 0.2.0 (2023-05-21)
 
 ### New Features (BREAKING)
@@ -15,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 2 commits contributed to the release.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -26,6 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release organize-rs_core v0.2.0, safety bump organize-rs v0.3.0 ([`fb27edc`](https://github.com/organize-rs/organize/commit/fb27edc1f40e49e4db6d8553ebb1317feb0cb8be))
     - Implement range syntax also for date related filters ([`13f7560`](https://github.com/organize-rs/organize/commit/13f7560c1deb053fb74880247d01b60be6ef0ca1))
 </details>
 
