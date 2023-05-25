@@ -3,73 +3,23 @@
 
 pub mod actions;
 pub mod aliases;
+pub mod de;
 pub mod filters;
+pub mod ser;
+pub mod tags;
 
 use std::fmt::Display;
 
-use displaydoc::Display;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    locations::LocationKind,
+    locations::{LocationCollection, LocationKind},
     rules::{
-        actions::ActionApplicationKind,
-        filters::{FilterApplicationKind, FilterModeGroupKind},
+        actions::{ActionApplicationCollection, ActionApplicationKind},
+        filters::{FilterApplicationCollection, FilterApplicationKind, FilterModeGroupKind},
+        tags::{Tag, TagCollection},
     },
 };
-
-/// Tags that can be applied to rules
-#[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord)]
-pub enum Tag {
-    /// Always run filters/actions with this tag
-    Always,
-    /// Custom tag for running filters/actions
-    Custom(String),
-    /// Never run filters/actions with this tag
-    Never,
-}
-
-impl Tag {
-    /// Returns `true` if the organize tag is [`Always`].
-    ///
-    /// [`Always`]: OrganizeTag::Always
-    #[must_use]
-    pub fn is_always(&self) -> bool {
-        matches!(self, Self::Always)
-    }
-
-    /// Returns `true` if the organize tag is [`Never`].
-    ///
-    /// [`Never`]: OrganizeTag::Never
-    #[must_use]
-    pub fn is_never(&self) -> bool {
-        matches!(self, Self::Never)
-    }
-
-    /// Returns `true` if the organize tag is [`Custom`].
-    ///
-    /// [`Custom`]: OrganizeTag::Custom
-    #[must_use]
-    pub fn is_custom(&self) -> bool {
-        matches!(self, Self::Custom(..))
-    }
-
-    pub fn as_custom(&self) -> Option<&String> {
-        if let Self::Custom(v) = self {
-            Some(v)
-        } else {
-            None
-        }
-    }
-
-    pub fn try_into_custom(self) -> Result<String, Self> {
-        if let Self::Custom(v) = self {
-            Ok(v)
-        } else {
-            Err(self)
-        }
-    }
-}
 
 /// [`Rule`] contains a list of objects with the required keys
 /// "locations" and "actions". One config can have many [`Rule`]s.
@@ -78,17 +28,17 @@ pub struct Rule {
     /// rule name
     name: String,
     /// tag for a rule, so you can run a set of rules by passing `--tags` or `--skip-tags`
-    tags: Vec<Tag>,
+    tags: TagCollection,
     /// whether the rule is enabled / disabled
     enabled: bool,
-    /// list of locations
-    locations: Vec<LocationKind>,
     /// whether "all", "any" or "none" of the filters must apply
     filter_mode: FilterModeGroupKind,
+    /// list of locations
+    locations: LocationCollection,
     /// supported filters
-    filters: Vec<FilterApplicationKind>,
+    filters: FilterApplicationCollection,
     /// supported actions
-    actions: Vec<ActionApplicationKind>,
+    actions: ActionApplicationCollection,
 }
 
 impl Display for Rule {
@@ -140,17 +90,17 @@ pub struct RuleBuilder {
     /// rule name
     name: String,
     /// tag for a rule, so you can run a set of rules by passing `--tags` or `--skip-tags`
-    tags: Vec<Tag>,
+    tags: TagCollection,
     /// whether the rule is enabled / disabled
     enabled: bool,
     /// whether "all", "any" or "none" of the filters must apply
     filter_mode: FilterModeGroupKind,
     /// list of locations
-    locations: Vec<LocationKind>,
+    locations: LocationCollection,
     /// supported filters
-    filters: Vec<FilterApplicationKind>,
+    filters: FilterApplicationCollection,
     /// supported actions
-    actions: Vec<ActionApplicationKind>,
+    actions: ActionApplicationCollection,
 }
 
 impl RuleBuilder {
@@ -192,7 +142,7 @@ impl RuleBuilder {
     }
 
     /// Add multiple locations
-    pub fn locations(mut self, mut locations: Vec<LocationKind>) -> RuleBuilder {
+    pub fn locations(mut self, mut locations: LocationCollection) -> RuleBuilder {
         self.locations.append(&mut locations);
         self
     }
@@ -210,7 +160,7 @@ impl RuleBuilder {
     }
 
     /// Add multiple filters
-    pub fn filters(mut self, mut filters: Vec<FilterApplicationKind>) -> RuleBuilder {
+    pub fn filters(mut self, mut filters: FilterApplicationCollection) -> RuleBuilder {
         self.filters.append(&mut filters);
         self
     }
@@ -222,7 +172,7 @@ impl RuleBuilder {
     }
 
     /// Add multiple actions
-    pub fn actions(mut self, mut actions: Vec<ActionApplicationKind>) -> RuleBuilder {
+    pub fn actions(mut self, mut actions: ActionApplicationCollection) -> RuleBuilder {
         self.actions.append(&mut actions);
         self
     }
@@ -234,7 +184,7 @@ impl RuleBuilder {
     }
 
     /// Add multiple tags
-    pub fn tags(mut self, mut tags: Vec<Tag>) -> RuleBuilder {
+    pub fn tags(mut self, mut tags: TagCollection) -> RuleBuilder {
         self.tags.append(&mut tags);
         self
     }

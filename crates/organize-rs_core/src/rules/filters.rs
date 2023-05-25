@@ -18,6 +18,30 @@ pub type FilterClosure<'a, C> = Box<dyn FnMut(&DirEntry<C>) -> bool + 'a>;
 pub type FilterClosureCollection<'a, C> = Vec<FilterClosure<'a, C>>;
 pub type FilterFilterClosureSliceMut<'a, C> = &'a mut [Box<dyn FnMut(&DirEntry<C>) -> bool>];
 
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+
+pub struct FilterApplicationCollection(Vec<FilterApplicationKind>);
+
+impl std::ops::DerefMut for FilterApplicationCollection {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Default for FilterApplicationCollection {
+    fn default() -> Self {
+        Self(vec![FilterApplicationKind::default()])
+    }
+}
+
+impl std::ops::Deref for FilterApplicationCollection {
+    type Target = Vec<FilterApplicationKind>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct FilterCollection(Vec<(FilterModeGroupKind, FilterApplicationKind)>);
 
@@ -110,6 +134,12 @@ pub enum FilterApplicationKind {
     Invert(FilterKind),
     /// Apply {0}
     Retain(FilterKind),
+}
+
+impl Default for FilterApplicationKind {
+    fn default() -> Self {
+        Self::Retain(FilterKind::default())
+    }
 }
 
 impl FilterApplicationKind {
@@ -432,7 +462,8 @@ pub enum FilterKind {
     ///
     /// Sort pdfs by year of creation
     ///
-    /// ```yaml
+    /// ```rust
+    /// let rule = r#"
     /// rules:
     ///    - name: Sort pdfs by year of creation
     ///      locations: "~/Documents"
@@ -441,6 +472,7 @@ pub enum FilterKind {
     ///        - created
     ///      actions:
     ///        - move: "~/Documents/PDF/{created.year}/"
+    /// "#;
     /// ```
     #[serde(rename = "created")]
     Created {

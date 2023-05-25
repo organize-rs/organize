@@ -7,6 +7,29 @@ use clap::ValueEnum;
 
 use displaydoc::Display;
 
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+pub struct LocationCollection(Vec<LocationKind>);
+
+impl std::ops::DerefMut for LocationCollection {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Default for LocationCollection {
+    fn default() -> Self {
+        Self(vec![LocationKind::default()])
+    }
+}
+
+impl std::ops::Deref for LocationCollection {
+    type Target = Vec<LocationKind>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 /// [`OrganizeTarget`] defines targets `organize` operates on.
 ///
 /// When targets is set to dirs, organize will work on
@@ -47,16 +70,7 @@ impl TargetKind {
 }
 
 #[derive(Debug, Clone, Deserialize, Copy)]
-pub struct MaxDepth(u64);
-
-impl Serialize for MaxDepth {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_u64(self.0)
-    }
-}
+pub struct MaxDepth(pub(crate) u64);
 
 impl Display for MaxDepth {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -111,6 +125,15 @@ pub enum LocationKind {
         /// the folders, not on files
         target: TargetKind,
     },
+}
+
+impl Default for LocationKind {
+    fn default() -> Self {
+        Self::NonRecursive {
+            path: PathBuf::default(),
+            target: TargetKind::default(),
+        }
+    }
 }
 
 impl Display for LocationKind {

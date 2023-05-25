@@ -1,6 +1,6 @@
 //! `config` subcommand
 
-use std::{fs::File, path::PathBuf, str::FromStr};
+use std::{fs::File, io::Write, path::PathBuf, str::FromStr};
 
 use abscissa_core::{status_err, Application, Command, Runnable, Shutdown};
 use anyhow::{bail, Result};
@@ -12,7 +12,8 @@ use organize_rs_core::{
     rules::{
         actions::{ActionApplicationKind, ActionKind},
         filters::{FilterApplicationKind, FilterKind, FilterModeGroupKind},
-        Rule, Tag,
+        tags::Tag,
+        Rule,
     },
 };
 use ron::ser::PrettyConfig;
@@ -73,8 +74,10 @@ impl GenConfigCmd {
                 bail!("Config file already exists. We will overwrite it, make sure you have a backup and agree in the dialog.");
             }
         } else {
-            let file = File::create(&self.config_path)?;
-            ron::ser::to_writer_pretty(file, &rule, PrettyConfig::default())?;
+            let mut file = File::create(&self.config_path)?;
+            // ron::ser::to_writer_pretty(file, &rule, PrettyConfig::default())?;
+            // file.write_all(toml::to_string_pretty(&rule)?.as_bytes())?;
+            file.write_all(serde_yaml::to_string(&rule)?.as_bytes())?;
         };
 
         Ok(())
