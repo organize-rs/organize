@@ -17,6 +17,12 @@
 
 ## Filters
 
+- global ignore list
+  - .py
+  - .js
+  - .ini
+  - 
+
 ### Filters impl
 
 - [ ] Regex
