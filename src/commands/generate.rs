@@ -8,14 +8,14 @@ use clap::{Parser, Subcommand};
 
 use crate::commands::generate::{gen_completions::GenCompletionsCmd, gen_config::GenConfigCmd};
 
-#[derive(Subcommand, Debug, Clone)]
+#[derive(Subcommand, Command, Debug, Runnable)]
 pub enum GenerateSubCmd {
     /// Generate a *.ron config stub
     Config(GenConfigCmd),
     /// Generate completions for your shell
     Completions(GenCompletionsCmd),
-    /// Generate a *.rhai script stub
-    Script,
+    // Generate a *.rhai script stub
+    // Script,
 }
 
 /// Generate completions for your shell, and organize config and script files
@@ -28,6 +28,6 @@ pub struct GenerateCmd {
 impl Runnable for GenerateCmd {
     /// Start the application.
     fn run(&self) {
-        todo!()
+        self.commands.run();
     }
 }
