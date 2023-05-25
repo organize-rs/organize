@@ -1080,14 +1080,13 @@ impl FilterKind {
         exts: &'args [String],
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            let file_path = entry.path();
-            let Some(extension) = file_path.extension() else {
-                return false
-            };
-            let Some(extension_str) = extension.to_str() else {
-                    return false
-                };
-            exts.iter().any(|f| f == extension_str)
+            entry
+                .path()
+                .extension()
+                .and_then(|ext| ext.to_str())
+                .map_or(false, |extension_str| {
+                    exts.iter().any(|f| f == extension_str)
+                })
         })
     }
 
@@ -1162,18 +1161,15 @@ impl FilterKind {
 
     fn filter_by_empty<C: ClientState>(&self) -> Box<dyn FnMut(&DirEntry<C>) -> bool + '_> {
         Box::new(|entry| {
-            entry
-                .metadata()
-                .map(|e| {
-                    if entry.path().is_file() {
-                        e.len() == 0
-                    } else if entry.path().is_dir() {
-                        entry.path().read_dir().map_or(false, |f| f.count() == 0)
-                    } else {
-                        false
-                    }
-                })
-                .unwrap_or(false)
+            entry.metadata().map_or(false, |e| {
+                if entry.path().is_file() {
+                    e.len() == 0
+                } else if entry.path().is_dir() {
+                    entry.path().read_dir().map_or(false, |f| f.count() == 0)
+                } else {
+                    false
+                }
+            })
         })
     }
 
@@ -1182,9 +1178,10 @@ impl FilterKind {
         range: &'args PeriodRange,
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            entry.metadata().ok().map_or(false, |f| {
-                let Ok(sys_time) = f.accessed() else { return false };
-                Self::matches_date(&sys_time, &range.clone())
+            entry.metadata().ok().map_or(false, |metadata| {
+                metadata.accessed().map_or(false, |sys_time| {
+                    Self::matches_date(&sys_time, &range.clone())
+                })
             })
         })
     }
@@ -1193,9 +1190,10 @@ impl FilterKind {
         range: &'args PeriodRange,
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            entry.metadata().ok().map_or(false, |f| {
-                let Ok(sys_time) = f.modified() else { return false };
-                Self::matches_date(&sys_time, &range.clone())
+            entry.metadata().ok().map_or(false, |metadata| {
+                metadata.modified().map_or(false, |sys_time| {
+                    Self::matches_date(&sys_time, &range.clone())
+                })
             })
         })
     }
@@ -1204,9 +1202,10 @@ impl FilterKind {
         range: &'args PeriodRange,
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            entry.metadata().ok().map_or(false, |f| {
-                let Ok(sys_time) = f.created() else { return false };
-                Self::matches_date(&sys_time, &range.clone())
+            entry.metadata().ok().map_or(false, |metadata| {
+                metadata.created().map_or(false, |sys_time| {
+                    Self::matches_date(&sys_time, &range.clone())
+                })
             })
         })
     }
@@ -1257,8 +1256,9 @@ impl FilterKind {
         range: &'args SizeRange,
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            let Ok(metadata) = entry.metadata() else { return false };
-            range.in_range(metadata.len() as f64)
+            entry
+                .metadata()
+                .map_or(false, |metadata| range.in_range(metadata.len() as f64))
         })
     }
 
@@ -1267,10 +1267,11 @@ impl FilterKind {
         ignore_name: &'args [String],
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            let Some(file_name) = entry.file_name().to_str() else { return false };
-            ignore_name
-                .iter()
-                .any(|pat| file_name.to_lowercase().contains(&pat.to_lowercase()))
+            entry.file_name().to_str().map_or(false, |file_name| {
+                ignore_name
+                    .iter()
+                    .any(|pat| file_name.to_lowercase().contains(&pat.to_lowercase()))
+            })
         })
     }
 
@@ -1279,15 +1280,11 @@ impl FilterKind {
         ignore_path: &'args [String],
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            entry
-                .path()
-                .to_str()
-                .map(|path| {
-                    ignore_path
-                        .iter()
-                        .any(|pat| path.to_lowercase().contains(&pat.to_lowercase()))
-                })
-                .unwrap_or(false)
+            entry.path().to_str().map_or(false, |path| {
+                ignore_path
+                    .iter()
+                    .any(|pat| path.to_lowercase().contains(&pat.to_lowercase()))
+            })
         })
     }
 
