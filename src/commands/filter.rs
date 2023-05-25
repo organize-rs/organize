@@ -11,7 +11,7 @@ use organize_rs_core::{
         FilterApplicationKind, FilterCollection, FilterKind, FilterModeGroupKind,
         RecursiveFilterArgs,
     },
-    FilterWalker,
+    FilteredFileWalker,
 };
 
 /// `filter` subcommand
@@ -86,7 +86,7 @@ impl Runnable for FilterCmd {
 
 impl FilterCmd {
     fn inner_run(&self, filters: FilterCollection) {
-        let mut filter_walker = FilterWalker::new();
+        let mut filter_walker = FilteredFileWalker::new();
 
         // Convert to OrganizeLocation
         let locations = self

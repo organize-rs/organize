@@ -7,11 +7,21 @@ use std::fmt::Display;
 use clap::{Subcommand, ValueEnum};
 
 use displaydoc::Display;
+use jwalk::{ClientState, DirEntry};
 use serde::{Deserialize, Serialize};
 use trash;
-use walkdir::DirEntry;
 
-type ActionClosure = Box<dyn FnMut(&DirEntry) -> Result<Option<bool>, Box<dyn std::error::Error>>>;
+type ActionClosure<C> =
+    Box<dyn FnMut(&DirEntry<C>) -> Result<Option<bool>, Box<dyn std::error::Error>>>;
+
+/// how an action is applied
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+pub enum ActionApplicationKind {
+    /// Dry run, as in preview an action
+    Preview(ActionKind),
+    /// Execute action destructively
+    Destructive(ActionKind),
+}
 
 /// Colours for `MacOS` tags
 #[cfg(target_os = "osx")]
@@ -658,7 +668,7 @@ pub enum ActionKind {
 }
 
 impl ActionKind {
-    pub fn get_action(&self) -> ActionClosure {
+    pub fn get_action<C: ClientState>(&self) -> ActionClosure<C> {
         match self {
             ActionKind::NoAction => Box::new(move |_entry| Ok(Some(false))),
             ActionKind::Trash => Box::new(self.action_move_to_trash()),
@@ -700,9 +710,9 @@ impl ActionKind {
         }
     }
 
-    fn action_move_to_trash(
+    fn action_move_to_trash<C: ClientState>(
         &self,
-    ) -> impl FnMut(&DirEntry) -> Result<Option<bool>, Box<dyn std::error::Error>> {
+    ) -> impl FnMut(&DirEntry<C>) -> Result<Option<bool>, Box<dyn std::error::Error>> {
         move |entry| {
             trash::delete(entry.path())
                 .map(|_op| None)

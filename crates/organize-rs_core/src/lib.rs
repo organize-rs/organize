@@ -7,29 +7,29 @@ use crate::{
     error::OrganizeResult,
     locations::{LocationKind, MaxDepth, TargetKind},
     rules::filters::{
-        FilterApplicationKind, FilterCollection, FilterModeGroupKind, FilterSliceMut,
+        FilterApplicationKind, FilterCollection, FilterFilterClosureSliceMut, FilterModeGroupKind,
     },
 };
 
 use std::{fmt::Display, fs::FileType, ops::Not, path::Path};
 
 use itertools::{Either, Itertools};
-use walkdir::{DirEntry, WalkDir};
+use jwalk::{ClientState, DirEntry, WalkDir};
 
 pub mod constants {
     pub const MAX_DEPTH: usize = 0;
 }
 
-pub struct IterCarry<'it> {
-    pub iter: &'it mut dyn Iterator<Item = DirEntry>,
+pub struct IterCarry<'it, C: ClientState> {
+    pub iter: &'it mut dyn Iterator<Item = DirEntry<C>>,
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct FilterWalker {
-    entries: Vec<DirEntry>,
+#[derive(Debug, Default)]
+pub struct FilteredFileWalker {
+    entries: Vec<DirEntry<((), ())>>,
 }
 
-impl FilterWalker {
+impl FilteredFileWalker {
     pub fn new() -> Self {
         Self::default()
     }
@@ -38,7 +38,7 @@ impl FilterWalker {
         self.entries().iter().for_each(|f| println!("{f:?}"));
     }
 
-    pub fn entries(&self) -> &[DirEntry] {
+    pub fn entries(&self) -> &[DirEntry<((), ())>] {
         &self.entries
     }
 
@@ -74,14 +74,14 @@ impl FilterWalker {
             &mut any_filters,
             &mut all_filters,
         )
-        .collect();
+        .collect_vec();
     }
 
     fn populate_entries<A>(
         path: A,
         max_depth: impl Into<Option<MaxDepth>>,
         targets: TargetKind,
-    ) -> OrganizeResult<Vec<DirEntry>>
+    ) -> OrganizeResult<Vec<DirEntry<((), ())>>>
     where
         A: AsRef<Path>,
     {
@@ -93,9 +93,8 @@ impl FilterWalker {
 
         println!("We are getting entries ...");
 
-        let files: Vec<DirEntry> = WalkDir::new(path)
+        let files = WalkDir::new(path)
             .max_depth(depth)
-            .contents_first(true)
             .into_iter()
             .filter_map(|f| f.ok())
             .filter(|f| match targets {
@@ -103,7 +102,7 @@ impl FilterWalker {
                 TargetKind::Files => FileType::is_file(&f.file_type()),
                 TargetKind::Both => true,
             })
-            .collect();
+            .collect_vec();
 
         Ok(files)
     }
@@ -118,7 +117,10 @@ impl FilterWalker {
     //         .collect_vec()
     // }
 
-    pub fn apply_filters(entries: Vec<DirEntry>, filters: FilterSliceMut) -> Vec<DirEntry> {
+    pub fn apply_filters(
+        entries: Vec<DirEntry<((), ())>>,
+        filters: FilterFilterClosureSliceMut<((), ())>,
+    ) -> Vec<DirEntry<((), ())>> {
         entries
             .into_iter()
             .filter(|entry| {
@@ -131,7 +133,7 @@ impl FilterWalker {
             .collect_vec()
     }
 
-    fn filter_applies(filter: &FilterApplicationKind, entry: &DirEntry) -> bool {
+    fn filter_applies(filter: &FilterApplicationKind, entry: &DirEntry<((), ())>) -> bool {
         match filter {
             FilterApplicationKind::Retain(filt) => filt.get_filter()(entry),
             FilterApplicationKind::Invert(inv_filt) => inv_filt.get_filter()(entry).not(),
@@ -143,7 +145,7 @@ impl FilterWalker {
         ignore_filters: &'a mut [FilterApplicationKind],
         any_filters: &'a mut [FilterApplicationKind],
         all_filters: &'a mut [FilterApplicationKind],
-    ) -> impl Iterator<Item = DirEntry> + 'a {
+    ) -> impl Iterator<Item = DirEntry<((), ())>> + 'a {
         locations
             .into_iter()
             .map(|location| match location {
@@ -186,7 +188,7 @@ impl FilterWalker {
     }
 }
 
-impl Display for FilterWalker {
+impl Display for FilteredFileWalker {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let last_five = self.entries.iter().rev().take(5).collect_vec();
         write!(
