@@ -14,19 +14,13 @@ use trash;
 type ActionClosure<C> =
     Box<dyn FnMut(&DirEntry<C>) -> Result<Option<bool>, Box<dyn std::error::Error>>>;
 
-#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, Display, Default)]
 #[serde(transparent)]
 pub struct ActionApplicationCollection(Vec<ActionApplicationKind>);
 
 impl std::ops::DerefMut for ActionApplicationCollection {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
-    }
-}
-
-impl Default for ActionApplicationCollection {
-    fn default() -> Self {
-        Self(vec![ActionApplicationKind::default()])
     }
 }
 

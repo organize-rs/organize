@@ -1,3 +1,5 @@
+//! parser
+
 use std::{fmt::Display, ops::Range, str::FromStr};
 
 use serde::{Deserialize, Serialize};
@@ -11,7 +13,7 @@ use winnow::{
 
 use byte_unit::Byte;
 
-use crate::rules::filters::DateUnitKind;
+use crate::filters::DateUnitKind;
 
 pub fn parse_garbage(input: &str) -> IResult<&str, &str> {
     take_while(1.., " ,").parse_next(input)

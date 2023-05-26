@@ -6,11 +6,11 @@ use abscissa_core::{Command, Runnable};
 use clap::Args;
 use itertools::Itertools;
 use organize_rs_core::{
-    locations::{LocationKind, MaxDepth, TargetKind},
-    rules::filters::{
+    filters::{
         FilterApplicationKind, FilterCollection, FilterKind, FilterModeGroupKind,
         RecursiveFilterArgs,
     },
+    locations::{LocationKind, MaxDepth, TargetKind},
     FilteredFileWalker,
 };
 

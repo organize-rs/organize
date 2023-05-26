@@ -4,7 +4,8 @@
 //! application's configuration file and/or command-line options
 //! for specifying it.
 
-use organize_rs_core::rules::{aliases::Reference, Rule};
+use organize_rs_core::aliases::Reference;
+use organize_rs_core::rules::Rule;
 use serde::{Deserialize, Serialize};
 
 /// Organize Configuration

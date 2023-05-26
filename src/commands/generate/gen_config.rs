@@ -1,20 +1,19 @@
-//! `config` subcommand
+//! `gen_config` subcommand
 
 use std::{fs::File, io::Write, path::PathBuf, str::FromStr};
 
 use abscissa_core::{status_err, Application, Command, Runnable, Shutdown};
 use anyhow::{bail, Result};
-use clap::Parser;
+use clap::{Args, Parser};
 use dialoguer::Confirm;
 use organize_rs_core::{
+    actions::{ActionApplicationKind, ActionKind},
+    config::OrganizeConfig,
+    filters::{FilterApplicationKind, FilterKind, FilterModeGroupKind},
     locations::{LocationKind, MaxDepth, TargetKind},
     parsers::SizeRange,
-    rules::{
-        actions::{ActionApplicationKind, ActionKind},
-        filters::{FilterApplicationKind, FilterKind, FilterModeGroupKind},
-        tags::Tag,
-        Rule,
-    },
+    rules::Rule,
+    tags::Tag,
 };
 use ron::ser::PrettyConfig;
 
@@ -22,13 +21,24 @@ use crate::application::ORGANIZE_APP;
 
 #[derive(Command, Debug, Parser, Clone)]
 pub struct GenConfigCmd {
+    /// path to an existing or to be created config file
+    #[clap(short, long)]
+    config_path: PathBuf,
+
+    #[clap(flatten)]
+    config_opts: GenConfigOpts,
+}
+
+#[derive(Debug, Args, Clone)]
+#[group(required = false, multiple = false)]
+pub struct GenConfigOpts {
     /// generate a config interactively
     #[clap(short, long)]
     interactive: bool,
 
-    /// path to an existing or to be created config file
+    /// generate a config interactively
     #[clap(short, long)]
-    config_path: PathBuf,
+    template: bool,
 }
 
 impl Runnable for GenConfigCmd {
@@ -46,9 +56,9 @@ impl Runnable for GenConfigCmd {
 
 impl GenConfigCmd {
     fn generate_example_config(&self) -> Result<()> {
-        let rule_builder = Rule::builder();
+        let mut config = OrganizeConfig::new();
 
-        let rule = rule_builder
+        let rule = Rule::builder()
             .name("test")
             .filter(FilterApplicationKind::Apply(FilterKind::Extension {
                 exts: vec!["toml".to_string()],
@@ -66,18 +76,20 @@ impl GenConfigCmd {
             .tag(Tag::Custom("my_test_rule".to_string()))
             .build();
 
+        config.add_rule(rule.clone());
+
         if File::open(&self.config_path).is_ok() {
             if Confirm::new().with_prompt("Config file already exists. We will overwrite it, do you have a backup and want to continue?").interact()? {
                 let file = File::create(&self.config_path)?;
-                ron::ser::to_writer_pretty(file, &rule, PrettyConfig::default())?;
+                ron::ser::to_writer_pretty(file, &config, PrettyConfig::default())?;
             } else {
                 bail!("Config file already exists. We will overwrite it, make sure you have a backup and agree in the dialog.");
             }
         } else {
-            let mut file = File::create(&self.config_path)?;
-            // ron::ser::to_writer_pretty(file, &rule, PrettyConfig::default())?;
+            let file = File::create(&self.config_path)?;
+            ron::ser::to_writer_pretty(file, &rule, PrettyConfig::default())?;
             // file.write_all(toml::to_string_pretty(&rule)?.as_bytes())?;
-            file.write_all(serde_yaml::to_string(&rule)?.as_bytes())?;
+            // file.write_all(serde_yaml::to_string(&rule)?.as_bytes())?;
         };
 
         Ok(())

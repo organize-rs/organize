@@ -1,31 +1,36 @@
 (
-    name: "test",
-    tags: [
-        Custom("my_test_rule"),
-    ],
-    enabled: false,
-    locations: [
-        RecursiveWithMaxDepth(
-            path: "C:\\Users\\dailyuse\\dev-src\\organize",
-            max_depth: 10,
-            target: Files,
-        ),
-    ],
-    filter_mode: All,
-    filters: [
-        Retain(extension(
-            exts: [
-                "toml",
+    rules: [
+        (
+            name: "test",
+            tags: [
+                Always,
+                Custom("my_test_rule"),
             ],
-        )),
-        Retain(size(
-            range: ((
-                start: 1024.0,
-                end: 4000000000000.0,
-            )),
-        )),
-    ],
-    actions: [
-        Preview(trash),
+            enabled: false,
+            filter_mode: All,
+            locations: [
+                (
+                    path: "C:\\Users\\dailyuse\\dev-src\\organize",
+                    max_depth: 10,
+                    target: Files,
+                ),
+            ],
+            filters: [
+                Apply(extension(
+                    exts: [
+                        "toml",
+                    ],
+                )),
+                Apply(size(
+                    range: ((
+                        start: 1024.0,
+                        end: 4000000000000.0,
+                    )),
+                )),
+            ],
+            actions: [
+                Preview(trash),
+            ],
+        ),
     ],
 )

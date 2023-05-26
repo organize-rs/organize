@@ -1,3 +1,5 @@
+//! errors
+
 use displaydoc::Display;
 use std::error::Error as StdError;
 use thiserror::Error as ThisError;

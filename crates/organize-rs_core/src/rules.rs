@@ -1,37 +1,39 @@
 //! Rules that can be used in the config file and
 //! `organize` operates on
 
-pub mod actions;
-pub mod aliases;
 pub mod de;
-pub mod filters;
 pub mod ser;
-pub mod tags;
 
 use std::fmt::Display;
 
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    locations::{LocationCollection, LocationKind},
-    rules::{
-        actions::{ActionApplicationCollection, ActionApplicationKind},
-        filters::{
-            FilterApplicationCollection, FilterApplicationKind, FilterKind, FilterModeGroupKind,
-        },
-        tags::{Tag, TagCollection},
+    actions::{ActionApplicationCollection, ActionApplicationKind},
+    filters::{
+        FilterApplicationCollection, FilterApplicationKind, FilterKind, FilterModeGroupKind,
     },
+    locations::{LocationCollection, LocationKind},
+    tags::{Tag, TagCollection},
 };
 
 /// [`Rules`] contains a list of [`Rule`] objects with the required keys
 /// "locations" and "actions". One config can have many [`Rules`].
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
 #[serde(transparent)]
 pub struct Rules(Vec<Rule>);
 
-impl Default for Rules {
-    fn default() -> Self {
-        Self(vec![Rule::default()])
+impl Rules {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn preview(&self) {
+        todo!()
+    }
+
+    pub fn execute(&self) {
+        todo!()
     }
 }
 
@@ -103,14 +105,6 @@ impl Rule {
     // This method will help users to discover the builder
     pub fn builder() -> RuleBuilder {
         RuleBuilder::default()
-    }
-
-    pub fn preview(&self) {
-        todo!()
-    }
-
-    pub fn execute(&self) {
-        todo!()
     }
 }
 

@@ -1,3 +1,5 @@
+//! serializers
+
 use crate::locations::MaxDepth;
 use serde::Serialize;
 

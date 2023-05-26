@@ -2,7 +2,7 @@
 
 use abscissa_core::{Command, Runnable};
 use clap::Args;
-use organize_rs_core::rules::actions::ActionKind;
+use organize_rs_core::actions::ActionKind;
 
 /// `action` subcommand
 #[derive(Command, Debug, Args, Clone)]

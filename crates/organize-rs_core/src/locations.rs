@@ -1,3 +1,5 @@
+//! locations
+
 use std::{fmt::Display, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
@@ -7,19 +9,13 @@ use clap::ValueEnum;
 
 use displaydoc::Display;
 
-#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, Display, Default)]
 #[serde(transparent)]
 pub struct LocationCollection(Vec<LocationKind>);
 
 impl std::ops::DerefMut for LocationCollection {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
-    }
-}
-
-impl Default for LocationCollection {
-    fn default() -> Self {
-        Self(vec![LocationKind::default()])
     }
 }
 

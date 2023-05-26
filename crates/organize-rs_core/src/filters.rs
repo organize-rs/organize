@@ -27,19 +27,13 @@ pub enum CullKind {
     Bump,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, Display, Default)]
 #[serde(transparent)]
 pub struct FilterApplicationCollection(Vec<FilterApplicationKind<FilterKind>>);
 
 impl std::ops::DerefMut for FilterApplicationCollection {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
-    }
-}
-
-impl Default for FilterApplicationCollection {
-    fn default() -> Self {
-        Self(vec![FilterApplicationKind::default()])
     }
 }
 
@@ -425,7 +419,6 @@ impl From<(f64, &str)> for DateUnitKind {
 /// use to apply to locations.
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(untagged)]
 pub enum FilterKind {
     /// Match locations by the time they were added to a folder
     ///

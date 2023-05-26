@@ -1,5 +1,28 @@
 # TODO
 
+## Next
+
+1. generate example configs for integration test cases
+    - check against py-organize documentation for feature parity
+1. implement `organize run config` with preview
+1. implement destructive run
+
+## Features
+
+1. implement Terminal UI
+    - generate config interactively `generate config --interactive`
+
+1. implement scripting
+1. build GUI
+
+## Config
+
+- generate fully commentated example config `generate config --template`
+
+## Optional
+
+1. implement deserializer for `py-organize` config
+
 ## General
 
 - how can we do a single run over a directory/files and apply many filters and actions?
@@ -8,8 +31,10 @@
       - maybe have a separate worker that just gets the `location` + `action_fn` and executes it
       - would also make more sense for `conflict handling`, because the files are actually already known to be there
     - or would it make more sense to apply the new `path` for each `location` and then do `conflict handling` before an action is even started?
+    - maybe it woul be more reasonable to have each filter only result in `1` destructive action (e.g. move, trash, delete, rename)
+      - check which actions are parallelizable
 
-## Features
+## Notes
 
 - support batch renaming (e.g. rename all images in a directory to image_n where n is a number
 
@@ -42,14 +67,14 @@
 
 ### Actions impl
 
-- [ ] Confirm
+- [ ] Trash
 - [ ] Copy
-- [ ] Delete
-- [ ] Echo
 - [ ] Move
 - [ ] Rename
-- [ ] Symlink
-- [ ] Trash
 - [ ] Write
+- [ ] Confirm
+- [ ] Delete
 - [ ] Shell
+- [ ] Symlink
+- [ ] Echo
 - [ ] Email (?)

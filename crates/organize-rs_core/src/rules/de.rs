@@ -1,8 +1,10 @@
+//! deserializers
+
 use serde::Deserialize;
 
 #[cfg(test)]
 mod tests {
-    use crate::config::PyOrganizeConfig;
+    use crate::py_config::PyOrganizeConfig;
 
     type TestResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
@@ -16,7 +18,23 @@ rules:
     subfolders: true
     filters:
       - extension: 
-        - pdf
+        exts: 
+          - pdf
+      - name:
+        contains:
+          - Invoice
+          - Order
+          - Purchase
+        case_sensitive: false
+    actions:
+      - move: ~/Documents/Shopping/
+  - name: "Sort my invoices and receipts"
+    locations: 
+      - ~/Downloads
+    subfolders: true
+    filters:
+      - extension: 
+          - pdf
       - name:
           contains:
             - Invoice
@@ -26,7 +44,7 @@ rules:
     actions:
       - move: ~/Documents/Shopping/
 "#;
-        serde_yaml::from_str::<PyOrganizeConfig>(rules).unwrap();
+        serde_yaml::from_str::<PyOrganizeConfig>(rules)?;
 
         Ok(())
     }
