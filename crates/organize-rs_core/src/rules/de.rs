@@ -1,10 +1,8 @@
 //! deserializers
 
-use serde::Deserialize;
-
 #[cfg(test)]
 mod tests {
-    use crate::py_config::PyOrganizeConfig;
+    use crate::{config::OrganizeConfig, py_config::PyOrganizeConfig};
 
     type TestResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
@@ -44,7 +42,8 @@ rules:
     actions:
       - move: ~/Documents/Shopping/
 "#;
-        serde_yaml::from_str::<PyOrganizeConfig>(rules)?;
+        let value = serde_yaml::from_str::<serde_yaml::Value>(rules)?;
+        let data = PyOrganizeConfig::deserialize_from_value(value.into()).unwrap();
 
         Ok(())
     }

@@ -14,7 +14,7 @@ pub enum GenerateSubCmd {
     Config(GenConfigCmd),
     /// Generate completions for your shell
     Completions(GenCompletionsCmd),
-    // Generate a *.rhai script stub
+    // TODO: Generate a *.rhai script stub
     // Script,
 }
 

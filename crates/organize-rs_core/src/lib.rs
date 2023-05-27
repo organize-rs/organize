@@ -10,10 +10,10 @@ pub mod rules;
 pub mod tags;
 
 use crate::{
-    error::OrganizeResult,
+    error::{OrganizeResult, WalkerErrorKind},
     filters::{
         FilterApplicationKind, FilterCollection, FilterFilterClosureSliceMut, FilterKind,
-        FilterModeGroupKind,
+        FilterModeKind,
     },
     locations::{LocationKind, MaxDepth, TargetKind},
 };
@@ -66,7 +66,7 @@ impl FilteredFileWalker {
             .decompose()
             .into_iter()
             .partition_map(|filter| match filter {
-                (FilterModeGroupKind::None, value) => Either::Left(value),
+                (FilterModeKind::None, value) => Either::Left(value),
                 other => Either::Right(other),
             });
 
@@ -74,8 +74,8 @@ impl FilteredFileWalker {
         let (mut any_filters, mut all_filters): (Vec<_>, Vec<_>) = other_filters
             .into_iter()
             .partition_map(|filter| match filter {
-                (FilterModeGroupKind::Any, value_any) => Either::Left(value_any),
-                (FilterModeGroupKind::All, value_all) => Either::Right(value_all),
+                (FilterModeKind::Any, value_any) => Either::Left(value_any),
+                (FilterModeKind::All, value_all) => Either::Right(value_all),
                 _ => unreachable!("There should be no items left in `FilterModeGroupKind::None`!"),
             });
 
@@ -97,7 +97,7 @@ impl FilteredFileWalker {
         A: AsRef<Path>,
     {
         let depth = if let Some(max_depth) = max_depth.into() {
-            usize::try_from(*max_depth)?
+            usize::try_from(*max_depth).map_err(WalkerErrorKind::FailedToConvertNumbers)?
         } else {
             constants::MAX_DEPTH
         };
@@ -109,7 +109,7 @@ impl FilteredFileWalker {
             .into_iter()
             .filter_map(|f| f.ok())
             .filter(|f| match targets {
-                TargetKind::Dirs => FileType::is_dir(&f.file_type()),
+                TargetKind::Directories => FileType::is_dir(&f.file_type()),
                 TargetKind::Files => FileType::is_file(&f.file_type()),
                 TargetKind::Both => true,
             })

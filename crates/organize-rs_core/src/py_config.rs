@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::ActionApplicationCollection,
-    filters::{FilterKind, FilterModeGroupKind},
+    filters::{FilterKind, FilterModeKind},
     locations::LocationCollection,
     tags::TagCollection,
 };
@@ -41,7 +41,7 @@ pub struct PyRule {
     /// whether the rule is enabled / disabled
     enabled: bool,
     /// whether "all", "any" or "none" of the filters must apply
-    filter_mode: FilterModeGroupKind,
+    filter_mode: FilterModeKind,
     /// list of locations
     locations: LocationCollection,
     /// supported filters

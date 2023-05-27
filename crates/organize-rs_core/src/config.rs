@@ -23,4 +23,8 @@ impl OrganizeConfig {
     pub fn add_rule(&mut self, rule: Rule) {
         self.rules.push(rule)
     }
+
+    pub fn add_rules(&mut self, rules: Rules) {
+        self.rules.extend_from_slice(&rules)
+    }
 }

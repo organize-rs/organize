@@ -4,14 +4,17 @@
 pub mod de;
 pub mod ser;
 
-use std::fmt::Display;
+use std::{
+    fmt::Display,
+    slice::{Iter, IterMut},
+};
 
 use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{ActionApplicationCollection, ActionApplicationKind},
     filters::{
-        FilterApplicationCollection, FilterApplicationKind, FilterKind, FilterModeGroupKind,
+        FilterApplicationKind, FilterGroup, FilterGroupCollection, FilterKind, FilterModeKind,
     },
     locations::{LocationCollection, LocationKind},
     tags::{Tag, TagCollection},
@@ -34,6 +37,14 @@ impl Rules {
 
     pub fn execute(&self) {
         todo!()
+    }
+
+    pub fn iter(&self) -> Iter<'_, Rule> {
+        self.0.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> IterMut<'_, Rule> {
+        self.0.iter_mut()
     }
 }
 
@@ -62,12 +73,10 @@ pub struct Rule {
     tags: TagCollection,
     /// whether the rule is enabled / disabled
     enabled: bool,
-    /// whether "all", "any" or "none" of the filters must apply
-    filter_mode: FilterModeGroupKind,
     /// list of locations
     locations: LocationCollection,
     /// supported filters
-    filters: FilterApplicationCollection,
+    filters: FilterGroupCollection,
     /// supported actions
     actions: ActionApplicationCollection,
 }
@@ -79,7 +88,6 @@ impl Display for Rule {
             tags,
             enabled,
             locations,
-            filter_mode,
             filters,
             actions,
         } = self;
@@ -88,7 +96,6 @@ impl Display for Rule {
             f,
             "
     Rule - {name} ({enabled})
-        -> {filter_mode}
 
     Tags: {tags:?}
     Locations: {locations:?}
@@ -116,12 +123,10 @@ pub struct RuleBuilder {
     tags: TagCollection,
     /// whether the rule is enabled / disabled
     enabled: bool,
-    /// whether "all", "any" or "none" of the filters must apply
-    filter_mode: FilterModeGroupKind,
     /// list of locations
     locations: LocationCollection,
     /// supported filters
-    filters: FilterApplicationCollection,
+    filters: FilterGroupCollection,
     /// supported actions
     actions: ActionApplicationCollection,
 }
@@ -140,7 +145,6 @@ impl RuleBuilder {
             tags: self.tags,
             enabled: self.enabled,
             locations: self.locations,
-            filter_mode: self.filter_mode,
             filters: self.filters,
             actions: self.actions,
         }
@@ -170,20 +174,14 @@ impl RuleBuilder {
         self
     }
 
-    /// Set filter mode
-    pub fn filter_mode(mut self, filter_mode: FilterModeGroupKind) -> RuleBuilder {
-        self.filter_mode = filter_mode;
-        self
-    }
-
     /// Add a single filter
-    pub fn filter(mut self, filter: FilterApplicationKind<FilterKind>) -> RuleBuilder {
+    pub fn filter(mut self, filter: FilterGroup<Vec<FilterKind>>) -> RuleBuilder {
         self.filters.push(filter);
         self
     }
 
     /// Add multiple filters
-    pub fn filters(mut self, mut filters: FilterApplicationCollection) -> RuleBuilder {
+    pub fn filters(mut self, mut filters: FilterGroupCollection) -> RuleBuilder {
         self.filters.append(&mut filters);
         self
     }

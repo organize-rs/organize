@@ -72,6 +72,9 @@ mime = "0.3"
 # config
 ron = "0.8.0"
 
+# deserialisation error handling
+# deserr = { version = "0.6.0", default-features = false }
+
 # dev dependencies
 tempfile = "3.5.0"
 aho-corasick = "1.0"
@@ -155,7 +158,6 @@ anyhow = { workspace = true }
 dialoguer = { workspace = true }
 ron = { workspace = true }
 open = { workspace = true }
-
 
 [dev-dependencies]
 abscissa_core = { workspace = true, features = ["testing"] }

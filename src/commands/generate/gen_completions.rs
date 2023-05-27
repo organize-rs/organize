@@ -16,6 +16,9 @@ pub struct GenCompletionsCmd {
     /// Shell to generate completions for
     #[arg(value_enum)]
     shell: Variant,
+    // TODO: does it make sense to also write
+    // TODO  the completions to a file, mostly
+    // TODO  for usage in integration tests
 }
 
 #[derive(Clone, Debug, ValueEnum)]

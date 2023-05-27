@@ -9,10 +9,12 @@ use dialoguer::Confirm;
 use organize_rs_core::{
     actions::{ActionApplicationKind, ActionKind},
     config::OrganizeConfig,
-    filters::{FilterApplicationKind, FilterKind, FilterModeGroupKind},
+    filters::{
+        FilterApplicationKind, FilterGroup, FilterKind, FilterModeKind, RawFilterApplicationKind,
+    },
     locations::{LocationKind, MaxDepth, TargetKind},
     parsers::SizeRange,
-    rules::Rule,
+    rules::{Rule, Rules},
     tags::Tag,
 };
 use ron::ser::PrettyConfig;
@@ -23,7 +25,7 @@ use crate::application::ORGANIZE_APP;
 pub struct GenConfigCmd {
     /// path to an existing or to be created config file
     #[clap(short, long)]
-    config_path: PathBuf,
+    path: PathBuf,
 
     #[clap(flatten)]
     config_opts: GenConfigOpts,
@@ -57,41 +59,62 @@ impl Runnable for GenConfigCmd {
 impl GenConfigCmd {
     fn generate_example_config(&self) -> Result<()> {
         let mut config = OrganizeConfig::new();
+        let mut rules = Rules::new();
 
-        let rule = Rule::builder()
-            .name("test")
-            .filter(FilterApplicationKind::Apply(FilterKind::Extension {
-                exts: vec!["toml".to_string()],
-            }))
-            .filter(FilterApplicationKind::Apply(FilterKind::Size {
-                range: SizeRange::from_str("1KiB..")?,
-            }))
-            .filter_mode(FilterModeGroupKind::All)
-            .action(ActionApplicationKind::Preview(ActionKind::Trash))
-            .location(LocationKind::RecursiveWithMaxDepth {
-                path: r"C:\Users\dailyuse\dev-src\organize".into(),
-                target: TargetKind::Files,
-                max_depth: MaxDepth::new(10),
-            })
-            .tag(Tag::Custom("my_test_rule".to_string()))
-            .build();
+        rules.extend(vec![empty_file_rule(), empty_folder_rule()]);
 
-        config.add_rule(rule.clone());
+        config.add_rules(rules);
 
-        if File::open(&self.config_path).is_ok() {
+        if File::open(&self.path).is_ok() {
             if Confirm::new().with_prompt("Config file already exists. We will overwrite it, do you have a backup and want to continue?").interact()? {
-                let file = File::create(&self.config_path)?;
+                let file = File::create(&self.path)?;
                 ron::ser::to_writer_pretty(file, &config, PrettyConfig::default())?;
             } else {
                 bail!("Config file already exists. We will overwrite it, make sure you have a backup and agree in the dialog.");
             }
         } else {
-            let file = File::create(&self.config_path)?;
-            ron::ser::to_writer_pretty(file, &rule, PrettyConfig::default())?;
+            let file = File::create(&self.path)?;
+            ron::ser::to_writer_pretty(file, &config, PrettyConfig::default())?;
             // file.write_all(toml::to_string_pretty(&rule)?.as_bytes())?;
             // file.write_all(serde_yaml::to_string(&rule)?.as_bytes())?;
         };
 
         Ok(())
     }
+}
+
+pub fn empty_file_rule() -> Rule {
+    Rule::builder()
+        .name("Empty File")
+        .filter(FilterGroup {
+            apply: RawFilterApplicationKind::Apply,
+            mode: FilterModeKind::All,
+            filters: vec![FilterKind::Empty],
+        })
+        .action(ActionApplicationKind::Preview(ActionKind::Trash))
+        .location(LocationKind::RecursiveWithMaxDepth {
+            path: r"tests\fixtures\empty_file".into(),
+            target: TargetKind::Files,
+            max_depth: MaxDepth::new(1),
+        })
+        .tag(Tag::Custom("Test::EmptyFile".to_string()))
+        .build()
+}
+
+pub fn empty_folder_rule() -> Rule {
+    Rule::builder()
+        .name("Empty Directory")
+        .filter(FilterGroup {
+            apply: RawFilterApplicationKind::Apply,
+            mode: FilterModeKind::All,
+            filters: vec![FilterKind::Empty],
+        })
+        .action(ActionApplicationKind::Preview(ActionKind::Trash))
+        .location(LocationKind::RecursiveWithMaxDepth {
+            path: r"tests\fixtures\empty_folder".into(),
+            target: TargetKind::Directories,
+            max_depth: MaxDepth::new(1),
+        })
+        .tag(Tag::Custom("Test::EmptyDirectory".to_string()))
+        .build()
 }

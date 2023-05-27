@@ -29,16 +29,16 @@ pub enum CullKind {
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display, Default)]
 #[serde(transparent)]
-pub struct FilterApplicationCollection(Vec<FilterApplicationKind<FilterKind>>);
+pub struct FilterGroupCollection(Vec<FilterGroup<Vec<FilterKind>>>);
 
-impl std::ops::DerefMut for FilterApplicationCollection {
+impl std::ops::DerefMut for FilterGroupCollection {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
 }
 
-impl std::ops::Deref for FilterApplicationCollection {
-    type Target = Vec<FilterApplicationKind<FilterKind>>;
+impl std::ops::Deref for FilterGroupCollection {
+    type Target = Vec<FilterGroup<Vec<FilterKind>>>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -46,7 +46,7 @@ impl std::ops::Deref for FilterApplicationCollection {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct FilterCollection(Vec<(FilterModeGroupKind, FilterApplicationKind<FilterKind>)>);
+pub struct FilterCollection(Vec<(FilterModeKind, FilterApplicationKind<FilterKind>)>);
 
 impl Display for FilterCollection {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -61,18 +61,18 @@ impl Display for FilterCollection {
 
         let (all, other): (Vec<_>, Vec<_>) =
             self.0.iter().partition_map(|(mode, filter)| match mode {
-                FilterModeGroupKind::All => Either::Left((mode, filter)),
-                FilterModeGroupKind::Any => Either::Right((mode, filter)),
-                FilterModeGroupKind::None => Either::Right((mode, filter)),
+                FilterModeKind::All => Either::Left((mode, filter)),
+                FilterModeKind::Any => Either::Right((mode, filter)),
+                FilterModeKind::None => Either::Right((mode, filter)),
             });
 
         let (any, none): (Vec<_>, Vec<_>) =
             other
                 .into_iter()
                 .partition_map(|(mode, filter)| match mode {
-                    FilterModeGroupKind::Any => Either::Left((mode, filter)),
-                    FilterModeGroupKind::None => Either::Right((mode, filter)),
-                    FilterModeGroupKind::All => {
+                    FilterModeKind::Any => Either::Left((mode, filter)),
+                    FilterModeKind::None => Either::Right((mode, filter)),
+                    FilterModeKind::All => {
                         unreachable!(
                             "We took already care of that variant, shouldn't exist in here."
                         )
@@ -96,10 +96,9 @@ impl Display for FilterCollection {
                     f,
                     "
     Application Kind: {filter}"
-                )?
+                )?;
             }
         }
-
         Ok(())
     }
 }
@@ -110,25 +109,22 @@ impl FilterCollection {
     }
 
     pub fn with_vec(
-        filter_collection: Vec<(FilterModeGroupKind, FilterApplicationKind<FilterKind>)>,
+        filter_collection: Vec<(FilterModeKind, FilterApplicationKind<FilterKind>)>,
     ) -> Self {
         Self(filter_collection)
     }
 
-    pub fn decompose(self) -> Vec<(FilterModeGroupKind, FilterApplicationKind<FilterKind>)> {
+    pub fn decompose(self) -> Vec<(FilterModeKind, FilterApplicationKind<FilterKind>)> {
         self.0
     }
 
-    pub fn push(
-        &mut self,
-        filter_collection: (FilterModeGroupKind, FilterApplicationKind<FilterKind>),
-    ) {
+    pub fn push(&mut self, filter_collection: (FilterModeKind, FilterApplicationKind<FilterKind>)) {
         self.0.push(filter_collection)
     }
 }
 
 impl std::ops::Deref for FilterCollection {
-    type Target = Vec<(FilterModeGroupKind, FilterApplicationKind<FilterKind>)>;
+    type Target = Vec<(FilterModeKind, FilterApplicationKind<FilterKind>)>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -142,6 +138,48 @@ pub enum FilterApplicationKind<T> {
     Invert(T),
     /// Apply {0}
     Apply(T),
+}
+
+/// Should filters be negated
+#[derive(Debug, Clone, Deserialize, Serialize, Display, Copy)]
+pub enum RawFilterApplicationKind {
+    /// Invert
+    Invert,
+    /// Apply
+    Apply,
+}
+
+impl Default for RawFilterApplicationKind {
+    fn default() -> Self {
+        Self::Apply
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+pub struct FilterGroup<T> {
+    pub apply: RawFilterApplicationKind,
+    pub mode: FilterModeKind,
+    pub filters: T,
+}
+
+impl<T> FilterGroup<T> {
+    pub fn new(apply: RawFilterApplicationKind, mode: FilterModeKind, filters: T) -> Self {
+        Self {
+            apply,
+            mode,
+            filters,
+        }
+    }
+}
+
+impl<T: Default> Default for FilterGroup<T> {
+    fn default() -> Self {
+        Self {
+            apply: RawFilterApplicationKind::default(),
+            mode: FilterModeKind::default(),
+            filters: T::default(),
+        }
+    }
 }
 
 impl<T> Default for FilterApplicationKind<T>
@@ -211,7 +249,7 @@ impl<T> FilterApplicationKind<T> {
     Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Copy, Hash,
 )]
 #[non_exhaustive]
-pub enum FilterModeGroupKind {
+pub enum FilterModeKind {
     /// All of the filters need to apply
     All,
     /// Any of the filters need to apply
@@ -220,13 +258,13 @@ pub enum FilterModeGroupKind {
     None,
 }
 
-impl Default for FilterModeGroupKind {
+impl Default for FilterModeKind {
     fn default() -> Self {
         Self::Any
     }
 }
 
-impl FilterModeGroupKind {
+impl FilterModeKind {
     /// Returns `true` if the organize filter mode is [`All`].
     ///
     /// [`All`]: OrganizeFilterMode::All

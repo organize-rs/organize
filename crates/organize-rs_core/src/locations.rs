@@ -39,7 +39,7 @@ pub enum TargetKind {
     /// operate on both
     Both,
     /// operate only on directories
-    Dirs,
+    Directories,
     /// operate only on files
     Files,
 }
@@ -64,11 +64,11 @@ impl TargetKind {
     /// [`Dirs`]: OrganizeTargets::Dirs
     #[must_use]
     pub fn is_dirs(&self) -> bool {
-        matches!(self, Self::Dirs)
+        matches!(self, Self::Directories)
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Deserialize, Serialize, Copy, PartialEq, Eq, Hash)]
 pub struct MaxDepth(pub(crate) u64);
 
 impl Display for MaxDepth {
