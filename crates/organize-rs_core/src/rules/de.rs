@@ -2,13 +2,12 @@
 
 #[cfg(test)]
 mod tests {
-    use crate::{config::OrganizeConfig, py_config::PyOrganizeConfig};
 
     type TestResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
     #[test]
     pub fn test_single_rule_deserialisation_passes() -> TestResult<()> {
-        let rules = r#"
+        let _rules = r#"
 rules:
   - name: "Sort my invoices and receipts"
     locations: 

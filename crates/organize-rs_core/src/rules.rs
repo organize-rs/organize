@@ -13,9 +13,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{ActionApplicationCollection, ActionApplicationKind},
-    filters::{
-        FilterApplicationKind, FilterGroup, FilterGroupCollection, FilterKind, FilterModeKind,
-    },
+    filters::{FilterGroup, FilterGroupCollection, FilterKind},
     locations::{LocationCollection, LocationKind},
     tags::{Tag, TagCollection},
 };

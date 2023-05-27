@@ -1,6 +1,6 @@
 //! `gen_config` subcommand
 
-use std::{fs::File, io::Write, path::PathBuf, str::FromStr};
+use std::{fs::File, path::PathBuf};
 
 use abscissa_core::{status_err, Application, Command, Runnable, Shutdown};
 use anyhow::{bail, Result};
@@ -9,11 +9,8 @@ use dialoguer::Confirm;
 use organize_rs_core::{
     actions::{ActionApplicationKind, ActionKind},
     config::OrganizeConfig,
-    filters::{
-        FilterApplicationKind, FilterGroup, FilterKind, FilterModeKind, RawFilterApplicationKind,
-    },
+    filters::{FilterGroup, FilterKind, FilterModeKind, RawFilterApplicationKind},
     locations::{LocationKind, MaxDepth, TargetKind},
-    parsers::SizeRange,
     rules::{Rule, Rules},
     tags::Tag,
 };
