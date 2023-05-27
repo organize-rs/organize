@@ -7,15 +7,22 @@ pub fn coverage(
     workspace: bool,
     target_dir: impl Into<Option<PathBuf>>,
 ) -> Result<()> {
+    let mut target_dir_new = target_dir.into().unwrap_or(PathBuf::from("./target"));
     crate::helpers::remove_dir("coverage")?;
     create_dir_all("coverage")?;
 
     println!("=== running coverage ===");
 
     let base_cmd = if workspace {
-        cmd!("cargo", "test", "--workspace")
+        cmd!(
+            "cargo",
+            "test",
+            "--workspace",
+            "--target-dir",
+            target_dir_new.clone()
+        )
     } else {
-        cmd!("cargo", "test")
+        cmd!("cargo", "test", "--target-dir", target_dir_new.clone())
     };
 
     base_cmd
@@ -31,11 +38,14 @@ pub fn coverage(
     } else {
         ("lcov", "coverage/lcov.info")
     };
+
+    target_dir_new = target_dir_new.join("debug").join("deps");
+
     cmd!(
         "grcov",
         ".",
         "--binary-path",
-        target_dir.into().unwrap_or("./target/debug/deps".into()),
+        target_dir_new,
         "-s",
         ".",
         "-t",

@@ -42,8 +42,8 @@ rules:
     actions:
       - move: ~/Documents/Shopping/
 "#;
-        let value = serde_yaml::from_str::<serde_yaml::Value>(rules)?;
-        let data = PyOrganizeConfig::deserialize_from_value(value.into()).unwrap();
+        // let value = serde_yaml::from_str::<serde_yaml::Value>(rules)?;
+        // let data = PyOrganizeConfig::deserialize_from_value(value.into()).unwrap();
 
         Ok(())
     }

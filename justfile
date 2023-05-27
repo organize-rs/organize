@@ -90,16 +90,16 @@ test: check lint
 
 # Runs the whole test suite with nextest.
 ntest:
-    cargo nextest run -r --all-features --workspace
+    cargo nextest run --all-features --workspace
 
 # Runs only the ignored tests with nextest.
 nitest:
-    cargo nextest run -r --all-features --workspace -- --ignored
+    cargo nextest run --all-features --workspace -- --ignored
 
 # Runs a test defined by an expression with nextest.
 # e.g. `just ntest completions` => test completions 
 natest *ARGS:
-    cargo nextest run -r --all-features -E 'test({{ARGS}})'
+    cargo nextest run --all-features --workspace -E 'test({{ARGS}})'
 
 # Runs a test to check if the public api of organize-rs_core
 # has been changed

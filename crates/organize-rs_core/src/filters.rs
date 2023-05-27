@@ -511,8 +511,7 @@ pub enum FilterKind {
     ///
     /// Sort pdfs by year of creation
     ///
-    /// ```rust
-    /// let rule = r#"
+    /// ```yaml
     /// rules:
     ///    - name: Sort pdfs by year of creation
     ///      locations: "~/Documents"
@@ -521,7 +520,6 @@ pub enum FilterKind {
     ///        - created
     ///      actions:
     ///        - move: "~/Documents/PDF/{created.year}/"
-    /// "#;
     /// ```
     #[serde(rename = "created")]
     Created {
@@ -905,17 +903,17 @@ pub enum FilterKind {
         #[cfg_attr(feature = "cli", arg(long))]
         expr: String,
     },
-    /// Match locations by their size
+    /// Match files by their size
     ///
-    /// Accepts file size conditions, e.g: ">= 500 MB", "< 20k", ">0", "= 10 KiB".
+    /// Accepts file size conditions, e.g: "500MB..", "..20kb", "0KB..", "10KiB..".
     ///
     /// It is possible to define both lower and upper conditions like this:
-    /// ">20k, < 1 TB", ">= 20 Mb, <25 Mb".
+    /// "20kb..1TB", "20Mb..25Mb".
     ///
     /// The filter will match if all given conditions are satisfied.
     ///
-    /// - Accepts all units from KB to YB.
-    /// - If no unit is given, kilobytes are assumend.
+    /// - Accepts all units from KB to TB.
+    /// - Maximum size is 4 TB.
     /// - If binary prefix is given (KiB, GiB) the size is calculated using base 1024.
     ///
     /// # Result
@@ -932,9 +930,9 @@ pub enum FilterKind {
     /// ```yaml
     /// rules:
     ///   - locations: "~/Downloads"
-    ///     targets: files
+    ///     target: files
     ///     filters:
-    ///       - size: "> 0.5 GB"
+    ///       - size: "0.5GB.."
     ///     actions:
     ///       - trash
     /// ```
@@ -1424,11 +1422,15 @@ impl FilterKind {
         ignore_name: &'args [String],
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            entry.file_name().to_str().map_or(false, |file_name| {
-                ignore_name
-                    .iter()
-                    .any(|pat| file_name.to_lowercase().contains(&pat.to_lowercase()))
-            })
+            if entry.file_type().is_file() {
+                entry.file_name().to_str().map_or(false, |file_name| {
+                    ignore_name
+                        .iter()
+                        .any(|pat| file_name.to_lowercase().contains(&pat.to_lowercase()))
+                })
+            } else {
+                false
+            }
         })
     }
 
@@ -1464,5 +1466,256 @@ impl FilterKind {
     #[must_use]
     pub fn is_bump(f: Option<CullKind>) -> bool {
         matches!(f, Some(CullKind::Bump))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{
+        ops::Not,
+        path::{Path, PathBuf},
+        str::FromStr,
+    };
+
+    use itertools::Itertools;
+    use jwalk::{DirEntry, WalkDir};
+    use pretty_assertions::assert_eq;
+
+    use crate::{filters::FilterKind, parsers::SizeRange};
+
+    fn get_fixtures_dir() -> PathBuf {
+        vec!["tests", "fixtures", "filters"].iter().collect()
+    }
+
+    fn get_size_fixture() -> Vec<PathBuf> {
+        vec![
+            get_fixtures_dir().join("different_sizes"),
+            get_fixtures_dir().join("different_sizes").join("1MiB"),
+            get_fixtures_dir().join("different_sizes").join("300KiB"),
+            get_fixtures_dir().join("different_sizes").join("empty.txt"),
+        ]
+    }
+
+    fn get_ignore_path_fixture() -> Vec<PathBuf> {
+        vec![
+            get_fixtures_dir().join("ignore_path"),
+            get_fixtures_dir().join("ignore_path").join("a.txt"),
+            get_fixtures_dir().join("ignore_path").join("b.txt"),
+            get_fixtures_dir().join("ignore_path").join("bemp"),
+            get_fixtures_dir()
+                .join("ignore_path")
+                .join("bemp")
+                .join("d.txt"),
+            get_fixtures_dir().join("ignore_path").join("bump"),
+            get_fixtures_dir()
+                .join("ignore_path")
+                .join("bump")
+                .join("c.txt"),
+        ]
+    }
+
+    fn get_ignore_name_fixture() -> Vec<PathBuf> {
+        vec![
+            get_fixtures_dir().join("ignore_name"),
+            get_fixtures_dir().join("ignore_name").join("a.txt"),
+            get_fixtures_dir().join("ignore_name").join("bemp"),
+            get_fixtures_dir()
+                .join("ignore_name")
+                .join("bemp")
+                .join("d.txt"),
+            get_fixtures_dir()
+                .join("ignore_name")
+                .join("bemp")
+                .join("ignore.c"),
+            get_fixtures_dir().join("ignore_name").join("bump"),
+            get_fixtures_dir()
+                .join("ignore_name")
+                .join("bump")
+                .join("a.txt"),
+            get_fixtures_dir()
+                .join("ignore_name")
+                .join("bump")
+                .join("bump.txt"),
+            get_fixtures_dir().join("ignore_name").join("bump.txt"),
+        ]
+    }
+
+    fn get_fixture_entries(sub_dir: impl AsRef<Path>) -> Vec<DirEntry<((), ())>> {
+        let mut to_walk = get_fixtures_dir();
+        to_walk.push(sub_dir.as_ref());
+        WalkDir::new(to_walk)
+            .into_iter()
+            .filter_map(|f| f.ok())
+            .collect_vec()
+    }
+
+    #[test]
+    fn test_filter_file_size_2mb_passes() {
+        let filter = FilterKind::Size {
+            range: SizeRange::from_str("..2mb").unwrap(),
+        };
+
+        let mut entries = get_fixture_entries("different_sizes");
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+        let mut fixture = get_size_fixture();
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+        entries.retain(|f| (filter.get_filter()(f)));
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+        _ = fixture.remove(0);
+
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+    }
+
+    #[test]
+    fn test_filter_file_size_350_800_kib_passes() {
+        let filter = FilterKind::Size {
+            range: SizeRange::from_str("350KiB..800kib").unwrap(),
+        };
+
+        let mut entries = get_fixture_entries("different_sizes");
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+        let mut fixture = get_size_fixture();
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+        entries.retain(|f| (filter.get_filter()(f)));
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+        _ = fixture.clear();
+
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+    }
+    #[test]
+    fn test_filter_file_size_250kib_passes() {
+        let filter = FilterKind::Size {
+            range: SizeRange::from_str("250KiB..").unwrap(),
+        };
+
+        let mut entries = get_fixture_entries("different_sizes");
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+        let mut fixture = get_size_fixture();
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+        entries.retain(|f| (filter.get_filter()(f)));
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+        _ = fixture.pop();
+        _ = fixture.remove(0);
+
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+    }
+
+    #[test]
+    fn test_filter_ignore_single_str_is_in_path_passes() {
+        let filter = FilterKind::IgnorePath {
+            in_path: vec![String::from("bump")],
+        };
+
+        let mut entries = get_fixture_entries("ignore_path");
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+        let mut fixture = get_ignore_path_fixture();
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+        entries.retain(|f| (filter.get_filter()(f)).not());
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+        _ = fixture.drain(5..);
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+    }
+
+    #[test]
+    fn test_filter_ignore_multiple_strs_is_in_path_passes() {
+        let filter = FilterKind::IgnorePath {
+            in_path: vec![String::from("bump"), String::from("bemp")],
+        };
+
+        let mut entries = get_fixture_entries("ignore_path");
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+        let mut fixture = get_ignore_path_fixture();
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+        entries.retain(|f| (filter.get_filter()(f)).not());
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+        _ = fixture.drain(3..);
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+    }
+
+    #[test]
+    fn test_filter_ignore_single_str_is_in_name_passes() {
+        let filter = FilterKind::IgnoreName {
+            in_name: vec![String::from("ignore")],
+        };
+
+        let mut entries = get_fixture_entries("ignore_name");
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+        let mut fixture = get_ignore_name_fixture();
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+        entries.retain(|f| (filter.get_filter()(f)).not());
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+        assert_eq!(
+            fixture.remove(4),
+            get_fixtures_dir()
+                .join("ignore_name")
+                .join("bemp")
+                .join("ignore.c")
+        );
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+    }
+
+    #[test]
+    fn test_filter_ignore_multiple_strs_is_in_name_passes() {
+        let filter = FilterKind::IgnoreName {
+            in_name: vec![
+                String::from("ignore"),
+                String::from("a.txt"),
+                String::from("bump"),
+            ],
+        };
+
+        let mut entries = get_fixture_entries("ignore_name");
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+        let mut fixture = get_ignore_name_fixture();
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
+        entries.retain(|f| (filter.get_filter()(f)).not());
+        let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+        let removed = fixture.drain(6..9);
+        assert_eq!(
+            removed.into_iter().collect_vec(),
+            vec![
+                get_fixtures_dir()
+                    .join("ignore_name")
+                    .join("bump")
+                    .join("a.txt"),
+                get_fixtures_dir()
+                    .join("ignore_name")
+                    .join("bump")
+                    .join("bump.txt"),
+                get_fixtures_dir().join("ignore_name").join("bump.txt"),
+            ]
+        );
+        assert_eq!(
+            fixture.remove(4),
+            get_fixtures_dir()
+                .join("ignore_name")
+                .join("bemp")
+                .join("ignore.c")
+        );
+        assert_eq!(
+            fixture.remove(1),
+            get_fixtures_dir().join("ignore_name").join("a.txt")
+        );
+        assert_eq!(entries.len(), fixture.len());
+        assert_eq!(paths, fixture);
     }
 }
