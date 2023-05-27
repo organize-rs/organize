@@ -1,7 +1,7 @@
 //! errors
 
 use displaydoc::Display;
-use std::error::Error as StdError;
+use std::{borrow::Cow, error::Error as StdError};
 use thiserror::Error as ThisError;
 
 /// Result type often returned from methods that can have rustic `Error`s.
@@ -51,6 +51,8 @@ pub enum WalkerErrorKind {
 pub enum FilterErrorKind {
     /// extension is not extractable from file: {0:?}
     ExtensionNotExtractable(std::path::PathBuf),
+    /// discovered and inverted item
+    InvertedItem,
 }
 
 /// [`ActionErrorKind`] describes the errors that can be returned for an action

@@ -8,6 +8,7 @@ use itertools::Itertools;
 use jwalk::{ClientState, DirEntry};
 
 use crate::{
+    error::FilterErrorKind,
     filters::{
         CullKind, DateUnitKind, DuplicateKind, FilterApplicationKind, FilterClosure,
         FilterCollection, FilterGroup, FilterKind, FilterModeKind, NameFilterArgs,
@@ -62,7 +63,14 @@ impl FilterKind {
                 .extension()
                 .and_then(|ext| ext.to_str())
                 .map_or(false, |extension_str| {
-                    exts.iter().any(|f| f == extension_str)
+                    exts.iter().any(|f| {
+                        if f.starts_with('.') {
+                            f.strip_prefix('.')
+                                .map_or_else(|| false, |f| extension_str == f)
+                        } else {
+                            f == extension_str
+                        }
+                    })
                 })
         })
     }
@@ -119,10 +127,14 @@ impl FilterKind {
                         FilterApplicationKind::Apply(Some(apply)) => file_name_str
                             .starts_with(&apply)
                             .then_some(CullKind::Retain),
-                        _ => Some(CullKind::Retain),
+                        _ => unreachable!("should not be anything else, than invert or apply."),
                     })
-                    .any(Self::is_bump)
-                    .not(),
+                    .map(|cull| match cull {
+                        Some(CullKind::Bump) => Err(FilterErrorKind::InvertedItem),
+                        Some(CullKind::Retain) => Ok(true),
+                        None => Ok(false),
+                    })
+                    .all(|res| res.map_or_else(|_err| false, |f| f)),
                 NameFilterArgs { contains: c, .. } if !c.is_empty() => c
                     .into_iter()
                     .unique()
@@ -151,10 +163,14 @@ impl FilterKind {
                         FilterApplicationKind::Apply(Some(apply)) => {
                             file_name_str.contains(&apply).then_some(CullKind::Retain)
                         }
-                        _ => Some(CullKind::Retain),
+                        _ => unreachable!("should not be anything else, than invert or apply."),
                     })
-                    .any(Self::is_bump)
-                    .not(),
+                    .map(|cull| match cull {
+                        Some(CullKind::Bump) => Err(FilterErrorKind::InvertedItem),
+                        Some(CullKind::Retain) => Ok(true),
+                        None => Ok(false),
+                    })
+                    .all(|res| res.map_or_else(|_err| false, |f| f)),
                 NameFilterArgs { ends_with: ew, .. } if !ew.is_empty() => ew
                     .into_iter()
                     .unique()
@@ -198,7 +214,7 @@ impl FilterKind {
                             (FilterApplicationKind::Apply(Some(apply)), Some(stem)) => {
                                 stem.ends_with(&apply).then_some(CullKind::Retain)
                             }
-                            _ => Some(CullKind::Retain),
+                            _ => unreachable!("should not be anything else, than invert or apply."),
                         }
                     })
                     .any(Self::is_bump)
