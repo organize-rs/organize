@@ -13,6 +13,7 @@
 
 1. implement Terminal UI
     - generate config interactively `generate config --interactive`
+    - <https://crates.io/crates/ratatui/0.20.1> + <https://crates.io/crates/tui-react>
 
 1. implement scripting
 1. build GUI

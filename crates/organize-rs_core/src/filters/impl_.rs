@@ -1,5 +1,6 @@
 use chrono::{DateTime, Utc};
 
+use filetime::FileTime;
 use itertools::Itertools;
 use jwalk::{ClientState, DirEntry};
 
@@ -198,9 +199,8 @@ impl FilterKind {
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |metadata| {
-                metadata.accessed().map_or(false, |sys_time| {
-                    Self::matches_date(&sys_time, &range.clone())
-                })
+                let atime = FileTime::from_last_access_time(&metadata);
+                Self::matches_date(&atime, &range.clone())
             })
         })
     }
@@ -210,30 +210,28 @@ impl FilterKind {
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |metadata| {
-                metadata.modified().map_or(false, |sys_time| {
-                    Self::matches_date(&sys_time, &range.clone())
-                })
+                let mtime = FileTime::from_last_modification_time(&metadata);
+                Self::matches_date(&mtime, &range.clone())
             })
         })
     }
+
     fn filter_by_created<'a, 'args, C: ClientState>(
         &'a self,
         range: &'args PeriodRange,
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |metadata| {
-                metadata.created().map_or(false, |sys_time| {
-                    Self::matches_date(&sys_time, &range.clone())
-                })
+                FileTime::from_creation_time(&metadata)
+                    .map_or(false, |ctime| Self::matches_date(&ctime, &range.clone()))
             })
         })
     }
 
-    fn matches_date(item_date: &std::time::SystemTime, range: &PeriodRange) -> bool {
-        let datetime_file: DateTime<Utc> = chrono::DateTime::from(*item_date);
-        let now = chrono::offset::Utc::now();
+    fn matches_date(item_date: &FileTime, range: &PeriodRange) -> bool {
+        let now = FileTime::now();
 
-        let seconds_since_created = match u64::try_from((now - datetime_file).num_seconds()) {
+        let seconds_since_created = match u64::try_from(now.seconds() - item_date.seconds()) {
             Ok(it) => it,
             Err(err) => {
                 eprintln!("subtraction of two datetimes can't be negative: {err}");

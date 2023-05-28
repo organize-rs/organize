@@ -71,10 +71,10 @@ fn empty_file() -> Vec<PathBuf> {
 #[fixture]
 fn size() -> Vec<PathBuf> {
     vec![
-        get_fixtures_dir().join("different_sizes"),
-        get_fixtures_dir().join("different_sizes").join("1MiB"),
-        get_fixtures_dir().join("different_sizes").join("300KiB"),
-        get_fixtures_dir().join("different_sizes").join("empty.txt"),
+        get_fixtures_dir().join("size_based"),
+        get_fixtures_dir().join("size_based").join("1MiB"),
+        get_fixtures_dir().join("size_based").join("300KiB"),
+        get_fixtures_dir().join("size_based").join("empty.txt"),
     ]
 }
 
@@ -134,8 +134,27 @@ fn get_fixture_entries(sub_dir: impl AsRef<Path>) -> Vec<DirEntry<((), ())>> {
 }
 
 #[rstest]
+fn test_filter_file_date_7d_passes(mut size: Vec<PathBuf>) {
+    let filter = FilterKind::Size {
+        range: SizeRange::from_str("..2mb").unwrap(),
+    };
+
+    let mut entries = get_fixture_entries("date_based");
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+    assert_eq!(entries.len(), size.len());
+    assert_eq!(paths, size);
+    entries.retain(|f| (filter.get_filter()(f)));
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    _ = size.remove(0);
+
+    assert_eq!(entries.len(), size.len());
+    assert_eq!(paths, size);
+}
+
+#[rstest]
 #[should_panic]
-fn test_filter_mimetype_image_passes(mut mimetype: Vec<PathBuf>) {
+fn test_filter_mimetype_image_fails(mut mimetype: Vec<PathBuf>) {
     let filter = FilterKind::Mimetype {
         mimetype: vec![String::from("image")],
     };
@@ -522,7 +541,7 @@ fn test_filter_file_size_2mb_passes(mut size: Vec<PathBuf>) {
         range: SizeRange::from_str("..2mb").unwrap(),
     };
 
-    let mut entries = get_fixture_entries("different_sizes");
+    let mut entries = get_fixture_entries("size_based");
     let paths = entries.iter().map(|f| f.path()).collect_vec();
     assert_eq!(entries.len(), size.len());
     assert_eq!(paths, size);
@@ -541,7 +560,7 @@ fn test_filter_file_size_350_800_kib_passes(mut size: Vec<PathBuf>) {
         range: SizeRange::from_str("350KiB..800kib").unwrap(),
     };
 
-    let mut entries = get_fixture_entries("different_sizes");
+    let mut entries = get_fixture_entries("size_based");
     let paths = entries.iter().map(|f| f.path()).collect_vec();
     assert_eq!(entries.len(), size.len());
     assert_eq!(paths, size);
@@ -559,7 +578,7 @@ fn test_filter_file_size_250kib_passes(mut size: Vec<PathBuf>) {
         range: SizeRange::from_str("250KiB..").unwrap(),
     };
 
-    let mut entries = get_fixture_entries("different_sizes");
+    let mut entries = get_fixture_entries("size_based");
     let paths = entries.iter().map(|f| f.path()).collect_vec();
     assert_eq!(entries.len(), size.len());
     assert_eq!(paths, size);
