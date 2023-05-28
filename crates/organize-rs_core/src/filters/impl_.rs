@@ -35,6 +35,7 @@ impl FilterKind {
             FilterKind::LastAccessed { range } => self.filter_by_last_accessed(range),
             FilterKind::Mimetype { mimetype } => self.filter_by_mimetype(mimetype),
             FilterKind::Size { range } => self.filter_by_size(range),
+            // Check regex implementation: https://github.com/swanandx/lemmeknow/commit/25a98894b911e8c45954e0b8478397b06ae436bd
             FilterKind::Regex { expr: _ } => todo!("not implemented (yet)!"),
             FilterKind::Exif => todo!("not implemented (yet)!"),
             FilterKind::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
@@ -243,6 +244,9 @@ impl FilterKind {
         range.in_range(seconds_since_created)
     }
 
+    // TODO Support also  top level media type e.g. `image`
+    // TODO to identify all images, for now the unit test
+    // TODO is on `should_fail` for that
     fn filter_by_mimetype<'a, 'args, C: ClientState>(
         &'a self,
         mimetype: &'args [String],

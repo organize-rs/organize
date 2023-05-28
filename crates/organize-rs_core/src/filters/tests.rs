@@ -36,6 +36,16 @@ fn name() -> Vec<PathBuf> {
 }
 
 #[fixture]
+fn mimetype() -> Vec<PathBuf> {
+    vec![
+        get_fixtures_dir().join("mimetype"),
+        get_fixtures_dir().join("mimetype").join("a.txt"),
+        get_fixtures_dir().join("mimetype").join("b.jpg"),
+        get_fixtures_dir().join("mimetype").join("c.odt"),
+    ]
+}
+
+#[fixture]
 fn extension() -> Vec<PathBuf> {
     vec![
         get_fixtures_dir().join("by_extension"),
@@ -121,6 +131,86 @@ fn get_fixture_entries(sub_dir: impl AsRef<Path>) -> Vec<DirEntry<((), ())>> {
         .into_iter()
         .filter_map(|f| f.ok())
         .collect_vec()
+}
+
+#[rstest]
+#[should_panic]
+fn test_filter_mimetype_image_passes(mut mimetype: Vec<PathBuf>) {
+    let filter = FilterKind::Mimetype {
+        mimetype: vec![String::from("image")],
+    };
+
+    let mut entries = get_fixture_entries("mimetype");
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    assert_eq!(entries.len(), mimetype.len());
+    assert_eq!(paths, mimetype);
+    entries.retain(|f| (filter.get_filter()(f)));
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    mimetype.remove(3);
+    mimetype.remove(1);
+    mimetype.remove(0);
+    assert_eq!(entries.len(), mimetype.len());
+    assert_eq!(paths, mimetype);
+}
+
+#[rstest]
+fn test_filter_mimetype_jpg_odt_passes(mut mimetype: Vec<PathBuf>) {
+    let filter = FilterKind::Mimetype {
+        mimetype: vec![
+            String::from("application/vnd.oasis.opendocument.text"),
+            String::from("image/jpeg"),
+        ],
+    };
+
+    let mut entries = get_fixture_entries("mimetype");
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    assert_eq!(entries.len(), mimetype.len());
+    assert_eq!(paths, mimetype);
+    entries.retain(|f| (filter.get_filter()(f)));
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    mimetype.remove(1);
+    mimetype.remove(0);
+    assert_eq!(entries.len(), mimetype.len());
+    assert_eq!(paths, mimetype);
+}
+
+#[rstest]
+fn test_filter_all_items_passes(name: Vec<PathBuf>) {
+    let filter = FilterKind::AllItems {
+        i_agree_it_is_dangerous: true,
+    };
+
+    let mut entries = get_fixture_entries("by_name");
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    assert_eq!(entries.len(), name.len());
+    assert_eq!(paths, name);
+    entries.retain(|f| (filter.get_filter()(f)));
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    assert_eq!(entries.len(), name.len());
+    assert_eq!(paths, name);
+}
+
+#[rstest]
+fn test_filter_no_filter_passes(mut name: Vec<PathBuf>) {
+    let filter = FilterKind::NoFilter;
+
+    let mut entries = get_fixture_entries("by_name");
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    assert_eq!(entries.len(), name.len());
+    assert_eq!(paths, name);
+    entries.retain(|f| (filter.get_filter()(f)));
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    name.clear();
+    assert_eq!(entries.len(), name.len());
+    assert_eq!(paths, name);
 }
 
 #[rstest]
