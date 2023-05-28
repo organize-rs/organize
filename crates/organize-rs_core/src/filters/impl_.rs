@@ -1,8 +1,4 @@
-use std::ops::Not;
-
 use chrono::{DateTime, Utc};
-#[cfg(feature = "cli")]
-use clap::{Args, Subcommand, ValueEnum};
 
 use itertools::Itertools;
 use jwalk::{ClientState, DirEntry};
@@ -18,7 +14,7 @@ use crate::{
 };
 
 impl FilterKind {
-    const NEGATE_STRING: &str = "#!";
+    const NEGATE_STRING: &str = "-|";
 
     pub fn get_filter<C: ClientState>(&self) -> FilterClosure<C> {
         match self {
@@ -81,146 +77,103 @@ impl FilterKind {
         case_insensitive: &'args bool,
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            let arguments = arguments.clone();
-            let file_path = entry.path();
+            let NameFilterArgs {
+                simple_match: _, // TODO:  implement simple match filter
+                starts_with,
+                contains,
+                ends_with,
+            } = arguments.clone();
 
-            let file_name_str = file_path
-                .file_name()
-                .and_then(|f| f.to_str())
-                .map(|f| {
-                    if *case_insensitive {
-                        f.to_lowercase()
-                    } else {
-                        f.to_owned()
-                    }
-                })
-                .expect("should be able to unpack file name.");
+            let make_lowercase_if = |string: String| {
+                if *case_insensitive {
+                    string.to_lowercase()
+                } else {
+                    string
+                }
+            };
 
-            match arguments {
-                NameFilterArgs {
-                    starts_with: sw, ..
-                } if !sw.is_empty() => sw
-                    .into_iter()
-                    .unique()
-                    .map(|string| {
-                        let mut str = string;
-                        if *case_insensitive {
-                            str = str.to_lowercase();
-                        }
-                        str
-                    })
-                    .map(|string| {
-                        if string.starts_with(Self::NEGATE_STRING) {
-                            FilterApplicationKind::Invert({
-                                string
-                                    .strip_prefix(Self::NEGATE_STRING)
-                                    .map(|f| f.to_owned())
-                            })
-                        } else {
-                            FilterApplicationKind::Apply(Some(string))
-                        }
-                    })
-                    .map(|unique_string| match unique_string {
-                        FilterApplicationKind::Invert(Some(invert)) => {
-                            file_name_str.starts_with(&invert).then_some(CullKind::Bump)
-                        }
-                        FilterApplicationKind::Apply(Some(apply)) => file_name_str
-                            .starts_with(&apply)
-                            .then_some(CullKind::Retain),
-                        _ => unreachable!("should not be anything else, than invert or apply."),
-                    })
-                    .map(|cull| match cull {
-                        Some(CullKind::Bump) => Err(FilterErrorKind::InvertedItem),
-                        Some(CullKind::Retain) => Ok(true),
-                        None => Ok(false),
-                    })
-                    .all(|res| res.map_or_else(|_err| false, |f| f)),
-                NameFilterArgs { contains: c, .. } if !c.is_empty() => c
-                    .into_iter()
-                    .unique()
-                    .map(|string| {
-                        let mut str = string;
-                        if *case_insensitive {
-                            str = str.to_lowercase();
-                        }
-                        str
-                    })
-                    .map(|string| {
-                        if string.starts_with(Self::NEGATE_STRING) {
-                            FilterApplicationKind::Invert({
-                                string
-                                    .strip_prefix(Self::NEGATE_STRING)
-                                    .map(|f| f.to_owned())
-                            })
-                        } else {
-                            FilterApplicationKind::Apply(Some(string))
-                        }
-                    })
-                    .map(|unique_string| match unique_string {
-                        FilterApplicationKind::Invert(Some(invert)) => {
-                            file_name_str.contains(&invert).then_some(CullKind::Bump)
-                        }
-                        FilterApplicationKind::Apply(Some(apply)) => {
-                            file_name_str.contains(&apply).then_some(CullKind::Retain)
-                        }
-                        _ => unreachable!("should not be anything else, than invert or apply."),
-                    })
-                    .map(|cull| match cull {
-                        Some(CullKind::Bump) => Err(FilterErrorKind::InvertedItem),
-                        Some(CullKind::Retain) => Ok(true),
-                        None => Ok(false),
-                    })
-                    .all(|res| res.map_or_else(|_err| false, |f| f)),
-                NameFilterArgs { ends_with: ew, .. } if !ew.is_empty() => ew
-                    .into_iter()
-                    .unique()
-                    .map(|string| {
-                        let mut str = string;
-                        if *case_insensitive {
-                            str = str.to_lowercase();
-                        }
-                        str
-                    })
-                    .map(|string| {
-                        if string.starts_with(Self::NEGATE_STRING) {
-                            FilterApplicationKind::Invert({
-                                string
-                                    .strip_prefix(Self::NEGATE_STRING)
-                                    .map(|f| f.to_owned())
-                            })
-                        } else {
-                            FilterApplicationKind::Apply(Some(string))
-                        }
-                    })
-                    .map(|unique_string| {
-                        let file_stem = file_path.file_stem().and_then(|f| f.to_str()).map(|f| {
-                            if *case_insensitive {
-                                f.to_lowercase()
-                            } else {
-                                f.to_owned()
-                            }
-                        });
+            // Extract the file stem, if we can't do that, it's senseless to continue
+            let Some(Some(file_stem)) = entry
+                .path()
+                .file_stem()
+                .map(|f|{
+                    f.to_str().map(|f| f.to_owned())}) else {
+                        return false
+                    };
 
-                        match (unique_string, file_stem) {
-                            (FilterApplicationKind::Invert(Some(invert)), None) => {
-                                file_name_str.ends_with(&invert).then_some(CullKind::Bump)
-                            }
-                            (FilterApplicationKind::Apply(Some(apply)), None) => {
-                                file_name_str.ends_with(&apply).then_some(CullKind::Retain)
-                            }
-                            (FilterApplicationKind::Invert(Some(invert)), Some(stem)) => {
-                                stem.ends_with(&invert).then_some(CullKind::Bump)
-                            }
-                            (FilterApplicationKind::Apply(Some(apply)), Some(stem)) => {
-                                stem.ends_with(&apply).then_some(CullKind::Retain)
-                            }
-                            _ => unreachable!("should not be anything else, than invert or apply."),
-                        }
+            let file_stem = make_lowercase_if(file_stem);
+
+            let to_filter_applikation_kind = |string: String| -> FilterApplicationKind<String> {
+                if !string.starts_with(Self::NEGATE_STRING) {
+                    FilterApplicationKind::Apply(string)
+                } else {
+                    FilterApplicationKind::Invert({
+                        string
+                            .strip_prefix(Self::NEGATE_STRING)
+                            .map_or_else(|| string.clone(), |f| f.to_owned())
                     })
-                    .any(Self::is_bump)
-                    .not(),
-                NameFilterArgs { .. } => false,
-            }
+                }
+            };
+
+            let contains_filter =
+                |wrapped_string: FilterApplicationKind<String>| match wrapped_string {
+                    FilterApplicationKind::Invert(invert) => match file_stem.contains(&invert) {
+                        true => Err(FilterErrorKind::InvertedItem(invert)),
+                        false => Ok(false),
+                    },
+                    FilterApplicationKind::Apply(apply) => Ok(file_stem.contains(&apply)),
+                };
+
+            let starts_with_filter =
+                |wrapped_string: FilterApplicationKind<String>| match wrapped_string {
+                    FilterApplicationKind::Invert(invert) => match file_stem.starts_with(&invert) {
+                        true => Err(FilterErrorKind::InvertedItem(invert)),
+                        false => Ok(false),
+                    },
+                    FilterApplicationKind::Apply(apply) => Ok(file_stem.starts_with(&apply)),
+                };
+
+            let ends_with_filter =
+                |wrapped_string: FilterApplicationKind<String>| match wrapped_string {
+                    FilterApplicationKind::Invert(invert) => match file_stem.ends_with(&invert) {
+                        true => Err(FilterErrorKind::InvertedItem(invert)),
+                        false => Ok(false),
+                    },
+                    FilterApplicationKind::Apply(apply) => Ok(file_stem.ends_with(&apply)),
+                };
+
+            let (contains_oks, contains_errs): (Vec<_>, Vec<_>) = contains
+                .into_iter()
+                .map(make_lowercase_if)
+                .map(to_filter_applikation_kind)
+                .map(contains_filter)
+                .partition_result();
+
+            let (starts_with_oks, starts_with_errs): (Vec<_>, Vec<_>) = starts_with
+                .into_iter()
+                .map(make_lowercase_if)
+                .map(to_filter_applikation_kind)
+                .map(starts_with_filter)
+                .partition_result();
+
+            let (ends_with_oks, ends_with_errs): (Vec<_>, Vec<_>) = ends_with
+                .into_iter()
+                .map(make_lowercase_if)
+                .map(to_filter_applikation_kind)
+                .map(ends_with_filter)
+                .partition_result();
+
+            // return early if we have an item that should be skipped due to being inverted
+            if !(ends_with_errs.is_empty() & starts_with_errs.is_empty() & contains_errs.is_empty())
+            {
+                return false;
+            };
+
+            let mut oks = contains_oks;
+            oks.extend(starts_with_oks);
+            oks.extend(ends_with_oks);
+
+            oks.into_iter().any(|f| f)
         })
     }
 

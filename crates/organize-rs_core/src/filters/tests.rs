@@ -31,6 +31,7 @@ fn name() -> Vec<PathBuf> {
         get_fixtures_dir().join("by_name").join("456test2.txt"),
         get_fixtures_dir().join("by_name").join("789TaSt.jpg"),
         get_fixtures_dir().join("by_name").join("TEST123.txt"),
+        get_fixtures_dir().join("by_name").join("uTEST.txt"),
     ]
 }
 
@@ -125,6 +126,51 @@ fn get_fixture_entries(sub_dir: impl AsRef<Path>) -> Vec<DirEntry<((), ())>> {
 #[rstest]
 #[case(true)]
 #[case(false)]
+fn test_filter_name_contains_multiple_names_and_inverted_passes(
+    mut name: Vec<PathBuf>,
+    #[case] case_insensitive: bool,
+) {
+    let filter = FilterKind::Name {
+        arguments: NameFilterArgs {
+            contains: vec![
+                String::from("test"),
+                String::from("TaSt"),
+                String::from("-|uTEST"),
+            ],
+            starts_with: vec![],
+            simple_match: vec![],
+            ends_with: vec![],
+        },
+        case_insensitive,
+    };
+
+    let mut entries = get_fixture_entries("by_name");
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    assert_eq!(entries.len(), name.len());
+    assert_eq!(paths, name);
+    entries.retain(|f| (filter.get_filter()(f)));
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    if case_insensitive {
+        name.remove(5);
+        name.remove(0);
+        dbg!(&name);
+        dbg!(&entries);
+        assert_eq!(entries.len(), name.len());
+        assert_eq!(paths, name);
+    } else {
+        name.remove(5);
+        name.remove(4);
+        name.remove(0);
+        assert_eq!(entries.len(), name.len());
+        assert_eq!(paths, name);
+    }
+}
+
+#[rstest]
+#[case(true)]
+#[case(false)]
 fn test_filter_name_contains_multiple_names_passes(
     mut name: Vec<PathBuf>,
     #[case] case_insensitive: bool,
@@ -152,6 +198,7 @@ fn test_filter_name_contains_multiple_names_passes(
         assert_eq!(entries.len(), name.len());
         assert_eq!(paths, name);
     } else {
+        name.remove(5);
         name.remove(4);
         name.remove(0);
         assert_eq!(entries.len(), name.len());
@@ -185,11 +232,13 @@ fn test_filter_name_contains_single_name_passes(
     let paths = entries.iter().map(|f| f.path()).collect_vec();
 
     if case_insensitive {
+        dbg!(&entries);
         name.remove(3);
         name.remove(0);
         assert_eq!(entries.len(), name.len());
         assert_eq!(paths, name);
     } else {
+        name.remove(5);
         name.remove(4);
         name.remove(3);
         name.remove(0);

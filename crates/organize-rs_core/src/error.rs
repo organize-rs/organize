@@ -51,8 +51,8 @@ pub enum WalkerErrorKind {
 pub enum FilterErrorKind {
     /// extension is not extractable from file: {0:?}
     ExtensionNotExtractable(std::path::PathBuf),
-    /// discovered and inverted item
-    InvertedItem,
+    /// discovered and inverted item: {0}
+    InvertedItem(String),
 }
 
 /// [`ActionErrorKind`] describes the errors that can be returned for an action
