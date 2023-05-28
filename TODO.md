@@ -2,9 +2,11 @@
 
 ## Next
 
+1. implement unit tests for filters
+1. implement unit tests for actions
 1. generate example configs for integration test cases
     - check against py-organize documentation for feature parity
-1. implement `organize run config` with preview
+1. implement `organize run config` for preview
 1. implement destructive run
 
 ## Features
@@ -25,14 +27,9 @@
 
 ## General
 
-- how can we do a single run over a directory/files and apply many filters and actions?
-  - how to safe guard against the case, that one filter can match a file/folder and multiple actions would want to do different things to them?
-    - maybe the solution is to execute each rule + action immediately
-      - maybe have a separate worker that just gets the `location` + `action_fn` and executes it
-      - would also make more sense for `conflict handling`, because the files are actually already known to be there
-    - or would it make more sense to apply the new `path` for each `location` and then do `conflict handling` before an action is even started?
-    - maybe it woul be more reasonable to have each filter only result in `1` destructive action (e.g. move, trash, delete, rename)
-      - check which actions are parallelizable
+- it would be reasonable to have each rule only result in `1` destructive action (e.g. move, trash, delete, rename) so conflicts are already minimized
+  - check which actions are parallelizable
+  - add confirmation dialog for manual conflict handling  
 
 ## Notes
 
@@ -53,17 +50,25 @@
 ### Filters impl
 
 - [ ] Regex
+  - `Fancy_regex` + `regex` crates
+  - `Vec<Lazy<Regex>>` to have the regex compiled at runtime, but only once
 - [ ] Exif
+  - `kamadak-exif` crate
+    - <https://docs.rs/kamadak-exif/latest/exif/fn.get_exif_attr_from_jpeg.html>
+    - <https://docs.rs/kamadak-exif/latest/exif/fn.parse_exif.html>
 - [ ] FileContent
 - [ ] Duplicate
   - we can utilize `itertools::unique_by`
     - but that does already make it unique, so we need to see how we would collect the `DirEntry`, that was removed due to not being unique
+      - easy: compare against a `copy`
     - we can use everything that is being exposed by the `DirEntry` itself (metadata.len(), filename(), etc.)
 - [ ] Added (OSX?)
 - [ ] LastUsed (OSX?)
   - [RESEARCH] how does it relate to `LastAccessed`?
 
 ## Actions
+
+- Check: <https://github.com/Byron/jwalk/blob/main/tests/util/mod.rs> for impl details
 
 ### Actions impl
 
@@ -72,9 +77,14 @@
 - [ ] Move
 - [ ] Rename
 - [ ] Write
-- [ ] Confirm
 - [ ] Delete
-- [ ] Shell
 - [ ] Symlink
+
+#### Later
+
+- [ ] Confirm
+- [ ] Shell
 - [ ] Echo
-- [ ] Email (?)
+- [ ] Email
+  - <https://crates.io/crates/lettre>
+  - think about the best use case
