@@ -126,6 +126,43 @@ fn get_fixture_entries(sub_dir: impl AsRef<Path>) -> Vec<DirEntry<((), ())>> {
 #[rstest]
 #[case(true)]
 #[case(false)]
+fn test_filter_name_full_passes(mut name: Vec<PathBuf>, #[case] case_insensitive: bool) {
+    let filter = FilterKind::Name {
+        arguments: NameFilterArgs {
+            contains: vec![String::from("TaSt"), String::from("-|uTEST")],
+            starts_with: vec![String::from("123")],
+            simple_match: vec![],
+            ends_with: vec![String::from("2")],
+        },
+        case_insensitive,
+    };
+
+    let mut entries = get_fixture_entries("by_name");
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    assert_eq!(entries.len(), name.len());
+    assert_eq!(paths, name);
+    entries.retain(|f| (filter.get_filter()(f)));
+    let paths = entries.iter().map(|f| f.path()).collect_vec();
+
+    if case_insensitive {
+        name.remove(5);
+        name.remove(4);
+        name.remove(0);
+        assert_eq!(entries.len(), name.len());
+        assert_eq!(paths, name);
+    } else {
+        name.remove(5);
+        name.remove(4);
+        name.remove(0);
+        assert_eq!(entries.len(), name.len());
+        assert_eq!(paths, name);
+    }
+}
+
+#[rstest]
+#[case(true)]
+#[case(false)]
 fn test_filter_name_contains_multiple_names_and_inverted_passes(
     mut name: Vec<PathBuf>,
     #[case] case_insensitive: bool,
@@ -155,8 +192,6 @@ fn test_filter_name_contains_multiple_names_and_inverted_passes(
     if case_insensitive {
         name.remove(5);
         name.remove(0);
-        dbg!(&name);
-        dbg!(&entries);
         assert_eq!(entries.len(), name.len());
         assert_eq!(paths, name);
     } else {
