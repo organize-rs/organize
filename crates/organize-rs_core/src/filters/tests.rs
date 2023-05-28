@@ -138,6 +138,8 @@ fn get_fixture_entries(sub_dir: impl AsRef<Path>) -> Vec<DirEntry<((), ())>> {
 
 #[rstest]
 #[should_panic]
+#[case(FileTime::now().seconds() + 1, "3w..12w")] // -1 second
+#[should_panic]
 #[case(FileTime::now().seconds() - 2 * 7 * 24 * 60 * 60, "3w..12w")] // 2 weeks
 #[should_panic]
 #[case(FileTime::now().seconds() - 8 * 24 * 60 * 60, "..7d")] // 8 days
