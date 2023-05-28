@@ -200,7 +200,7 @@ impl FilterKind {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |metadata| {
                 let atime = FileTime::from_last_access_time(&metadata);
-                Self::matches_date(&atime, &range.clone())
+                Self::matches_date(atime.seconds(), &range.clone())
             })
         })
     }
@@ -211,7 +211,7 @@ impl FilterKind {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |metadata| {
                 let mtime = FileTime::from_last_modification_time(&metadata);
-                Self::matches_date(&mtime, &range.clone())
+                Self::matches_date(mtime.seconds(), &range.clone())
             })
         })
     }
@@ -222,16 +222,16 @@ impl FilterKind {
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |metadata| {
-                FileTime::from_creation_time(&metadata)
-                    .map_or(false, |ctime| Self::matches_date(&ctime, &range.clone()))
+                FileTime::from_creation_time(&metadata).map_or(false, |ctime| {
+                    Self::matches_date(ctime.seconds(), &range.clone())
+                })
             })
         })
     }
 
-    fn matches_date(item_date: &FileTime, range: &PeriodRange) -> bool {
+    pub(crate) fn matches_date(item_date_secs: i64, range: &PeriodRange) -> bool {
         let now = FileTime::now();
-
-        let seconds_since_created = match u64::try_from(now.seconds() - item_date.seconds()) {
+        let seconds_since_created = match u64::try_from(now.seconds() - item_date_secs) {
             Ok(it) => it,
             Err(err) => {
                 eprintln!("subtraction of two datetimes can't be negative: {err}");

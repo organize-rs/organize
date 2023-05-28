@@ -6,6 +6,7 @@ use std::{
     ops::Not,
     path::{Path, PathBuf},
     str::FromStr,
+    time::SystemTime,
 };
 
 use rstest::*;
@@ -14,9 +15,11 @@ use itertools::Itertools;
 use jwalk::{DirEntry, WalkDir};
 use pretty_assertions::assert_eq;
 
+use filetime::{self, FileTime};
+
 use crate::{
     filters::{FilterKind, NameFilterArgs},
-    parsers::SizeRange,
+    parsers::{PeriodRange, SizeRange},
 };
 
 fn get_fixtures_dir() -> PathBuf {
@@ -134,22 +137,17 @@ fn get_fixture_entries(sub_dir: impl AsRef<Path>) -> Vec<DirEntry<((), ())>> {
 }
 
 #[rstest]
-fn test_filter_file_date_7d_passes(mut size: Vec<PathBuf>) {
-    let filter = FilterKind::Size {
-        range: SizeRange::from_str("..2mb").unwrap(),
-    };
-
-    let mut entries = get_fixture_entries("date_based");
-    let paths = entries.iter().map(|f| f.path()).collect_vec();
-    assert_eq!(entries.len(), size.len());
-    assert_eq!(paths, size);
-    entries.retain(|f| (filter.get_filter()(f)));
-    let paths = entries.iter().map(|f| f.path()).collect_vec();
-
-    _ = size.remove(0);
-
-    assert_eq!(entries.len(), size.len());
-    assert_eq!(paths, size);
+#[should_panic]
+#[case(FileTime::now().seconds() - 2 * 7 * 24 * 60 * 60, "3w..12w")] // 2 weeks
+#[should_panic]
+#[case(FileTime::now().seconds() - 8 * 24 * 60 * 60, "..7d")] // 8 days
+#[should_panic]
+#[case(FileTime::now().seconds() - 24 * 60 * 60, "3d..")] // 1 day
+#[case(FileTime::now().seconds() - 5 * 7 * 24 * 60 * 60, "3w..12w")] // 5 weeks
+#[case(FileTime::now().seconds() - 6 * 24 * 60 * 60, "..7d")] // 6 days
+#[case(FileTime::now().seconds() - 4 * 24 * 60 * 60, "3d..")] // 4 days
+fn test_matches_date_passes(#[case] time: i64, #[case] period: PeriodRange) {
+    assert!(FilterKind::matches_date(time, &period))
 }
 
 #[rstest]
