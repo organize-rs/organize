@@ -53,6 +53,7 @@
 - [ ] Regex
   - `Fancy_regex` + `regex` crates
   - `Vec<Lazy<Regex>>` to have the regex compiled at runtime, but only once
+    - Check regex implementation: <https://github.com/swanandx/lemmeknow/commit/25a98894b911e8c45954e0b8478397b06ae436bd>
 - [ ] Exif
   - `kamadak-exif` crate
     - <https://docs.rs/kamadak-exif/latest/exif/fn.get_exif_attr_from_jpeg.html>

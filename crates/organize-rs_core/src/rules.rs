@@ -1,9 +1,6 @@
 //! Rules that can be used in the config file and
 //! `organize` operates on
 
-pub mod de;
-pub mod ser;
-
 use std::{
     fmt::Display,
     slice::{Iter, IterMut},

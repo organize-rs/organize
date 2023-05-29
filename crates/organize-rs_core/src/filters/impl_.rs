@@ -1,3 +1,5 @@
+use std::ops::Not;
+
 use chrono::{DateTime, Utc};
 
 use filetime::FileTime;
@@ -23,8 +25,10 @@ impl FilterKind {
             FilterKind::AllItems {
                 i_agree_it_is_dangerous,
             } => Box::new(|_entry| i_agree_it_is_dangerous.to_owned()),
-            FilterKind::IgnorePath { in_path } => self.filter_ignore_str_is_in_path(in_path),
-            FilterKind::IgnoreName { in_name } => self.filter_ignore_str_is_in_name(in_name),
+            FilterKind::IgnorePath { in_path } => self.filter_ignore_str_is_not_in_path(in_path),
+            FilterKind::IgnoreName { in_name } => {
+                self.filter_ignore_str_is_not_in_file_name(in_name)
+            }
             FilterKind::Extension { exts } => self.filter_by_extension(exts),
             FilterKind::Name {
                 arguments,
@@ -36,7 +40,6 @@ impl FilterKind {
             FilterKind::LastAccessed { range } => self.filter_by_last_accessed(range),
             FilterKind::Mimetype { mimetype } => self.filter_by_mimetype(mimetype),
             FilterKind::Size { range } => self.filter_by_size(range),
-            // Check regex implementation: https://github.com/swanandx/lemmeknow/commit/25a98894b911e8c45954e0b8478397b06ae436bd
             FilterKind::Regex { expr: _ } => todo!("not implemented (yet)!"),
             FilterKind::Exif => todo!("not implemented (yet)!"),
             FilterKind::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
@@ -282,32 +285,38 @@ impl FilterKind {
         })
     }
 
-    fn filter_ignore_str_is_in_name<'a, 'args, C: ClientState>(
+    /// this filter is negated, meaning, that if a keyword is found
+    /// this filter tells us to not include the file
+    fn filter_ignore_str_is_not_in_file_name<'a, 'args, C: ClientState>(
         &'a self,
         ignore_name: &'args [String],
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             if entry.file_type().is_file() {
-                entry.file_name().to_str().map_or(false, |file_name| {
+                entry.file_name().to_str().map_or(true, |file_name| {
                     ignore_name
                         .iter()
                         .any(|pat| file_name.to_lowercase().contains(&pat.to_lowercase()))
+                        .not()
                 })
             } else {
-                false
+                true
             }
         })
     }
 
-    fn filter_ignore_str_is_in_path<'a, 'args, C: ClientState>(
+    /// this filter is negated, meaning, that if a keyword is found
+    /// this filter tells us to not include the file
+    fn filter_ignore_str_is_not_in_path<'a, 'args, C: ClientState>(
         &'a self,
         ignore_path: &'args [String],
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            entry.path().to_str().map_or(false, |path| {
+            entry.path().to_str().map_or(true, |path| {
                 ignore_path
                     .iter()
                     .any(|pat| path.to_lowercase().contains(&pat.to_lowercase()))
+                    .not()
             })
         })
     }
