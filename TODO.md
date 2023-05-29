@@ -64,6 +64,8 @@
     - but that does already make it unique, so we need to see how we would collect the `DirEntry`, that was removed due to not being unique
       - easy: compare against a `copy`
     - we can use everything that is being exposed by the `DirEntry` itself (metadata.len(), filename(), etc.)
+- [ ] BrokenLinks
+  - matching soft-links whose files are non-existent
 - [ ] Added (OSX?)
 - [ ] LastUsed (OSX?)
   - [RESEARCH] how does it relate to `LastAccessed`?
@@ -75,12 +77,18 @@
 ### Actions impl
 
 - [ ] Trash
+  - `move_to_trash`
 - [ ] Copy
-- [ ] Move
-- [ ] Rename
-- [ ] Write
-- [ ] Delete
+  - `copy_to`
 - [ ] Symlink
+  - `symlink_to`
+- [ ] Move
+  - `move_to`
+- [ ] Rename
+  - `rename_to`
+- [ ] Delete
+  - `remove_irrecoverably`
+- [ ] Write
 
 #### Later
 

@@ -1,18 +1,38 @@
 //! Actions that can be used in the config file and
 //! `organize` applieds to matching rules
 
-use std::fmt::Display;
+mod impl_;
+mod impl_traits;
+#[cfg(test)]
+mod tests;
+
+use std::{fmt::Display, path::PathBuf};
 
 #[cfg(feature = "cli")]
 use clap::{Subcommand, ValueEnum};
 
 use displaydoc::Display;
-use jwalk::{ClientState, DirEntry};
+use jwalk::DirEntry;
 use serde::{Deserialize, Serialize};
-use trash;
 
-type ActionClosure<C> =
-    Box<dyn FnMut(&DirEntry<C>) -> Result<Option<bool>, Box<dyn std::error::Error>>>;
+use crate::error::OrganizeError;
+
+type ActionClosure<'a, C> =
+    Box<dyn FnMut(&DirEntry<C>, bool) -> Result<ActionResultKind, OrganizeError> + 'a>;
+
+/// A preview for an action to be executed
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+pub enum ActionResultKind {
+    /// A preview of a to be executed action
+    Preview {
+        /// file or directory path the action should be executed on
+        path: PathBuf,
+        /// corresponding action
+        action: ActionKind,
+    },
+    /// action has been successful
+    Successful,
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display, Default)]
 #[serde(transparent)]
@@ -365,12 +385,6 @@ pub enum ActionKind {
     /// ```
     #[serde(rename = "copy")]
     Copy {
-        /// The source of the file / dir that should be copied from.
-        /// If `src` ends with a slash, it is assumed
-        /// to be a source directory and the file / dir will be
-        /// copied into `destination` and keep its name.
-        #[cfg_attr(feature = "cli", arg(long))]
-        src: String,
         /// The destination where the file / dir should be copied
         /// to. If `dst` ends with a slash, it is assumed
         /// to be a target directory and the file / dir will be
@@ -414,16 +428,7 @@ pub enum ActionKind {
     ///     - delete
     /// ```
     #[serde(rename = "delete")]
-    Delete {
-        /// The source of the file / dir that should be deleted.
-        /// If `src` ends with a slash, it is assumed
-        /// to be a source directory and the file / dir will be
-        /// trashed.
-        ///
-        /// USE WITH CARE!
-        #[cfg_attr(feature = "cli", arg(long))]
-        src: String,
-    },
+    Delete,
     /// Print a given message
     ///
     /// This can be useful to test your rules, especially in combination
@@ -518,12 +523,6 @@ pub enum ActionKind {
     /// ```
     #[serde(rename = "move")]
     Move {
-        /// The source of the file / dir that should be moved.
-        /// If `src` ends with a slash, it is assumed
-        /// to be a source directory and the file / dir will be
-        /// copied into `destination` and keep its name.
-        #[cfg_attr(feature = "cli", arg(long))]
-        src: String,
         /// The destination where the file / dir should be moved
         /// to. If `dst` ends with a slash, it is assumed
         /// to be a target directory and the file / dir will be
@@ -567,12 +566,6 @@ pub enum ActionKind {
     /// ```
     #[serde(rename = "rename")]
     Rename {
-        /// The source of the file / dir that should be renamed.
-        /// If `src` ends with a slash, it is assumed
-        /// to be a source directory and the file / dir will be
-        /// renamed.
-        #[cfg_attr(feature = "cli", arg(long))]
-        src: String,
         /// The new name for the file / dir.
         #[cfg_attr(feature = "cli", arg(long))]
         name: String,
@@ -627,12 +620,6 @@ pub enum ActionKind {
     /// Create a symbolic link.
     #[serde(rename = "symlink")]
     Symlink {
-        /// The source of the file / dir that should be symlinked.
-        /// If `src` ends with a slash, it is assumed
-        /// to be a source directory and the file / dir will be
-        /// symlinked.
-        #[cfg_attr(feature = "cli", arg(long))]
-        src: String,
         /// The symlink destination.
         ///
         /// If `dst` ends with a slash `/``, create the symlink
@@ -723,240 +710,4 @@ pub enum ActionKind {
         #[cfg_attr(feature = "cli", arg(long))]
         filesystem: Option<String>,
     },
-}
-
-impl ActionKind {
-    pub fn get_action<C: ClientState>(&self) -> ActionClosure<C> {
-        match self {
-            ActionKind::NoAction => Box::new(move |_entry| Ok(Some(false))),
-            ActionKind::Trash => Box::new(self.action_move_to_trash()),
-            ActionKind::Copy {
-                src: _,
-                dst: _,
-                on_conflict: _,
-                rename_template: _,
-                filesystem: _,
-            } => todo!("not implemented (yet)!"),
-            ActionKind::Move {
-                src: _,
-                dst: _,
-                on_conflict: _,
-                rename_template: _,
-                filesystem: _,
-            } => todo!("not implemented (yet)!"),
-            ActionKind::Rename {
-                src: _,
-                name: _,
-                on_conflict: _,
-                rename_template: _,
-            } => todo!("not implemented (yet)!"),
-            ActionKind::Confirm { text: _, vars: _ } => todo!("not implemented (yet)!"),
-            ActionKind::Delete { src: _ } => todo!("not implemented (yet)!"),
-            ActionKind::Echo { msg: _ } => todo!("not implemented (yet)!"),
-            ActionKind::Symlink { src: _, dst: _ } => todo!("not implemented (yet)!"),
-            ActionKind::Write {
-                txt: _,
-                file: _,
-                mode: _,
-                newline: _,
-                clear_before_first_write: _,
-                filesystem: _,
-            } => todo!("not implemented (yet)!"),
-            ActionKind::Shell {
-                command: _,
-                run_in_simulation: _,
-                ignore_errors: _,
-                simulation_output: _,
-                simulation_returncode: _,
-            } => todo!(),
-            #[cfg(target_os = "osx")]
-            ActionKind::MacOsTags { tags } => todo!(),
-        }
-    }
-
-    fn action_move_to_trash<C: ClientState>(
-        &self,
-    ) -> impl FnMut(&DirEntry<C>) -> Result<Option<bool>, Box<dyn std::error::Error>> {
-        move |entry| {
-            trash::delete(entry.path())
-                .map(|_op| None)
-                .map_err(std::convert::Into::into)
-        }
-    }
-}
-
-impl Display for ActionKind {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ActionKind::NoAction => {
-                write!(
-                    f,
-                    "
-    Filter: NoAction
-    "
-                )
-            }
-            ActionKind::Confirm { text, vars } => {
-                write!(
-                    f,
-                    "
-    Filter: Confirm
-    
-    Arguments:
-    text: {text:?},
-    vars: {vars:?}
-            "
-                )
-            }
-            ActionKind::Copy {
-                src,
-                dst,
-                on_conflict,
-                rename_template,
-                filesystem,
-            } => {
-                write!(
-                    f,
-                    "
-    Filter: Copy
-                
-    Arguments: 
-    src: {src},
-    dst: {dst},
-    on_conflict: {on_conflict},
-    rename_template: {rename_template:?},
-    filesystem: {filesystem:?}
-            "
-                )
-            }
-            ActionKind::Delete { src } => {
-                write!(
-                    f,
-                    "
-    Filter: Delete 
-                
-    Arguments: 
-    src: {src}
-            "
-                )
-            }
-            ActionKind::Echo { msg } => {
-                write!(
-                    f,
-                    "
-    Filter: Echo 
-                
-    Arguments: 
-    msg: {msg}
-            "
-                )
-            }
-            ActionKind::Move {
-                src,
-                dst,
-                on_conflict,
-                rename_template,
-                filesystem,
-            } => {
-                write!(
-                    f,
-                    "
-    Filter: Move
-                
-    Arguments: 
-    src: {src},
-    dst: {dst},
-    on_conflict: {on_conflict},
-    rename_template: {rename_template:?},
-    filesystem: {filesystem:?}
-            "
-                )
-            }
-            ActionKind::Rename {
-                src,
-                name,
-                on_conflict,
-                rename_template,
-            } => {
-                write!(
-                    f,
-                    "
-    Filter: Rename 
-                
-    Arguments: 
-    src: {src},
-    name: {name},
-    on_conflict: {on_conflict},
-    rename_template: {rename_template:?}
-            "
-                )
-            }
-            ActionKind::Symlink { src, dst } => {
-                write!(
-                    f,
-                    "
-    Filter: Symlink 
-                
-    Arguments: 
-    src: {src},
-    dst: {dst},
-            "
-                )
-            }
-            ActionKind::Trash => {
-                write!(
-                    f,
-                    "
-    Filter: Symlink 
-            "
-                )
-            }
-            ActionKind::Write {
-                txt,
-                file,
-                mode,
-                newline,
-                clear_before_first_write,
-                filesystem,
-            } => write!(
-                f,
-                "
-    Filter: Write
-
-    Arguments:
-    txt: {txt},
-    file: {file},
-    mode: {mode},
-    newline: {newline:?},
-    clear_before_first_write: {clear_before_first_write:?},
-    filesystem: {filesystem:?}
-            "
-            ),
-            ActionKind::Shell {
-                command,
-                run_in_simulation,
-                ignore_errors,
-                simulation_output,
-                simulation_returncode,
-            } => write!(
-                f,
-                "
-    Filter: Shell
-
-    Arguments:
-    command: {command},
-    run_in_simulation: {run_in_simulation},
-    ignore_errors: {ignore_errors},
-    simulation_output: {simulation_output},
-    simulation_returncode: {simulation_returncode},
-            "
-            ),
-        }
-    }
-}
-
-impl Default for ActionKind {
-    fn default() -> Self {
-        Self::NoAction
-    }
 }

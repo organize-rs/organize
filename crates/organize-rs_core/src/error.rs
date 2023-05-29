@@ -75,6 +75,7 @@ impl ErrorMarker for WalkerErrorKind {}
 impl ErrorMarker for FilterErrorKind {}
 impl ErrorMarker for ActionErrorKind {}
 impl ErrorMarker for ConfigErrorKind {}
+impl ErrorMarker for std::io::Error {}
 
 impl<E> From<E> for OrganizeError
 where
