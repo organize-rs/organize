@@ -65,6 +65,7 @@ byte-unit = { workspace = true }
 trash = { workspace = true }
 rayon = { workspace = true }
 filetime = { workspace = true }
+crossbeam = { workspace = true }
 
 [dev-dependencies]
 rustup-toolchain = "0.1.4"

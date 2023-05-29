@@ -59,6 +59,7 @@ rayon = "1.7.0"
 trash = "3.0.2"
 dialoguer = "0.10.4"
 open = "4.1.0"
+crossbeam = { version = "0.8.2", features = ["crossbeam-channel"] }
 
 # parsing
 winnow = "0.4.6"

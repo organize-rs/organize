@@ -1,7 +1,7 @@
 //! errors
 
 use displaydoc::Display;
-use std::{borrow::Cow, error::Error as StdError};
+use std::error::Error as StdError;
 use thiserror::Error as ThisError;
 
 /// Result type often returned from methods that can have rustic `Error`s.

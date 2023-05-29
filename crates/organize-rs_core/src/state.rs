@@ -11,3 +11,9 @@ trait ProcessingState {}
 impl ProcessingState for Start {}
 impl ProcessingState for FilterRunning {}
 impl ProcessingState for CollectingEntries {}
+
+// Flux architecture
+// User action
+// Dispatcher
+// Store
+// View
