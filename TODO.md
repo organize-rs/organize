@@ -8,6 +8,8 @@
     - check against py-organize documentation for feature parity
 1. implement `organize run config` for preview
 1. implement destructive run
+1. implement `organize filter` / `organize action` in a way it can be used
+to generate copy & pastable output for config /rules
 
 ## Features
 
