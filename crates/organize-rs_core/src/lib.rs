@@ -28,10 +28,6 @@ use std::{fmt::Display, fs::FileType, ops::Not, path::Path};
 use itertools::{Either, Itertools};
 use jwalk::{ClientState, DirEntry, WalkDir};
 
-pub mod constants {
-    pub const MAX_DEPTH: usize = 0;
-}
-
 pub struct IterCarry<'it, C: ClientState> {
     pub iter: &'it mut dyn Iterator<Item = DirEntry<C>>,
 }
@@ -43,6 +39,8 @@ pub struct FilteredFileWalker {
 }
 
 impl FilteredFileWalker {
+    pub const MAX_DEPTH: usize = 0;
+
     pub fn new() -> Self {
         Self::default()
     }
@@ -102,7 +100,7 @@ impl FilteredFileWalker {
         let depth = if let Some(max_depth) = max_depth.into() {
             usize::try_from(*max_depth).map_err(WalkerErrorKind::FailedToConvertNumbers)?
         } else {
-            constants::MAX_DEPTH
+            Self::MAX_DEPTH
         };
 
         println!("We are getting entries ...");
