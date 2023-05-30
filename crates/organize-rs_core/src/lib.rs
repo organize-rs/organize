@@ -9,6 +9,7 @@ pub mod locations;
 pub mod parsers;
 pub mod py_config;
 pub mod rules;
+pub mod runner;
 pub mod ser_de;
 pub mod state;
 pub mod tags;
@@ -16,10 +17,10 @@ pub mod tags;
 use crate::{
     error::{OrganizeResult, WalkerErrorKind},
     filters::{
-        FilterApplicationKind, FilterCollection, FilterFilterClosureSliceMut, FilterKind,
-        FilterModeKind,
+        FilterApplicationKind, FilterCollection, FilterFilterClosureSliceMut, FilterGroup,
+        FilterGroupCollection, FilterKind, FilterModeKind, RawFilterApplicationKind,
     },
-    locations::{LocationKind, MaxDepth, TargetKind},
+    locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
 };
 
 use std::{fmt::Display, fs::FileType, ops::Not, path::Path};
@@ -38,6 +39,7 @@ pub struct IterCarry<'it, C: ClientState> {
 #[derive(Debug, Default)]
 pub struct FilteredFileWalker {
     entries: Vec<DirEntry<((), ())>>,
+    conflicts: Vec<DirEntry<((), ())>>,
 }
 
 impl FilteredFileWalker {
@@ -59,27 +61,25 @@ impl FilteredFileWalker {
 
     pub fn get_applicable_items(
         &mut self,
-        locations: Vec<LocationKind>,
-        filters: FilterCollection,
+        locations: LocationCollection,
+        filters: FilterGroupCollection,
     ) {
         // print out filters that will be applied
-        println!("{filters}");
+        println!("{filters:?}");
 
         // extract ignore filters
-        let (mut ignore_filters, other_filters): (Vec<_>, Vec<_>) = filters
-            .decompose()
-            .into_iter()
-            .partition_map(|filter| match filter {
-                (FilterModeKind::None, value) => Either::Left(value),
-                other => Either::Right(other),
+        let (mut ignore_filters, other_filters): (Vec<_>, Vec<_>) =
+            filters.iter().partition_map(|filter| match filter.mode() {
+                FilterModeKind::None => Either::Left(filter),
+                _ => Either::Right(filter),
             });
 
         // split off any / all filters
         let (mut any_filters, mut all_filters): (Vec<_>, Vec<_>) = other_filters
             .into_iter()
-            .partition_map(|filter| match filter {
-                (FilterModeKind::Any, value_any) => Either::Left(value_any),
-                (FilterModeKind::All, value_all) => Either::Right(value_all),
+            .partition_map(|filter| match filter.mode() {
+                FilterModeKind::Any => Either::Left(filter),
+                FilterModeKind::All => Either::Right(filter),
                 _ => unreachable!("There should be no items left in `FilterModeGroupKind::None`!"),
             });
 
@@ -88,8 +88,7 @@ impl FilteredFileWalker {
             &mut ignore_filters,
             &mut any_filters,
             &mut all_filters,
-        )
-        .collect_vec();
+        );
     }
 
     fn populate_entries<A>(
@@ -148,33 +147,43 @@ impl FilteredFileWalker {
             .collect_vec()
     }
 
-    fn filter_applies(
-        filter: &FilterApplicationKind<FilterKind>,
+    fn filter_group_applies(
+        filter_group: &FilterGroup<Vec<FilterKind>>,
         entry: &DirEntry<((), ())>,
     ) -> bool {
-        match filter {
-            FilterApplicationKind::Apply(filt) => filt.get_filter()(entry),
-            FilterApplicationKind::Invert(inv_filt) => inv_filt.get_filter()(entry).not(),
+        let (matched, not_matched): (Vec<bool>, Vec<bool>) = filter_group
+            .filters()
+            .iter()
+            .map(|single_filter| single_filter.get_filter()(entry))
+            .partition(|f| *f);
+
+        match (filter_group.apply(), filter_group.mode()) {
+            (RawFilterApplicationKind::Invert, FilterModeKind::All)
+            | (RawFilterApplicationKind::Apply, FilterModeKind::All) => not_matched.is_empty(),
+            (RawFilterApplicationKind::Invert, FilterModeKind::Any)
+            | (RawFilterApplicationKind::Apply, FilterModeKind::Any) => !matched.is_empty(),
+            (RawFilterApplicationKind::Invert, FilterModeKind::None)
+            | (RawFilterApplicationKind::Apply, FilterModeKind::None) => matched.is_empty(),
         }
     }
 
     fn get_filtered_iterator<'a>(
-        locations: Vec<LocationKind>,
-        ignore_filters: &'a mut [FilterApplicationKind<FilterKind>],
-        any_filters: &'a mut [FilterApplicationKind<FilterKind>],
-        all_filters: &'a mut [FilterApplicationKind<FilterKind>],
-    ) -> impl Iterator<Item = DirEntry<((), ())>> + 'a {
+        locations: LocationCollection,
+        ignore_filters: &'a mut [&FilterGroup<Vec<FilterKind>>],
+        any_filters: &'a mut [&FilterGroup<Vec<FilterKind>>],
+        all_filters: &'a mut [&FilterGroup<Vec<FilterKind>>],
+    ) -> Vec<DirEntry<((), ())>> {
         locations
-            .into_iter()
+            .iter()
             .unique()
             .map(|location| match location {
                 LocationKind::RecursiveWithMaxDepth {
                     path,
                     max_depth,
                     target,
-                } => Self::populate_entries(path, max_depth, target),
+                } => Self::populate_entries(path, *max_depth, *target),
                 LocationKind::NonRecursive { path, target } => {
-                    Self::populate_entries(path, None, target)
+                    Self::populate_entries(path, None, *target)
                 }
                 LocationKind::BarePath(path) => {
                     Self::populate_entries(path, None, TargetKind::default())
@@ -187,7 +196,7 @@ impl FilteredFileWalker {
                 ignore_filters
                     .iter()
                     // .inspect(|f| println!("Applying ignore filter: {f}"))
-                    .map(|filter| Self::filter_applies(filter, &entry))
+                    .map(|filter| Self::filter_group_applies(filter, &entry))
                     .all(|f| matches!(f, false))
                     .then_some(entry)
             })
@@ -195,7 +204,7 @@ impl FilteredFileWalker {
                 any_filters
                     .iter()
                     // .inspect(|f| println!("Applying filter: {f}"))
-                    .map(|filter| Self::filter_applies(filter, &entry))
+                    .map(|filter| Self::filter_group_applies(filter, &entry))
                     .any(|f| matches!(f, true))
                     .then_some(entry)
             })
@@ -203,10 +212,11 @@ impl FilteredFileWalker {
                 all_filters
                     .iter()
                     // .inspect(|f| println!("Applying filter: {f}"))
-                    .map(|filter| Self::filter_applies(filter, &entry))
+                    .map(|filter| Self::filter_group_applies(filter, &entry))
                     .all(|f| matches!(f, true))
                     .then_some(entry)
             })
+            .collect_vec()
     }
 }
 

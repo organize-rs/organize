@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 /// Organize Configuration
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(deny_unknown_fields)]
-pub struct OrganizeConfig {
+pub struct OrganizeAppConfig {
     aliases: Vec<Reference>,
     rules: Vec<Rule>,
 }

@@ -13,6 +13,12 @@ use displaydoc::Display;
 #[serde(transparent)]
 pub struct LocationCollection(Vec<LocationKind>);
 
+impl LocationCollection {
+    pub fn from_vec(vec: Vec<LocationKind>) -> Self {
+        Self(vec)
+    }
+}
+
 impl std::ops::DerefMut for LocationCollection {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
@@ -105,7 +111,7 @@ impl Default for MaxDepth {
 /// [`OrganizeLocation] contains the directories and files
 /// organize should include in the entry discovery
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
-#[serde(untagged)]
+// #[serde(untagged)]
 pub enum LocationKind {
     /// Non-recursive discovery of directory entries
     NonRecursive {

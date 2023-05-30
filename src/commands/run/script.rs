@@ -15,12 +15,12 @@ use crate::scripting::add;
 #[derive(Command, Debug, Parser)]
 pub struct RunScriptCmd {
     /// path to a *.rhai script file containing organize rules
-    script_path: PathBuf,
+    path: PathBuf,
 }
 
 impl Runnable for RunScriptCmd {
     fn run(&self) {
-        match start_scripting_engine(&self.script_path) {
+        match start_scripting_engine(&self.path) {
             Ok(_) => {}
             Err(err) => {
                 status_err!("failed to execute script: {}", err);

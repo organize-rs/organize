@@ -72,8 +72,6 @@
 
 ## Actions
 
-- Check: <https://github.com/Byron/jwalk/blob/main/tests/util/mod.rs> for impl details
-
 ### Actions impl
 
 - [ ] Trash

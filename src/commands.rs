@@ -12,7 +12,7 @@ use crate::{
         action::ActionCmd, check::CheckCmd, docs::DocsCmd, filter::FilterCmd,
         generate::GenerateCmd, run::RunCmd,
     },
-    config::OrganizeConfig,
+    config::OrganizeAppConfig,
 };
 use abscissa_core::{Command, Configurable, FrameworkError, Runnable};
 use clap::{self, Subcommand};
@@ -98,7 +98,7 @@ impl Runnable for EntryPoint {
 }
 
 /// This trait allows you to define how application configuration is loaded.
-impl Configurable<OrganizeConfig> for EntryPoint {
+impl Configurable<OrganizeAppConfig> for EntryPoint {
     /// Location of the configuration file
     fn config_path(&self) -> Option<PathBuf> {
         // Check if the config file exists, and if it does not, ignore it.
@@ -123,7 +123,10 @@ impl Configurable<OrganizeConfig> for EntryPoint {
     ///
     /// This can be safely deleted if you don't want to override config
     /// settings from command-line options.
-    fn process_config(&self, config: OrganizeConfig) -> Result<OrganizeConfig, FrameworkError> {
+    fn process_config(
+        &self,
+        config: OrganizeAppConfig,
+    ) -> Result<OrganizeAppConfig, FrameworkError> {
         // match &self.cmd {
         // OrganizeCmd::Reveal(cmd) => cmd.override_config(config),
         //

@@ -45,13 +45,8 @@ impl Runnable for CheckCmd {
 
 impl Runnable for CheckConfigCmd {
     fn run(&self) {
-        let reader =
-            read_to_string(self.path.as_path()).expect("reading the file contents should succeed.");
-        let _data = ron::de::from_str::<OrganizeConfig>(reader.as_str())
-            .expect("parsing ron value should succeed.");
-
-        // println!("{config:?}");
-        todo!()
+        let config = OrganizeConfig::load_from_file(&self.path);
+        println!("{config}");
     }
 }
 

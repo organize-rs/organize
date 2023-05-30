@@ -1,6 +1,6 @@
 //! Organize Abscissa Application
 
-use crate::{commands::EntryPoint, config::OrganizeConfig};
+use crate::{commands::EntryPoint, config::OrganizeAppConfig};
 use abscissa_core::{
     application::{self, AppCell},
     config::{self, CfgCell},
@@ -14,7 +14,7 @@ pub static ORGANIZE_APP: AppCell<OrganizeApp> = AppCell::new();
 #[derive(Debug)]
 pub struct OrganizeApp {
     /// Application configuration.
-    config: CfgCell<OrganizeConfig>,
+    config: CfgCell<OrganizeAppConfig>,
 
     /// Application state.
     state: application::State<Self>,
@@ -38,13 +38,13 @@ impl Application for OrganizeApp {
     type Cmd = EntryPoint;
 
     /// Application configuration.
-    type Cfg = OrganizeConfig;
+    type Cfg = OrganizeAppConfig;
 
     /// Paths to resources within the application.
     type Paths = StandardPaths;
 
     /// Accessor for application configuration.
-    fn config(&self) -> config::Reader<OrganizeConfig> {
+    fn config(&self) -> config::Reader<OrganizeAppConfig> {
         self.config.read()
     }
 

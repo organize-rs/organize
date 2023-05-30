@@ -417,22 +417,12 @@ impl<T> FilterApplicationKind<T> {
     }
 }
 
-impl<T> FilterGroup<T> {
-    pub fn new(apply: RawFilterApplicationKind, mode: FilterModeKind, filters: T) -> Self {
-        Self {
-            apply,
-            mode,
-            filters,
-        }
-    }
-}
-
 impl FilterCollection {
     pub fn new() -> Self {
         Self::default()
     }
 
-    pub fn with_vec(
+    pub fn from_vec(
         filter_collection: Vec<(FilterModeKind, FilterApplicationKind<FilterKind>)>,
     ) -> Self {
         Self(filter_collection)
@@ -504,5 +494,41 @@ impl DuplicateKind {
     #[must_use]
     pub fn is_last_modified(&self) -> bool {
         matches!(self, Self::LastModified)
+    }
+}
+
+impl FilterGroup<Vec<FilterKind>> {
+    pub fn set_mode(&mut self, mode: FilterModeKind) {
+        self.mode = mode;
+    }
+
+    pub fn set_apply(&mut self, apply: RawFilterApplicationKind) {
+        self.apply = apply;
+    }
+
+    pub fn set_filters(&mut self, filters: Vec<FilterKind>) {
+        self.filters = filters;
+    }
+}
+
+impl<T> FilterGroup<T> {
+    pub fn new(apply: RawFilterApplicationKind, mode: FilterModeKind, filters: T) -> Self {
+        Self {
+            apply,
+            mode,
+            filters,
+        }
+    }
+
+    pub fn apply(&self) -> RawFilterApplicationKind {
+        self.apply
+    }
+
+    pub fn mode(&self) -> FilterModeKind {
+        self.mode
+    }
+
+    pub fn filters(&self) -> &T {
+        &self.filters
     }
 }

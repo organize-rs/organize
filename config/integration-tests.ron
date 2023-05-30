@@ -8,7 +8,7 @@
             ],
             enabled: false,
             locations: [
-                (
+                RecursiveWithMaxDepth(
                     path: "tests\\fixtures\\empty_file",
                     max_depth: (1),
                     target: Files,
@@ -35,7 +35,7 @@
             ],
             enabled: false,
             locations: [
-                (
+                RecursiveWithMaxDepth(
                     path: "tests\\fixtures\\empty_folder",
                     max_depth: (1),
                     target: Directories,

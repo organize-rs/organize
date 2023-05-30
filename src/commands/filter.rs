@@ -7,9 +7,10 @@ use clap::Args;
 use itertools::Itertools;
 use organize_rs_core::{
     filters::{
-        FilterApplicationKind, FilterCollection, FilterKind, FilterModeKind, RecursiveFilterArgs,
+        FilterApplicationKind, FilterCollection, FilterGroup, FilterGroupCollection, FilterKind,
+        FilterModeKind, RawFilterApplicationKind, RecursiveFilterArgs,
     },
-    locations::{LocationKind, MaxDepth, TargetKind},
+    locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
     FilteredFileWalker,
 };
 
@@ -52,35 +53,41 @@ pub struct LocationOpts {
 
 impl Runnable for FilterCmd {
     fn run(&self) {
-        let mut filter_collection = FilterCollection::with_vec(vec![(
+        let filter_group0 = FilterGroup::new(
+            RawFilterApplicationKind::Apply,
             self.filter_mode,
-            FilterApplicationKind::Apply(self.filters.clone()),
-        )]);
+            vec![self.filters.clone()],
+        );
+
+        let mut filters = vec![];
 
         if let Some(ignore_names) = self.ignore_name.clone() {
-            filter_collection.push((
-                FilterModeKind::None,
-                FilterApplicationKind::Apply(FilterKind::IgnoreName {
-                    in_name: ignore_names,
-                }),
-            ));
+            filters.push(FilterKind::IgnoreName {
+                in_name: ignore_names,
+            });
         };
 
         if let Some(ignore_paths) = self.ignore_path.clone() {
-            filter_collection.push((
-                FilterModeKind::None,
-                FilterApplicationKind::Apply(FilterKind::IgnorePath {
-                    in_path: ignore_paths,
-                }),
-            ));
+            filters.push(FilterKind::IgnorePath {
+                in_path: ignore_paths,
+            });
         };
 
-        self.inner_run(filter_collection);
+        let filter_group1 = FilterGroup::new(
+            RawFilterApplicationKind::Apply,
+            FilterModeKind::None,
+            filters,
+        );
+
+        let filter_group_collection =
+            FilterGroupCollection::from_vec(vec![filter_group0, filter_group1]);
+
+        self.inner_run(filter_group_collection);
     }
 }
 
 impl FilterCmd {
-    fn inner_run(&self, filters: FilterCollection) {
+    fn inner_run(&self, filters: FilterGroupCollection) {
         let mut filter_walker = FilteredFileWalker::new();
 
         // Convert to OrganizeLocation
@@ -103,7 +110,9 @@ impl FilterCmd {
             // .inspect(|f| println!("Got the following locations: {f}"))
             .collect_vec();
 
-        filter_walker.get_applicable_items(locations, filters);
+        let location_collection = LocationCollection::from_vec(locations);
+
+        filter_walker.get_applicable_items(location_collection, filters);
 
         filter_walker.print_entries();
 

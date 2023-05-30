@@ -108,6 +108,26 @@ impl Rule {
     pub fn builder() -> RuleBuilder {
         RuleBuilder::default()
     }
+
+    pub fn locations(&self) -> LocationCollection {
+        self.locations.clone()
+    }
+
+    pub fn tags(&self) -> TagCollection {
+        self.tags.clone()
+    }
+
+    pub fn filters(&self) -> FilterGroupCollection {
+        self.filters.clone()
+    }
+
+    pub fn actions(&self) -> ActionApplicationCollection {
+        self.actions.clone()
+    }
+
+    pub fn enabled(&self) -> bool {
+        self.enabled
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]

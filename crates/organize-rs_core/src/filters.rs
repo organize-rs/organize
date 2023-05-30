@@ -31,6 +31,12 @@ pub enum CullKind {
 #[serde(transparent)]
 pub struct FilterGroupCollection(Vec<FilterGroup<Vec<FilterKind>>>);
 
+impl FilterGroupCollection {
+    pub fn from_vec(vec: Vec<FilterGroup<Vec<FilterKind>>>) -> Self {
+        Self(vec)
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct FilterCollection(Vec<(FilterModeKind, FilterApplicationKind<FilterKind>)>);
 
