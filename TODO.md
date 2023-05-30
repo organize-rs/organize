@@ -13,6 +13,11 @@ to generate copy & pastable output for config /rules
 
 ## Features
 
+1. implement file name templating
+
+- e.g. with <https://lib.rs/crates/tinytemplate> or <https://lib.rs/crates/handlebars>
+- or bare with `.replace` and own placeholders like `{{file_name}}`, `{{counter}}` etc.
+
 1. implement Terminal UI
     - generate config interactively `generate config --interactive`
     - <https://crates.io/crates/ratatui/0.20.1> + <https://crates.io/crates/tui-react>
