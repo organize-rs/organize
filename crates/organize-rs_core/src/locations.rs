@@ -75,6 +75,7 @@ impl TargetKind {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Copy, PartialEq, Eq, Hash)]
+#[serde(transparent)]
 pub struct MaxDepth(pub(crate) u64);
 
 impl Display for MaxDepth {
