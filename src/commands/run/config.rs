@@ -19,10 +19,9 @@ pub struct RunConfigCmd {
 
 impl RunConfigCmd {
     fn inner_run(&self) -> Result<()> {
-        let config = OrganizeConfig::load_from_file(&self.path);
-
-        let runner = Runner::<Init>::load(config);
-
+        let runner = Runner::<Init>::load_config(&self.path);
+        let runner = runner.run();
+        runner.print_entries();
         Ok(())
     }
 }

@@ -90,7 +90,7 @@ pub fn empty_file_rule() -> Rule {
         })
         .action(ActionApplicationKind::Preview(ActionKind::Trash))
         .location(LocationKind::RecursiveWithMaxDepth {
-            path: r"tests\fixtures\empty_file".into(),
+            path: r"crates\organize-rs_core\tests\fixtures\filters\empty_file".into(),
             target: TargetKind::Files,
             max_depth: MaxDepth::new(1),
         })
@@ -108,7 +108,7 @@ pub fn empty_folder_rule() -> Rule {
         })
         .action(ActionApplicationKind::Preview(ActionKind::Trash))
         .location(LocationKind::RecursiveWithMaxDepth {
-            path: r"tests\fixtures\empty_folder".into(),
+            path: r"crates\organize-rs_core\tests\fixtures\filters\empty_folder".into(),
             target: TargetKind::Directories,
             max_depth: MaxDepth::new(1),
         })

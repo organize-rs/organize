@@ -35,7 +35,6 @@ pub struct IterCarry<'it, C: ClientState> {
 #[derive(Debug, Default)]
 pub struct FilteredFileWalker {
     entries: Vec<DirEntry<((), ())>>,
-    conflicts: Vec<DirEntry<((), ())>>,
 }
 
 impl FilteredFileWalker {
@@ -62,9 +61,6 @@ impl FilteredFileWalker {
         locations: LocationCollection,
         filters: FilterGroupCollection,
     ) {
-        // print out filters that will be applied
-        println!("{filters:?}");
-
         // extract ignore filters
         let (mut ignore_filters, other_filters): (Vec<_>, Vec<_>) =
             filters.iter().partition_map(|filter| match filter.mode() {
@@ -81,7 +77,7 @@ impl FilteredFileWalker {
                 _ => unreachable!("There should be no items left in `FilterModeGroupKind::None`!"),
             });
 
-        self.entries = Self::get_filtered_iterator(
+        self.entries = Self::get_filtered_entries(
             locations,
             &mut ignore_filters,
             &mut any_filters,
@@ -103,12 +99,12 @@ impl FilteredFileWalker {
             Self::MAX_DEPTH
         };
 
-        println!("We are getting entries ...");
+        // TODO: Initialize indicatif progress bar
 
         let files = WalkDir::new(path)
             .max_depth(depth)
             .into_iter()
-            .filter_map(|f| f.ok())
+            .flat_map(|f| f.ok())
             .filter(|f| match targets {
                 TargetKind::Directories => FileType::is_dir(&f.file_type()),
                 TargetKind::Files => FileType::is_file(&f.file_type()),
@@ -118,16 +114,6 @@ impl FilteredFileWalker {
 
         Ok(files)
     }
-
-    // pub fn apply_single_filter(
-    //     entries: &DirEntry,
-    //     mut filter: Box<dyn FnMut(&DirEntry) -> bool>,
-    // ) -> Vec<DirEntry> {
-    //     entries
-    //         .into_iter()
-    //         .filter_map(|f| filter(&f).then_some(f))
-    //         .collect_vec()
-    // }
 
     pub fn apply_filters(
         entries: Vec<DirEntry<((), ())>>,
@@ -165,7 +151,7 @@ impl FilteredFileWalker {
         }
     }
 
-    fn get_filtered_iterator<'a>(
+    fn get_filtered_entries<'a>(
         locations: LocationCollection,
         ignore_filters: &'a mut [&FilterGroup<Vec<FilterKind>>],
         any_filters: &'a mut [&FilterGroup<Vec<FilterKind>>],
@@ -189,30 +175,42 @@ impl FilteredFileWalker {
             })
             // .inspect(|f| println!("filter matched: {f:?}"))
             .flatten_ok()
-            .filter_map(std::result::Result::ok)
-            .filter_map(|entry| {
-                ignore_filters
-                    .iter()
-                    // .inspect(|f| println!("Applying ignore filter: {f}"))
-                    .map(|filter| Self::filter_group_applies(filter, &entry))
-                    .all(|f| matches!(f, false))
-                    .then_some(entry)
+            .flat_map(std::result::Result::ok)
+            .flat_map(|entry| {
+                if !ignore_filters.is_empty() {
+                    ignore_filters
+                        .iter()
+                        // .inspect(|f| println!("Applying ignore filter: {f}"))
+                        .map(|filter| Self::filter_group_applies(filter, &entry))
+                        .all(|f| matches!(f, false))
+                        .then_some(entry)
+                } else {
+                    Some(entry)
+                }
             })
-            .filter_map(|entry| {
-                any_filters
-                    .iter()
-                    // .inspect(|f| println!("Applying filter: {f}"))
-                    .map(|filter| Self::filter_group_applies(filter, &entry))
-                    .any(|f| matches!(f, true))
-                    .then_some(entry)
+            .flat_map(|entry| {
+                if !all_filters.is_empty() {
+                    all_filters
+                        .iter()
+                        // .inspect(|f| println!("Applying filter: {f}"))
+                        .map(|filter| Self::filter_group_applies(filter, &entry))
+                        .all(|f| matches!(f, true))
+                        .then_some(entry)
+                } else {
+                    Some(entry)
+                }
             })
-            .filter_map(|entry| {
-                all_filters
-                    .iter()
-                    // .inspect(|f| println!("Applying filter: {f}"))
-                    .map(|filter| Self::filter_group_applies(filter, &entry))
-                    .all(|f| matches!(f, true))
-                    .then_some(entry)
+            .flat_map(|entry| {
+                if !any_filters.is_empty() {
+                    any_filters
+                        .iter()
+                        // .inspect(|f| println!("Applying filter: {f}"))
+                        .map(|filter| Self::filter_group_applies(filter, &entry))
+                        .any(|f| matches!(f, true))
+                        .then_some(entry)
+                } else {
+                    Some(entry)
+                }
             })
             .collect_vec()
     }

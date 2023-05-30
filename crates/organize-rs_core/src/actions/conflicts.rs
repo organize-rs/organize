@@ -14,6 +14,8 @@ pub enum OnConflictKind {
     KeepNewer,
     /// Keep the oldest item
     KeepOlder,
+    /// Move the item to a folder for further inspection
+    MoveToFolder,
     /// Overwrite the item
     Overwrite,
     /// Overwrite the item if it is empty
@@ -28,8 +30,6 @@ pub enum OnConflictKind {
     Smallest,
     /// Move the item to trash
     Trash,
-    /// Move the item to a folder for further inspection
-    MoveToFolder,
 }
 
 impl OnConflictKind {
