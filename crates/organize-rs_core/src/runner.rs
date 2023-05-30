@@ -4,7 +4,7 @@ use crate::{
     concurrency::OffThreadExt,
     config::OrganizeConfig,
     rules::{self, Rule},
-    state::{EntriesCollected, Init, ProcessingState, Start},
+    state::{HandleConflicts, Init, Inspect, ProcessingState, Start},
     FilteredFileWalker,
 };
 
@@ -28,7 +28,7 @@ impl Runner<Init> {
 }
 
 impl Runner<Start> {
-    pub fn run(self) -> Runner<EntriesCollected> {
+    pub fn apply_filters(self) -> Runner<Inspect> {
         let mut entries = vec![];
         self.config.rules().iter().for_each(|rule| {
             if rule.enabled() {
@@ -40,15 +40,26 @@ impl Runner<Start> {
             }
         });
 
-        Runner::<EntriesCollected> {
+        Runner::<Inspect> {
             config: self.config,
-            extra: EntriesCollected::with_entries(entries),
+            extra: Inspect::with_entries(entries),
         }
     }
 }
 
-impl Runner<EntriesCollected> {
-    pub fn print_entries(&self) {
+impl Runner<Inspect> {
+    pub fn advance(self) -> Runner<HandleConflicts> {
+        let entries = self.extra.entries();
+
+        Runner::<HandleConflicts> {
+            config: self.config,
+            extra: HandleConflicts::with_entries(entries),
+        }
+    }
+
+    pub fn preview_entries(&self) {
         self.extra.print_entries();
     }
 }
+
+impl Runner<HandleConflicts> {}

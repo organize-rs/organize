@@ -20,8 +20,11 @@ pub struct RunConfigCmd {
 impl RunConfigCmd {
     fn inner_run(&self) -> Result<()> {
         let runner = Runner::<Init>::load_config(&self.path);
-        let runner = runner.run();
-        runner.print_entries();
+        let runner = runner.apply_filters();
+        runner.preview_entries();
+        let runner = runner.advance();
+        // let runner: Runner<AskConfirmation> = runner.get_confirmation();
+        // let runner: Runner<ApplyActions> = runner.apply_actions();
         Ok(())
     }
 }

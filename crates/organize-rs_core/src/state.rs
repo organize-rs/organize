@@ -13,11 +13,11 @@ pub struct Init;
 pub struct Start;
 
 #[derive(Debug, Default)]
-pub struct EntriesCollected {
+pub struct Inspect {
     entries: Vec<(Rule, FilteredFileWalker)>,
 }
 
-impl EntriesCollected {
+impl Inspect {
     pub fn with_entries(entries: Vec<(Rule, FilteredFileWalker)>) -> Self {
         Self { entries }
     }
@@ -28,23 +28,46 @@ impl EntriesCollected {
             println!("Rule: {rule}");
         })
     }
+
+    pub fn entries(self) -> Vec<(Rule, FilteredFileWalker)> {
+        self.entries
+    }
 }
 
 #[derive(Debug, Default)]
-pub struct ConflictHandling {
+pub struct HandleConflicts {
     entries: Vec<(Rule, FilteredFileWalker)>,
     conflicts: Vec<DirEntry<((), ())>>,
 }
+
+impl HandleConflicts {
+    pub fn with_entries(entries: Vec<(Rule, FilteredFileWalker)>) -> Self {
+        Self {
+            entries,
+            conflicts: vec![],
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct AskConfirmation;
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct Preview;
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct ApplyActions;
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct Report;
 
 pub trait ProcessingState {}
 
 impl ProcessingState for Init {}
 impl ProcessingState for Start {}
-impl ProcessingState for EntriesCollected {}
-impl ProcessingState for ConflictHandling {}
-
-// Flux architecture
-// User action
-// Dispatcher
-// Store
-// View
+impl ProcessingState for Inspect {}
+impl ProcessingState for HandleConflicts {}
+impl ProcessingState for AskConfirmation {}
+impl ProcessingState for Preview {}
+impl ProcessingState for ApplyActions {}
+impl ProcessingState for Report {}
