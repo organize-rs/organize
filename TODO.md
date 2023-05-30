@@ -2,12 +2,10 @@
 
 ## Next
 
-1. implement unit tests for filters
-1. implement unit tests for actions
+1. implement unit tests for actions and the actions themselves
 1. generate example configs for integration test cases
     - check against py-organize documentation for feature parity
-1. implement `organize run config` for preview
-1. implement destructive run
+1. implement `organize run config` with preview and destructive run
 1. implement `organize filter` / `organize action` in a way it can be used
 to generate copy & pastable output for config /rules
 
@@ -24,6 +22,10 @@ to generate copy & pastable output for config /rules
 
 1. implement scripting
 1. build GUI
+
+## Testing
+
+1. implement unit tests for (new upcoming) filters
 
 ## Config
 
