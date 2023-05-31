@@ -503,7 +503,7 @@ impl FilterGroup<Vec<FilterKind>> {
     }
 
     pub fn set_apply(&mut self, apply: RawFilterApplicationKind) {
-        self.invert = apply;
+        self.exclude = apply;
     }
 
     pub fn set_filters(&mut self, filters: Vec<FilterKind>) {
@@ -514,14 +514,14 @@ impl FilterGroup<Vec<FilterKind>> {
 impl<T> FilterGroup<T> {
     pub fn new(apply: RawFilterApplicationKind, mode: FilterModeKind, filters: T) -> Self {
         Self {
-            invert: apply,
+            exclude: apply,
             mode,
             filters,
         }
     }
 
     pub fn apply(&self) -> RawFilterApplicationKind {
-        self.invert
+        self.exclude
     }
 
     pub fn mode(&self) -> FilterModeKind {

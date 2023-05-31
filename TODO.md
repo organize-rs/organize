@@ -2,6 +2,7 @@
 
 ## Next
 
+1. implement doctests for filters (so the yaml syntax is clear)
 1. implement unit tests for actions and the actions themselves
 1. generate example configs for integration test cases
     - check against py-organize documentation for feature parity

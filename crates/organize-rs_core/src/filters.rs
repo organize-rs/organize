@@ -58,15 +58,15 @@ pub enum FilterApplicationKind<T> {
 pub enum RawFilterApplicationKind {
     /// Invert
     #[serde(rename = "yes")]
-    Invert,
+    Exclude,
     /// Apply
     #[serde(rename = "no")]
-    Apply,
+    Include,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub struct FilterGroup<T> {
-    pub invert: RawFilterApplicationKind,
+    pub exclude: RawFilterApplicationKind,
     pub mode: FilterModeKind,
     pub filters: T,
 }

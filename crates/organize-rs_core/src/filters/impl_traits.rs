@@ -258,7 +258,7 @@ impl std::ops::Deref for FilterCollection {
 impl<T: Default> Default for FilterGroup<T> {
     fn default() -> Self {
         Self {
-            invert: RawFilterApplicationKind::default(),
+            exclude: RawFilterApplicationKind::default(),
             mode: FilterModeKind::default(),
             filters: T::default(),
         }
@@ -267,7 +267,7 @@ impl<T: Default> Default for FilterGroup<T> {
 
 impl Default for RawFilterApplicationKind {
     fn default() -> Self {
-        Self::Apply
+        Self::Include
     }
 }
 

@@ -142,12 +142,12 @@ impl FilteredFileWalker {
             .partition(|f| *f);
 
         match (filter_group.apply(), filter_group.mode()) {
-            (RawFilterApplicationKind::Invert, FilterModeKind::All)
-            | (RawFilterApplicationKind::Apply, FilterModeKind::All) => not_matched.is_empty(),
-            (RawFilterApplicationKind::Invert, FilterModeKind::Any)
-            | (RawFilterApplicationKind::Apply, FilterModeKind::Any) => !matched.is_empty(),
-            (RawFilterApplicationKind::Invert, FilterModeKind::None)
-            | (RawFilterApplicationKind::Apply, FilterModeKind::None) => matched.is_empty(),
+            (RawFilterApplicationKind::Exclude, FilterModeKind::All)
+            | (RawFilterApplicationKind::Include, FilterModeKind::All) => not_matched.is_empty(),
+            (RawFilterApplicationKind::Exclude, FilterModeKind::Any)
+            | (RawFilterApplicationKind::Include, FilterModeKind::Any) => !matched.is_empty(),
+            (RawFilterApplicationKind::Exclude, FilterModeKind::None)
+            | (RawFilterApplicationKind::Include, FilterModeKind::None) => matched.is_empty(),
         }
     }
 

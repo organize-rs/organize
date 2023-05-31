@@ -232,7 +232,7 @@ pub fn empty_file_rule() -> Rule {
     Rule::builder()
         .name("Empty File")
         .filter_group(FilterGroup {
-            invert: RawFilterApplicationKind::Apply,
+            exclude: RawFilterApplicationKind::Include,
             mode: FilterModeKind::All,
             filters: vec![FilterKind::Empty],
         })
@@ -250,7 +250,7 @@ pub fn empty_folder_rule() -> Rule {
     Rule::builder()
         .name("Empty Directory")
         .filter_group(FilterGroup {
-            invert: RawFilterApplicationKind::Apply,
+            exclude: RawFilterApplicationKind::Include,
             mode: FilterModeKind::All,
             filters: vec![FilterKind::Empty],
         })
@@ -268,7 +268,7 @@ pub fn pdf_on_desktop_rule() -> Rule {
     Rule::builder()
         .name("PDFs on Desktop")
         .filter_group(FilterGroup {
-            invert: RawFilterApplicationKind::Apply,
+            exclude: RawFilterApplicationKind::Include,
             mode: FilterModeKind::All,
             filters: vec![FilterKind::Extension {
                 exts: vec![String::from("pdf")],

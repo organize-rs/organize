@@ -54,7 +54,7 @@ pub struct LocationOpts {
 impl Runnable for FilterCmd {
     fn run(&self) {
         let filter_group0 = FilterGroup::new(
-            RawFilterApplicationKind::Apply,
+            RawFilterApplicationKind::Include,
             self.filter_mode,
             vec![self.filters.clone()],
         );
@@ -74,7 +74,7 @@ impl Runnable for FilterCmd {
         };
 
         let filter_group1 = FilterGroup::new(
-            RawFilterApplicationKind::Apply,
+            RawFilterApplicationKind::Include,
             FilterModeKind::None,
             filters,
         );
