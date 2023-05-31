@@ -16,7 +16,7 @@ use displaydoc::Display;
 use jwalk::DirEntry;
 use serde::{Deserialize, Serialize};
 
-use crate::{error::OrganizeError, actions::conflicts::OnConflictKind};
+use crate::{actions::conflicts::OnConflictKind, error::OrganizeError};
 
 type ActionClosure<'a, C> =
     Box<dyn FnMut(&DirEntry<C>, bool) -> Result<ActionResultKind, OrganizeError> + 'a>;
@@ -57,8 +57,10 @@ impl std::ops::Deref for ActionApplicationCollection {
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub enum ActionApplicationKind {
     /// Dry run, as in preview an action
+    #[serde(rename = "preview")]
     Preview(ActionKind),
     /// Execute action destructively
+    #[serde(rename = "destructive")]
     Destructive(ActionKind),
 }
 
@@ -473,6 +475,7 @@ pub enum ActionKind {
         filesystem: Option<String>,
     },
     /// Do nothing
+    #[serde(rename = "do_nothing")]
     NoAction,
     /// Rename a file
     ///

@@ -161,7 +161,7 @@ impl Display for FilterKind {
                 "
                 )
             }
-            FilterKind::Filecontent { regex } => {
+            FilterKind::FileContent { regex } => {
                 write!(
                     f,
                     "
@@ -258,7 +258,7 @@ impl std::ops::Deref for FilterCollection {
 impl<T: Default> Default for FilterGroup<T> {
     fn default() -> Self {
         Self {
-            apply: RawFilterApplicationKind::default(),
+            invert: RawFilterApplicationKind::default(),
             mode: FilterModeKind::default(),
             filters: T::default(),
         }

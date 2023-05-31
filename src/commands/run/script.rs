@@ -15,6 +15,7 @@ use crate::scripting::add;
 #[derive(Command, Debug, Parser)]
 pub struct RunScriptCmd {
     /// path to a *.rhai script file containing organize rules
+    #[arg(long)]
     path: PathBuf,
 }
 

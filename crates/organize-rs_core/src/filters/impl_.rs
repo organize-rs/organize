@@ -42,7 +42,7 @@ impl FilterKind {
             FilterKind::Size { range } => self.filter_by_size(range),
             FilterKind::Regex { expr: _ } => todo!("not implemented (yet)!"),
             FilterKind::Exif => todo!("not implemented (yet)!"),
-            FilterKind::Filecontent { regex: _ } => todo!("not implemented (yet)!"),
+            FilterKind::FileContent { regex: _ } => todo!("not implemented (yet)!"),
             FilterKind::Duplicate {
                 detect_original_by: _,
                 reverse: _,
@@ -503,7 +503,7 @@ impl FilterGroup<Vec<FilterKind>> {
     }
 
     pub fn set_apply(&mut self, apply: RawFilterApplicationKind) {
-        self.apply = apply;
+        self.invert = apply;
     }
 
     pub fn set_filters(&mut self, filters: Vec<FilterKind>) {
@@ -514,14 +514,14 @@ impl FilterGroup<Vec<FilterKind>> {
 impl<T> FilterGroup<T> {
     pub fn new(apply: RawFilterApplicationKind, mode: FilterModeKind, filters: T) -> Self {
         Self {
-            apply,
+            invert: apply,
             mode,
             filters,
         }
     }
 
     pub fn apply(&self) -> RawFilterApplicationKind {
-        self.apply
+        self.invert
     }
 
     pub fn mode(&self) -> FilterModeKind {

@@ -5,15 +5,16 @@ use std::path::PathBuf;
 use abscissa_core::{status_err, Application, Command, Runnable};
 
 use anyhow::Result;
-use clap::Parser;
+use clap::{Args, Parser};
 use organize_rs_core::{config::OrganizeConfig, runner::Runner, state::Init};
 
 use crate::application::ORGANIZE_APP;
 
 /// Run a *.ron config with organize
-#[derive(Command, Debug, Parser)]
+#[derive(Command, Debug, Args)]
 pub struct RunConfigCmd {
     /// path to a compatible config file containing organize rules
+    #[arg(long)]
     path: PathBuf,
 }
 
@@ -22,7 +23,7 @@ impl RunConfigCmd {
         let runner = Runner::<Init>::load_config(&self.path);
         let runner = runner.apply_filters();
         runner.preview_entries();
-        let runner = runner.advance();
+        // let runner = runner.advance();
         // let runner: Runner<AskConfirmation> = runner.get_confirmation();
         // let runner: Runner<ApplyActions> = runner.apply_actions();
         Ok(())

@@ -53,14 +53,16 @@ pub enum FilterApplicationKind<T> {
 #[derive(Debug, Clone, Deserialize, Serialize, Display, Copy)]
 pub enum RawFilterApplicationKind {
     /// Invert
+    #[serde(rename = "yes")]
     Invert,
     /// Apply
+    #[serde(rename = "no")]
     Apply,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub struct FilterGroup<T> {
-    pub apply: RawFilterApplicationKind,
+    pub invert: RawFilterApplicationKind,
     pub mode: FilterModeKind,
     pub filters: T,
 }
@@ -75,10 +77,13 @@ pub struct FilterGroup<T> {
 #[non_exhaustive]
 pub enum FilterModeKind {
     /// All of the filters need to apply
+    #[serde(rename = "must_apply")]
     All,
     /// Any of the filters need to apply
+    #[serde(rename = "can_apply")]
     Any,
     /// None of the filters need to apply
+    #[serde(rename = "must_not_apply")]
     None,
 }
 
@@ -189,7 +194,7 @@ pub enum FilterKind {
     ///        - echo: "Date added: {date_added.strftime('%Y-%m-%d')}"
     /// ```
     #[cfg(target_os = "osx")]
-    #[serde(rename = "date_added")]
+    #[serde(rename = "added")]
     Added {
         /// This filter uses the `range` syntax (always inclusive) of Rust.
         /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
@@ -208,6 +213,7 @@ pub enum FilterKind {
     /// Careful! All items are returned, meaning in combination with
     /// an action like `Trash` it would move *all* files/folders to
     /// the trash bin.
+    #[serde(rename = "all_items")]
     AllItems {
         #[cfg_attr(feature = "cli", arg(long))]
         i_agree_it_is_dangerous: bool,
@@ -385,8 +391,8 @@ pub enum FilterKind {
     ///     actions:
     ///       - move: "~/Documents/Invoices/{filecontent.customer}/"
     /// ```
-    #[serde(rename = "filecontent")]
-    Filecontent {
+    #[serde(rename = "file_content")]
+    FileContent {
         #[cfg_attr(feature = "cli", arg(long))]
         regex: String,
     },
@@ -417,12 +423,14 @@ pub enum FilterKind {
     #[serde(rename = "hash")]
     Hash,
     /// Defines a string that makes organize skip a location when found in the file name
+    #[serde(rename = "ignore_filename")]
     IgnoreName {
         /// Matches for these Strings in the Filename
         // #[cfg_attr(feature = "cli", arg(long))]
         in_name: Vec<String>,
     },
     /// Defines a string that makes organize skip a location when found in the full path
+    #[serde(rename = "ignore_path")]
     IgnorePath {
         /// Matches for these Strings in the whole Path
         // #[cfg_attr(feature = "cli", arg(long))]
@@ -585,6 +593,7 @@ pub enum FilterKind {
     /// Empty / no items due to the risk otherwise if it's used in
     /// combination with an action, that the action will be applied
     /// to all results.
+    #[serde(rename = "no_items")]
     NoFilter,
     /// Match filenames with the given regular expression
     ///

@@ -3,19 +3,15 @@
 use displaydoc::Display;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Default,
+)]
 #[serde(transparent)]
 pub struct TagCollection(Vec<Tag>);
 
 impl std::ops::DerefMut for TagCollection {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
-    }
-}
-
-impl Default for TagCollection {
-    fn default() -> Self {
-        Self(vec![Tag::default()])
     }
 }
 

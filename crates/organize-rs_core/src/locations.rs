@@ -43,10 +43,13 @@ impl std::ops::Deref for LocationCollection {
 )]
 pub enum TargetKind {
     /// operate on both
+    #[serde(rename = "both")]
     Both,
     /// operate only on directories
+    #[serde(rename = "folders")]
     Directories,
     /// operate only on files
+    #[serde(rename = "files")]
     Files,
 }
 
@@ -115,6 +118,7 @@ impl Default for MaxDepth {
 // #[serde(untagged)]
 pub enum LocationKind {
     /// Non-recursive discovery of directory entries
+    #[serde(rename = "non_recursive")]
     NonRecursive {
         /// path to the location that should be filtered
         path: PathBuf,
@@ -123,6 +127,7 @@ pub enum LocationKind {
         target: TargetKind,
     },
     /// Recursive discovery of directory entries
+    #[serde(rename = "recursive")]
     RecursiveWithMaxDepth {
         /// path to the location that should be filtered
         path: PathBuf,
@@ -133,6 +138,7 @@ pub enum LocationKind {
         target: TargetKind,
     },
     /// Just a bare path, takes default settings
+    #[serde(rename = "default_settings")]
     BarePath(PathBuf),
 }
 

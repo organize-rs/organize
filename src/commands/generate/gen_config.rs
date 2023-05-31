@@ -58,7 +58,11 @@ impl GenConfigCmd {
         let mut config = OrganizeConfig::new();
         let mut rules = Rules::new();
 
-        rules.extend(vec![empty_file_rule(), empty_folder_rule()]);
+        rules.extend(vec![
+            // empty_file_rule(),
+            // empty_folder_rule(),
+            pdf_on_desktop_rule(),
+        ]);
 
         config.add_rules(rules);
 
@@ -84,7 +88,7 @@ pub fn empty_file_rule() -> Rule {
     Rule::builder()
         .name("Empty File")
         .filter(FilterGroup {
-            apply: RawFilterApplicationKind::Apply,
+            invert: RawFilterApplicationKind::Apply,
             mode: FilterModeKind::All,
             filters: vec![FilterKind::Empty],
         })
@@ -102,7 +106,7 @@ pub fn empty_folder_rule() -> Rule {
     Rule::builder()
         .name("Empty Directory")
         .filter(FilterGroup {
-            apply: RawFilterApplicationKind::Apply,
+            invert: RawFilterApplicationKind::Apply,
             mode: FilterModeKind::All,
             filters: vec![FilterKind::Empty],
         })
@@ -113,5 +117,25 @@ pub fn empty_folder_rule() -> Rule {
             max_depth: MaxDepth::new(1),
         })
         .tag(Tag::Custom("Test::EmptyDirectory".to_string()))
+        .build()
+}
+
+pub fn pdf_on_desktop_rule() -> Rule {
+    Rule::builder()
+        .name("PDFs on Desktop")
+        .filter(FilterGroup {
+            invert: RawFilterApplicationKind::Apply,
+            mode: FilterModeKind::All,
+            filters: vec![FilterKind::Extension {
+                exts: vec![String::from("pdf")],
+            }],
+        })
+        .action(ActionApplicationKind::Preview(ActionKind::NoAction))
+        .location(LocationKind::RecursiveWithMaxDepth {
+            path: r"C:\Users\dailyuse\Desktop".into(),
+            target: TargetKind::Directories,
+            max_depth: MaxDepth::new(4),
+        })
+        .tag(Tag::Custom("Documents::PDF".to_string()))
         .build()
 }
