@@ -1,7 +1,5 @@
 //! `gen_config` subcommand
 
-use std::{fs::File, path::PathBuf};
-
 use abscissa_core::{status_err, Application, Command, Runnable, Shutdown};
 use anyhow::{bail, Result};
 use clap::{Args, Parser};
@@ -9,12 +7,18 @@ use dialoguer::Confirm;
 use organize_rs_core::{
     actions::{ActionApplicationKind, ActionKind},
     config::{ConfigFileFormat, OrganizeConfig},
+    error::ConfigErrorKind,
     filters::{FilterGroup, FilterKind, FilterModeKind, RawFilterApplicationKind},
     locations::{LocationKind, MaxDepth, TargetKind},
     rules::{empty_file_rule, empty_folder_rule, pdf_on_desktop_rule, Rule, Rules},
     tags::Tag,
 };
 use ron::ser::PrettyConfig;
+use std::io::Write;
+use std::{
+    fs::File,
+    path::{Path, PathBuf},
+};
 
 use crate::application::ORGANIZE_APP;
 
@@ -38,7 +42,7 @@ pub struct GenConfigOpts {
     #[clap(short, long)]
     interactive: bool,
 
-    /// generate a config interactively
+    /// output template config
     #[clap(short, long)]
     template: bool,
 }
@@ -46,7 +50,13 @@ pub struct GenConfigOpts {
 impl Runnable for GenConfigCmd {
     /// Start the application.
     fn run(&self) {
-        match self.generate_example_config() {
+        let result = if self.config_opts.template {
+            self.generate_config_template_yaml()
+        } else {
+            self.generate_example_config()
+        };
+
+        match result {
             Ok(_) => {}
             Err(err) => {
                 status_err!("{}", err);
@@ -58,8 +68,6 @@ impl Runnable for GenConfigCmd {
 
 impl GenConfigCmd {
     fn generate_example_config(&self) -> Result<()> {
-        // TODO: This should probably just `include_str!` at compile time and output that fully annotated config.
-        // TODO: Change this, when we have integration tests in place.
         let mut config = OrganizeConfig::new();
         let mut rules = Rules::new();
 
@@ -80,6 +88,27 @@ impl GenConfigCmd {
         } else {
             config.write_to_file(&self.path, true)?;
         };
+
+        Ok(())
+    }
+
+    fn generate_config_template_yaml(&self) -> Result<()> {
+        // TODO: Handle in a better way
+        let path = format!("{}{}", self.path.as_path().display(), ".tmpl.yaml");
+
+        if File::open(&path).is_ok() {
+            if Confirm::new().with_prompt("Config file already exists. We will overwrite it, do you have a backup and want to continue?").default(false).interact()? {
+                write!(&mut File::open(&path)?, "{}", crate::config::CONFIG_TEMPLATE_YAML)?;
+            } else {
+                bail!("Config file already exists at:{path}. We will overwrite it, make sure you have a backup and agree in the dialog.");
+            }
+        } else {
+            let mut file = File::create(&path)?;
+            write!(&mut file, "{}", crate::config::CONFIG_TEMPLATE_YAML)?;
+        };
+
+        println!("organize config template has been generated successfully!");
+        println!("You can find the config template here: {path}");
 
         Ok(())
     }

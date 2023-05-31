@@ -116,7 +116,7 @@ impl OrganizeConfig {
 
     pub fn write_to_file(&self, path: impl AsRef<Path>, overwrite: bool) -> OrganizeResult<()> {
         let file = match (File::open(path.as_ref()).is_ok(), overwrite) {
-            (true, true) | (false, true) | (false, false) => File::create(path.as_ref())?,
+            (true | false, true) | (false, false) => File::create(path.as_ref())?,
             (true, false) => {
                 return Err(crate::error::ConfigErrorKind::ConfigFileAlreadyExists(
                     path.as_ref().to_path_buf(),

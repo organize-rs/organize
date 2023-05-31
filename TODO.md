@@ -2,20 +2,26 @@
 
 ## Next
 
+1. [RESEARCH] move target to `FilterGroup`, implications?
+    - need to move filter for `TargetKind` to a later stage?
+1. Fully annotate template config
 1. implement doctests for filters (so the yaml syntax is clear)
-1. implement unit tests for actions and the actions themselves
 1. generate example configs for integration test cases
     - check against py-organize documentation for feature parity
+1. implement unit tests for actions and the actions themselves
 1. implement `organize run config` with preview and destructive run
 1. implement `organize filter` / `organize action` in a way it can be used
-to generate copy & pastable output for config /rules
+to generate copy & pastable output for config->rules->`filter_groups`/`actions`
 
 ## Features
 
 1. implement file name templating
-
-- e.g. with <https://lib.rs/crates/tinytemplate> or <https://lib.rs/crates/handlebars>
-- or bare with `.replace` and own placeholders like `{{file_name}}`, `{{counter}}` etc.
+    - e.g. with <https://lib.rs/crates/tinytemplate> or <https://lib.rs/crates/handlebars>
+    - or bare with `.replace` and own placeholders like `{{file_name}}`, `{{counter}}` etc.
+    - support batch renaming (e.g. rename all images in a directory to image_n where n is a number
+    - remove some prefix from filenames
+      - we want to have filename tags as well e.g. `dnt_` (do not touch) or `wip_` so these things are treated differently
+      - also we want to have `{project_name}_` that we can remove after moving to a project folder
 
 1. implement Terminal UI
     - generate config interactively `generate config --interactive`
@@ -28,10 +34,6 @@ to generate copy & pastable output for config /rules
 
 1. implement unit tests for (new upcoming) filters
 
-## Config
-
-- generate fully commentated example config `generate config --template`
-
 ## De-/Serialisation
 
 1. use <https://docs.rs/serde_with/3.0.0/serde_with/index.html>
@@ -42,14 +44,6 @@ to generate copy & pastable output for config /rules
 - it would be reasonable to have each rule only result in `1` destructive action (e.g. move, trash, delete, rename) so conflicts are already minimized
   - check which actions are parallelizable
   - add confirmation dialog for manual conflict handling  
-
-## Notes
-
-- support batch renaming (e.g. rename all images in a directory to image_n where n is a number
-
-- remove some prefix from filenames
-  - we want to have filename tags as well e.g. `dnt_` (do not touch) or `wip_` so these things are treated differently
-  - also we want to have `{project_name}_` that we can remove after moving to a project folder
 
 ## Filters
 
