@@ -299,85 +299,71 @@ impl FromStr for SizeRange {
 mod tests {
 
     use super::*;
-    use std::ops::Range;
 
     #[test]
     fn parse_left_size_condition_to_range_passes() {
         let condition = "5.0GiB..";
         let range = SizeRange::from_str(condition).unwrap();
-
-        assert_eq!(
-            range.0,
-            Range {
-                start: 5f64 * 1_024f64 * 1_024f64 * 1_024f64,
-                end: SizeRange::MAX
-            }
-        );
+        insta::assert_debug_snapshot!(range, @r###"
+        SizeRange(
+            5368709120.0..4000000000000.0,
+        )
+        "###);
     }
 
     #[test]
     fn parse_right_size_condition_to_range_passes() {
         let condition = "..0.5GiB";
         let range = SizeRange::from_str(condition).unwrap();
-        assert_eq!(
-            range.0,
-            Range {
-                start: SizeRange::MIN,
-                end: 0.5f64 * 1024f64 * 1_024f64 * 1_024f64
-            }
-        );
+        insta::assert_debug_snapshot!(range, @r###"
+        SizeRange(
+            1.0..536870912.0,
+        )
+        "###);
     }
 
     #[test]
     fn parse_whole_size_condition_to_range_passes() {
         let condition = "1.5MiB..100.3MB";
         let range = SizeRange::from_str(condition).unwrap();
-        assert_eq!(
-            range.0,
-            Range {
-                start: 1.5f64 * 1_024f64 * 1_024f64,
-                end: 100.3f64 * 1_000f64 * 1_000f64
-            }
-        );
+        insta::assert_debug_snapshot!(range, @r###"
+        SizeRange(
+            1572864.0..100300000.0,
+        )
+        "###);
     }
 
     #[test]
     fn parse_whole_period_condition_to_range_passes() {
         let condition = "1d..7d";
         let range = PeriodRange::from_str(condition).unwrap();
-        assert_eq!(
-            range.0,
-            Range {
-                start: 1.0f64 * 24f64 * 60f64 * 60f64,
-                end: 7f64 * 24f64 * 60f64 * 60f64
-            }
-        );
+        insta::assert_debug_snapshot!(range, @r###"
+        PeriodRange(
+            86400.0..604800.0,
+        )
+        "###);
     }
 
     #[test]
     fn parse_left_period_condition_to_range_passes() {
         let condition = "1d..";
         let range = PeriodRange::from_str(condition).unwrap();
-        assert_eq!(
-            range.0,
-            Range {
-                start: 1.0f64 * 24f64 * 60f64 * 60f64,
-                end: PeriodRange::MAX
-            }
-        );
+        insta::assert_debug_snapshot!(range, @r###"
+        PeriodRange(
+            86400.0..946700000.0,
+        )
+        "###);
     }
 
     #[test]
     fn parse_right_period_condition_to_range_passes() {
         let condition = "..1d";
         let range = PeriodRange::from_str(condition).unwrap();
-        assert_eq!(
-            range.0,
-            Range {
-                start: PeriodRange::MIN,
-                end: 1.0f64 * 24f64 * 60f64 * 60f64,
-            }
-        );
+        insta::assert_debug_snapshot!(range, @r###"
+        PeriodRange(
+            0.0..86400.0,
+        )
+        "###);
     }
 
     #[test]
@@ -385,13 +371,7 @@ mod tests {
     fn parse_different_units_on_whole_period_condition_to_range_fails() {
         let condition = "1w..7d";
         let range = PeriodRange::from_str(condition).unwrap();
-        assert_eq!(
-            range.0,
-            Range {
-                start: 1.0f64 * 24f64 * 60f64 * 60f64,
-                end: 7f64 * 24f64 * 60f64 * 60f64
-            }
-        );
+        insta::assert_debug_snapshot!(range, @r"");
     }
 
     #[test]
@@ -399,12 +379,6 @@ mod tests {
     fn parse_non_standard_units_on_whole_period_condition_to_range_fails() {
         let condition = "1f..7f";
         let range = PeriodRange::from_str(condition).unwrap();
-        assert_eq!(
-            range.0,
-            Range {
-                start: 1.0f64 * 24f64 * 60f64 * 60f64,
-                end: 7f64 * 24f64 * 60f64 * 60f64
-            }
-        );
+        insta::assert_debug_snapshot!(range, @r"");
     }
 }

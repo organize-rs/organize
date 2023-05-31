@@ -78,3 +78,5 @@ rstest = { workspace = true }
 quickcheck = { workspace = true }
 quickcheck_macros = { workspace = true }
 pretty_assertions = { workspace = true }
+insta = { workspace = true }
+organize-rs_testing = { workspace = true }

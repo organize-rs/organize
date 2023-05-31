@@ -11,7 +11,7 @@ use organize_rs_core::{
     config::{ConfigFileFormat, OrganizeConfig},
     filters::{FilterGroup, FilterKind, FilterModeKind, RawFilterApplicationKind},
     locations::{LocationKind, MaxDepth, TargetKind},
-    rules::{Rule, Rules},
+    rules::{empty_file_rule, empty_folder_rule, pdf_on_desktop_rule, Rule, Rules},
     tags::Tag,
 };
 use ron::ser::PrettyConfig;
@@ -58,6 +58,8 @@ impl Runnable for GenConfigCmd {
 
 impl GenConfigCmd {
     fn generate_example_config(&self) -> Result<()> {
+        // TODO: This should probably just `include_str!` at compile time and output that fully annotated config.
+        // TODO: Change this, when we have integration tests in place.
         let mut config = OrganizeConfig::new();
         let mut rules = Rules::new();
 
@@ -81,60 +83,4 @@ impl GenConfigCmd {
 
         Ok(())
     }
-}
-
-pub fn empty_file_rule() -> Rule {
-    Rule::builder()
-        .name("Empty File")
-        .filter_group(FilterGroup {
-            invert: RawFilterApplicationKind::Apply,
-            mode: FilterModeKind::All,
-            filters: vec![FilterKind::Empty],
-        })
-        .action(ActionApplicationKind::Preview(ActionKind::Trash))
-        .location(LocationKind::RecursiveWithMaxDepth {
-            path: r"crates\organize-rs_core\tests\fixtures\filters\empty_file".into(),
-            target: TargetKind::Files,
-            max_depth: MaxDepth::new(1),
-        })
-        .tag(Tag::Custom("Test::EmptyFile".to_string()))
-        .build()
-}
-
-pub fn empty_folder_rule() -> Rule {
-    Rule::builder()
-        .name("Empty Directory")
-        .filter_group(FilterGroup {
-            invert: RawFilterApplicationKind::Apply,
-            mode: FilterModeKind::All,
-            filters: vec![FilterKind::Empty],
-        })
-        .action(ActionApplicationKind::Preview(ActionKind::Trash))
-        .location(LocationKind::RecursiveWithMaxDepth {
-            path: r"crates\organize-rs_core\tests\fixtures\filters\empty_folder".into(),
-            target: TargetKind::Directories,
-            max_depth: MaxDepth::new(1),
-        })
-        .tag(Tag::Custom("Test::EmptyDirectory".to_string()))
-        .build()
-}
-
-pub fn pdf_on_desktop_rule() -> Rule {
-    Rule::builder()
-        .name("PDFs on Desktop")
-        .filter_group(FilterGroup {
-            invert: RawFilterApplicationKind::Apply,
-            mode: FilterModeKind::All,
-            filters: vec![FilterKind::Extension {
-                exts: vec![String::from("pdf")],
-            }],
-        })
-        .action(ActionApplicationKind::Preview(ActionKind::NoAction))
-        .location(LocationKind::RecursiveWithMaxDepth {
-            path: r"C:\Users\dailyuse\Desktop".into(), // TODO: this is just examplary
-            target: TargetKind::Files,
-            max_depth: MaxDepth::new(4),
-        })
-        .tag(Tag::Custom("Documents::PDF".to_string()))
-        .build()
 }

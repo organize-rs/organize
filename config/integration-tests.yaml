@@ -38,7 +38,7 @@ rules:
     locations:
       - !recursive
         path: C:\Users\dailyuse\Desktop
-        max_depth: 4
+        max_depth: 1
         target: files
     filter_groups:
       - invert: no

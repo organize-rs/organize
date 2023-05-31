@@ -52,8 +52,6 @@ pub fn files_differ(
 
         let output = String::from_utf8(proc.stdout)?;
 
-        dbg!(&output);
-
         let patterns = &["FC: no differences encountered"];
         let ac = AhoCorasick::new(patterns)?;
         let mut matches = vec![];
@@ -68,4 +66,13 @@ pub fn files_differ(
     }
 
     Ok(true)
+}
+
+#[macro_export]
+macro_rules! set_snapshot_suffix {
+    ($($expr:expr),*) => {
+        let mut settings = insta::Settings::clone_current();
+        settings.set_snapshot_suffix(format!($($expr,)*));
+        let _guard = settings.bind_to_scope();
+    }
 }

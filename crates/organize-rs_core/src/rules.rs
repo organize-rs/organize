@@ -9,9 +9,11 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    actions::{ActionApplicationCollection, ActionApplicationKind},
-    filters::{FilterGroup, FilterGroupCollection, FilterKind},
-    locations::{LocationCollection, LocationKind},
+    actions::{ActionApplicationCollection, ActionApplicationKind, ActionKind},
+    filters::{
+        FilterGroup, FilterGroupCollection, FilterKind, FilterModeKind, RawFilterApplicationKind,
+    },
+    locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
     tags::{Tag, TagCollection},
 };
 
@@ -223,5 +225,228 @@ impl RuleBuilder {
     pub fn tags(mut self, mut tags: TagCollection) -> RuleBuilder {
         self.tags.append(&mut tags);
         self
+    }
+}
+
+pub fn empty_file_rule() -> Rule {
+    Rule::builder()
+        .name("Empty File")
+        .filter_group(FilterGroup {
+            invert: RawFilterApplicationKind::Apply,
+            mode: FilterModeKind::All,
+            filters: vec![FilterKind::Empty],
+        })
+        .action(ActionApplicationKind::Preview(ActionKind::Trash))
+        .location(LocationKind::RecursiveWithMaxDepth {
+            path: r"crates\organize-rs_core\tests\fixtures\filters\empty_file".into(),
+            target: TargetKind::Files,
+            max_depth: MaxDepth::new(1),
+        })
+        .tag(Tag::Custom("Test::EmptyFile".to_string()))
+        .build()
+}
+
+pub fn empty_folder_rule() -> Rule {
+    Rule::builder()
+        .name("Empty Directory")
+        .filter_group(FilterGroup {
+            invert: RawFilterApplicationKind::Apply,
+            mode: FilterModeKind::All,
+            filters: vec![FilterKind::Empty],
+        })
+        .action(ActionApplicationKind::Preview(ActionKind::Trash))
+        .location(LocationKind::RecursiveWithMaxDepth {
+            path: r"crates\organize-rs_core\tests\fixtures\filters\empty_folder".into(),
+            target: TargetKind::Directories,
+            max_depth: MaxDepth::new(1),
+        })
+        .tag(Tag::Custom("Test::EmptyDirectory".to_string()))
+        .build()
+}
+
+pub fn pdf_on_desktop_rule() -> Rule {
+    Rule::builder()
+        .name("PDFs on Desktop")
+        .filter_group(FilterGroup {
+            invert: RawFilterApplicationKind::Apply,
+            mode: FilterModeKind::All,
+            filters: vec![FilterKind::Extension {
+                exts: vec![String::from("pdf")],
+            }],
+        })
+        .action(ActionApplicationKind::Preview(ActionKind::NoAction))
+        .location(LocationKind::RecursiveWithMaxDepth {
+            path: r"C:\Users\dailyuse\Desktop".into(),
+            target: TargetKind::Files,
+            max_depth: MaxDepth::new(4),
+        })
+        .tag(Tag::Custom("Documents::PDF".to_string()))
+        .build()
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn test_empty_folder_rule_passes() {
+        let rule = empty_folder_rule();
+        insta::assert_debug_snapshot!(rule, @r###"
+        Rule {
+            name: "Empty Directory",
+            tags: TagCollection(
+                [
+                    Custom(
+                        "Test::EmptyDirectory",
+                    ),
+                ],
+            ),
+            enabled: false,
+            locations: LocationCollection(
+                [
+                    RecursiveWithMaxDepth {
+                        path: "crates\\organize-rs_core\\tests\\fixtures\\filters\\empty_folder",
+                        max_depth: MaxDepth(
+                            1,
+                        ),
+                        target: Directories,
+                    },
+                ],
+            ),
+            filter_groups: FilterGroupCollection(
+                [
+                    FilterGroup {
+                        invert: Apply,
+                        mode: All,
+                        filters: [
+                            Empty,
+                        ],
+                    },
+                ],
+            ),
+            actions: ActionApplicationCollection(
+                [
+                    Preview(
+                        Trash,
+                    ),
+                ],
+            ),
+        }
+        "###);
+        insta::assert_display_snapshot!(rule, @r###"
+
+            Rule - Empty Directory (false)
+
+            Tags: TagCollection([Custom("Test::EmptyDirectory")])
+            Locations: LocationCollection([RecursiveWithMaxDepth { path: "crates\\organize-rs_core\\tests\\fixtures\\filters\\empty_folder", max_depth: MaxDepth(1), target: Directories }])
+
+            Filters: FilterGroupCollection([FilterGroup { invert: Apply, mode: All, filters: [Empty] }])
+
+            Actions: ActionApplicationCollection([Preview(Trash)])
+                
+        "###);
+        insta::assert_yaml_snapshot!(rule, @r###"
+        ---
+        name: Empty Directory
+        tags:
+          - custom: "Test::EmptyDirectory"
+        enabled: false
+        locations:
+          - recursive:
+              path: "crates\\organize-rs_core\\tests\\fixtures\\filters\\empty_folder"
+              max_depth: 1
+              target: folders
+        filter_groups:
+          - invert: "no"
+            mode: must_apply
+            filters:
+              - empty
+        actions:
+          - preview: trash
+        "###);
+    }
+
+    #[test]
+    fn test_pdf_on_desktop_rule_passes() {
+        let rule = pdf_on_desktop_rule();
+        insta::assert_debug_snapshot!(rule, @r###"
+        Rule {
+            name: "PDFs on Desktop",
+            tags: TagCollection(
+                [
+                    Custom(
+                        "Documents::PDF",
+                    ),
+                ],
+            ),
+            enabled: false,
+            locations: LocationCollection(
+                [
+                    RecursiveWithMaxDepth {
+                        path: "C:\\Users\\dailyuse\\Desktop",
+                        max_depth: MaxDepth(
+                            4,
+                        ),
+                        target: Files,
+                    },
+                ],
+            ),
+            filter_groups: FilterGroupCollection(
+                [
+                    FilterGroup {
+                        invert: Apply,
+                        mode: All,
+                        filters: [
+                            Extension {
+                                exts: [
+                                    "pdf",
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            ),
+            actions: ActionApplicationCollection(
+                [
+                    Preview(
+                        NoAction,
+                    ),
+                ],
+            ),
+        }
+        "###);
+        insta::assert_display_snapshot!(rule, @r###"
+
+            Rule - PDFs on Desktop (false)
+
+            Tags: TagCollection([Custom("Documents::PDF")])
+            Locations: LocationCollection([RecursiveWithMaxDepth { path: "C:\\Users\\dailyuse\\Desktop", max_depth: MaxDepth(4), target: Files }])
+
+            Filters: FilterGroupCollection([FilterGroup { invert: Apply, mode: All, filters: [Extension { exts: ["pdf"] }] }])
+
+            Actions: ActionApplicationCollection([Preview(NoAction)])
+                
+        "###);
+        insta::assert_yaml_snapshot!(rule, @r###"
+        ---
+        name: PDFs on Desktop
+        tags:
+          - custom: "Documents::PDF"
+        enabled: false
+        locations:
+          - recursive:
+              path: "C:\\Users\\dailyuse\\Desktop"
+              max_depth: 4
+              target: files
+        filter_groups:
+          - invert: "no"
+            mode: must_apply
+            filters:
+              - extension:
+                  exts: pdf
+        actions:
+          - preview: do_nothing
+        "###);
     }
 }

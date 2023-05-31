@@ -88,6 +88,7 @@ rstest = "0.17"
 quickcheck = "1"
 quickcheck_macros = "1"
 pretty_assertions = "1"
+insta = { version = "1.29.0", features = ["yaml", "ron", "json", "toml"] }
 
 # Scripting
 rhai = { version = "1.14.0", features = ["serde"] }
@@ -169,6 +170,7 @@ serde_with = { workspace = true }
 
 [dev-dependencies]
 abscissa_core = { workspace = true, features = ["testing"] }
+
 once_cell = { workspace = true }
 organize-rs_testing = { workspace = true }
 
@@ -215,3 +217,6 @@ rpath = false
 lto = true
 debug-assertions = false
 codegen-units = 1
+
+[profile.dev.package.insta]
+opt-level = 3

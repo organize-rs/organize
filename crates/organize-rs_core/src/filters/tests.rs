@@ -2,6 +2,8 @@
 
 // use quickcheck_macros::quickcheck;
 
+use organize_rs_testing::set_snapshot_suffix;
+
 use std::{
     path::{Path, PathBuf},
     str::FromStr,
@@ -89,7 +91,12 @@ fn test_filter_mimetype_jpg_odt_passes() {
     before.remove(1);
     before.remove(0);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\mimetype\\b.jpg",
+        "tests\\fixtures\\filters\\mimetype\\c.odt",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -98,9 +105,18 @@ fn test_filter_all_items_passes() {
         i_agree_it_is_dangerous: true,
     };
 
-    let (before, after) = get_base_values("by_name", filter);
+    let (_, after) = get_base_values("by_name", filter);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\by_name",
+        "tests\\fixtures\\filters\\by_name\\123test1.txt",
+        "tests\\fixtures\\filters\\by_name\\456test2.txt",
+        "tests\\fixtures\\filters\\by_name\\789TaSt.jpg",
+        "tests\\fixtures\\filters\\by_name\\TEST123.txt",
+        "tests\\fixtures\\filters\\by_name\\uTEST.txt",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -111,13 +127,14 @@ fn test_filter_no_filter_passes() {
 
     before.clear();
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @"[]");
 }
 
 #[rstest]
 #[case(true)]
 #[case(false)]
 fn test_filter_name_full_passes(#[case] case_insensitive: bool) {
+    set_snapshot_suffix!("{}", case_insensitive);
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
             contains: vec![String::from("TaSt"), String::from("-|uTEST")],
@@ -134,13 +151,20 @@ fn test_filter_name_full_passes(#[case] case_insensitive: bool) {
     before.remove(4);
     before.remove(0);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\by_name\\123test1.txt",
+        "tests\\fixtures\\filters\\by_name\\456test2.txt",
+        "tests\\fixtures\\filters\\by_name\\789TaSt.jpg",
+    ]
+    "###);
 }
 
 #[rstest]
 #[case(true)]
 #[case(false)]
 fn test_filter_name_contains_multiple_names_and_inverted_passes(#[case] case_insensitive: bool) {
+    set_snapshot_suffix!("{}", case_insensitive);
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
             contains: vec![
@@ -160,19 +184,33 @@ fn test_filter_name_contains_multiple_names_and_inverted_passes(#[case] case_ins
     if case_insensitive {
         before.remove(5);
         before.remove(0);
+        insta::assert_debug_snapshot!(after, @r###"
+        [
+            "tests\\fixtures\\filters\\by_name\\123test1.txt",
+            "tests\\fixtures\\filters\\by_name\\456test2.txt",
+            "tests\\fixtures\\filters\\by_name\\789TaSt.jpg",
+            "tests\\fixtures\\filters\\by_name\\TEST123.txt",
+        ]
+        "###);
     } else {
         before.remove(5);
         before.remove(4);
         before.remove(0);
+        insta::assert_debug_snapshot!(after, @r###"
+        [
+            "tests\\fixtures\\filters\\by_name\\123test1.txt",
+            "tests\\fixtures\\filters\\by_name\\456test2.txt",
+            "tests\\fixtures\\filters\\by_name\\789TaSt.jpg",
+        ]
+        "###);
     }
-
-    assert_eq!(before, after);
 }
 
 #[rstest]
 #[case(true)]
 #[case(false)]
 fn test_filter_name_contains_multiple_names_passes(#[case] case_insensitive: bool) {
+    set_snapshot_suffix!("{}", case_insensitive);
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
             contains: vec![String::from("test"), String::from("TaSt")],
@@ -187,19 +225,34 @@ fn test_filter_name_contains_multiple_names_passes(#[case] case_insensitive: boo
 
     if case_insensitive {
         before.remove(0);
+        insta::assert_debug_snapshot!(after, @r###"
+        [
+            "tests\\fixtures\\filters\\by_name\\123test1.txt",
+            "tests\\fixtures\\filters\\by_name\\456test2.txt",
+            "tests\\fixtures\\filters\\by_name\\789TaSt.jpg",
+            "tests\\fixtures\\filters\\by_name\\TEST123.txt",
+            "tests\\fixtures\\filters\\by_name\\uTEST.txt",
+        ]
+        "###);
     } else {
         before.remove(5);
         before.remove(4);
         before.remove(0);
+        insta::assert_debug_snapshot!(after, @r###"
+        [
+            "tests\\fixtures\\filters\\by_name\\123test1.txt",
+            "tests\\fixtures\\filters\\by_name\\456test2.txt",
+            "tests\\fixtures\\filters\\by_name\\789TaSt.jpg",
+        ]
+        "###);
     }
-
-    assert_eq!(before, after);
 }
 
 #[rstest]
 #[case(true)]
 #[case(false)]
 fn test_filter_name_contains_single_name_passes(#[case] case_insensitive: bool) {
+    set_snapshot_suffix!("{}", case_insensitive);
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
             contains: vec![String::from("test")],
@@ -215,14 +268,26 @@ fn test_filter_name_contains_single_name_passes(#[case] case_insensitive: bool) 
     if case_insensitive {
         before.remove(3);
         before.remove(0);
+        insta::assert_debug_snapshot!(after, @r###"
+        [
+            "tests\\fixtures\\filters\\by_name\\123test1.txt",
+            "tests\\fixtures\\filters\\by_name\\456test2.txt",
+            "tests\\fixtures\\filters\\by_name\\TEST123.txt",
+            "tests\\fixtures\\filters\\by_name\\uTEST.txt",
+        ]
+        "###);
     } else {
         before.remove(5);
         before.remove(4);
         before.remove(3);
         before.remove(0);
+        insta::assert_debug_snapshot!(after, @r###"
+        [
+            "tests\\fixtures\\filters\\by_name\\123test1.txt",
+            "tests\\fixtures\\filters\\by_name\\456test2.txt",
+        ]
+        "###);
     }
-
-    assert_eq!(before, after);
 }
 
 #[rstest]
@@ -243,7 +308,7 @@ fn test_filter_name_args_does_not_match_anything_passes(#[case] case_insensitive
 
     before.clear();
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @"[]");
 }
 
 #[rstest]
@@ -264,7 +329,7 @@ fn test_filter_name_args_empty_passes(#[case] case_insensitive: bool) {
 
     before.clear();
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @"[]");
 }
 
 #[rstest]
@@ -277,7 +342,12 @@ fn test_filter_multiple_extension_with_dot_passes() {
 
     before.remove(0);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\by_extension\\test.jpg",
+        "tests\\fixtures\\filters\\by_extension\\test.toml",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -290,7 +360,12 @@ fn test_filter_multiple_extensions_passes() {
 
     before.remove(0);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\by_extension\\test.jpg",
+        "tests\\fixtures\\filters\\by_extension\\test.toml",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -303,7 +378,11 @@ fn test_filter_single_extension_passes() {
 
     before.drain(..2);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\by_extension\\test.toml",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -314,7 +393,11 @@ fn test_filter_folder_empty_passes() {
 
     let (before, after) = get_base_values("empty_folder", filter);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\empty_folder",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -326,7 +409,11 @@ fn test_filter_file_empty_passes() {
     before.remove(0);
     before.remove(1);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\empty_file\\empty.txt",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -339,20 +426,30 @@ fn test_filter_file_size_2mb_passes() {
 
     _ = before.remove(0);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\size_based\\1MiB",
+        "tests\\fixtures\\filters\\size_based\\300KiB",
+        "tests\\fixtures\\filters\\size_based\\empty.txt",
+    ]
+    "###);
 }
 
 #[rstest]
-fn test_filter_file_size_350_800_kib_passes() {
+fn test_filter_file_size_300_800_kib_passes() {
     let filter = FilterKind::Size {
-        range: SizeRange::from_str("350KiB..800kib").unwrap(),
+        range: SizeRange::from_str("300KiB..800kib").unwrap(),
     };
 
     let (mut before, after) = get_base_values("size_based", filter);
 
     before.clear();
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\size_based\\300KiB",
+    ]
+    "###);
 }
 #[rstest]
 fn test_filter_file_size_250kib_passes() {
@@ -365,7 +462,12 @@ fn test_filter_file_size_250kib_passes() {
     _ = before.pop();
     _ = before.remove(0);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\size_based\\1MiB",
+        "tests\\fixtures\\filters\\size_based\\300KiB",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -378,7 +480,15 @@ fn test_filter_ignore_single_str_is_in_path_passes() {
 
     _ = before.drain(5..);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\ignore_path",
+        "tests\\fixtures\\filters\\ignore_path\\a.txt",
+        "tests\\fixtures\\filters\\ignore_path\\b.txt",
+        "tests\\fixtures\\filters\\ignore_path\\bemp",
+        "tests\\fixtures\\filters\\ignore_path\\bemp\\d.txt",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -391,7 +501,13 @@ fn test_filter_ignore_multiple_strs_is_in_path_passes() {
 
     _ = before.drain(3..);
 
-    assert_eq!(before, after);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\ignore_path",
+        "tests\\fixtures\\filters\\ignore_path\\a.txt",
+        "tests\\fixtures\\filters\\ignore_path\\b.txt",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -402,15 +518,19 @@ fn test_filter_ignore_single_str_is_in_name_passes() {
 
     let (mut before, after) = get_base_values("ignore_name", filter);
 
-    assert_eq!(
-        before.remove(4),
-        get_fixtures_dir()
-            .join("ignore_name")
-            .join("bemp")
-            .join("ignore.c")
-    );
-
-    assert_eq!(before, after);
+    before.remove(4);
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\ignore_name",
+        "tests\\fixtures\\filters\\ignore_name\\a.txt",
+        "tests\\fixtures\\filters\\ignore_name\\bemp",
+        "tests\\fixtures\\filters\\ignore_name\\bemp\\d.txt",
+        "tests\\fixtures\\filters\\ignore_name\\bump",
+        "tests\\fixtures\\filters\\ignore_name\\bump\\a.txt",
+        "tests\\fixtures\\filters\\ignore_name\\bump\\bump.txt",
+        "tests\\fixtures\\filters\\ignore_name\\bump.txt",
+    ]
+    "###);
 }
 
 #[rstest]
@@ -425,31 +545,16 @@ fn test_filter_ignore_multiple_strs_is_in_name_passes() {
 
     let (mut before, after) = get_base_values("ignore_name", filter);
 
-    let removed = before.drain(6..9);
-    assert_eq!(
-        removed.into_iter().collect_vec(),
-        vec![
-            get_fixtures_dir()
-                .join("ignore_name")
-                .join("bump")
-                .join("a.txt"),
-            get_fixtures_dir()
-                .join("ignore_name")
-                .join("bump")
-                .join("bump.txt"),
-            get_fixtures_dir().join("ignore_name").join("bump.txt"),
-        ]
-    );
-    assert_eq!(
-        before.remove(4),
-        get_fixtures_dir()
-            .join("ignore_name")
-            .join("bemp")
-            .join("ignore.c")
-    );
-    assert_eq!(
-        before.remove(1),
-        get_fixtures_dir().join("ignore_name").join("a.txt")
-    );
-    assert_eq!(before, after);
+    before.drain(6..9);
+    before.remove(4);
+    before.remove(1);
+
+    insta::assert_debug_snapshot!(after, @r###"
+    [
+        "tests\\fixtures\\filters\\ignore_name",
+        "tests\\fixtures\\filters\\ignore_name\\bemp",
+        "tests\\fixtures\\filters\\ignore_name\\bemp\\d.txt",
+        "tests\\fixtures\\filters\\ignore_name\\bump",
+    ]
+    "###);
 }
