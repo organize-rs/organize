@@ -8,7 +8,7 @@ use clap::{Args, Parser};
 use dialoguer::Confirm;
 use organize_rs_core::{
     actions::{ActionApplicationKind, ActionKind},
-    config::OrganizeConfig,
+    config::{ConfigFileFormat, OrganizeConfig},
     filters::{FilterGroup, FilterKind, FilterModeKind, RawFilterApplicationKind},
     locations::{LocationKind, MaxDepth, TargetKind},
     rules::{Rule, Rules},
@@ -26,6 +26,9 @@ pub struct GenConfigCmd {
 
     #[clap(flatten)]
     config_opts: GenConfigOpts,
+    // TODO: maybe explicitly chose?
+    // #[clap(long, default_value_t = ConfigFileFormat::Ron)]
+    // format: ConfigFileFormat,
 }
 
 #[derive(Debug, Args, Clone)]
@@ -59,25 +62,21 @@ impl GenConfigCmd {
         let mut rules = Rules::new();
 
         rules.extend(vec![
-            // empty_file_rule(),
-            // empty_folder_rule(),
+            empty_file_rule(),
+            empty_folder_rule(),
             pdf_on_desktop_rule(),
         ]);
 
         config.add_rules(rules);
 
         if File::open(&self.path).is_ok() {
-            if Confirm::new().with_prompt("Config file already exists. We will overwrite it, do you have a backup and want to continue?").interact()? {
-                let file = File::create(&self.path)?;
-                ron::ser::to_writer_pretty(file, &config, PrettyConfig::default())?;
+            if Confirm::new().with_prompt("Config file already exists. We will overwrite it, do you have a backup and want to continue?").default(false).interact()? {
+                config.write_to_file(&self.path, true)?;
             } else {
                 bail!("Config file already exists. We will overwrite it, make sure you have a backup and agree in the dialog.");
             }
         } else {
-            let file = File::create(&self.path)?;
-            ron::ser::to_writer_pretty(file, &config, PrettyConfig::default())?;
-            // file.write_all(toml::to_string_pretty(&rule)?.as_bytes())?;
-            // file.write_all(serde_yaml::to_string(&rule)?.as_bytes())?;
+            config.write_to_file(&self.path, true)?;
         };
 
         Ok(())
@@ -87,7 +86,7 @@ impl GenConfigCmd {
 pub fn empty_file_rule() -> Rule {
     Rule::builder()
         .name("Empty File")
-        .filter(FilterGroup {
+        .filter_group(FilterGroup {
             invert: RawFilterApplicationKind::Apply,
             mode: FilterModeKind::All,
             filters: vec![FilterKind::Empty],
@@ -105,7 +104,7 @@ pub fn empty_file_rule() -> Rule {
 pub fn empty_folder_rule() -> Rule {
     Rule::builder()
         .name("Empty Directory")
-        .filter(FilterGroup {
+        .filter_group(FilterGroup {
             invert: RawFilterApplicationKind::Apply,
             mode: FilterModeKind::All,
             filters: vec![FilterKind::Empty],
@@ -123,7 +122,7 @@ pub fn empty_folder_rule() -> Rule {
 pub fn pdf_on_desktop_rule() -> Rule {
     Rule::builder()
         .name("PDFs on Desktop")
-        .filter(FilterGroup {
+        .filter_group(FilterGroup {
             invert: RawFilterApplicationKind::Apply,
             mode: FilterModeKind::All,
             filters: vec![FilterKind::Extension {
@@ -132,8 +131,8 @@ pub fn pdf_on_desktop_rule() -> Rule {
         })
         .action(ActionApplicationKind::Preview(ActionKind::NoAction))
         .location(LocationKind::RecursiveWithMaxDepth {
-            path: r"C:\Users\dailyuse\Desktop".into(),
-            target: TargetKind::Directories,
+            path: r"C:\Users\dailyuse\Desktop".into(), // TODO: this is just examplary
+            target: TargetKind::Files,
             max_depth: MaxDepth::new(4),
         })
         .tag(Tag::Custom("Documents::PDF".to_string()))

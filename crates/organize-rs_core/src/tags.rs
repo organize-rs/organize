@@ -27,10 +27,13 @@ impl std::ops::Deref for TagCollection {
 #[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Tag {
     /// Always run filters/actions with this tag
+    #[serde(rename = "always_run")]
     Always,
     /// Custom tag for running filters/actions
+    #[serde(rename = "custom")]
     Custom(String),
     /// Never run filters/actions with this tag
+    #[serde(rename = "never_run")]
     Never,
 }
 

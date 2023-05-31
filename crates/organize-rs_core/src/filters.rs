@@ -376,8 +376,8 @@ pub enum FilterKind {
     #[serde(rename = "extension")]
     Extension {
         /// The file extensions to match (without dot)
-        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
         exts: Vec<String>,
     },
     /// Match file content with the given regular expression

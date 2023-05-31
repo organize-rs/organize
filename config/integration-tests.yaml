@@ -1,0 +1,50 @@
+rules:
+  - name: Empty File
+    tags:
+      - !custom Test::EmptyFile
+    enabled: true
+    locations:
+      - !recursive
+        path: crates\organize-rs_core\tests\fixtures\filters\empty_file
+        max_depth: 1
+        target: files
+    filter_groups:
+      - invert: no
+        mode: must_apply
+        filters:
+          - empty
+    actions:
+      - !preview trash
+  - name: Empty Directory
+    tags:
+      - !custom Test::EmptyDirectory
+    enabled: true
+    locations:
+      - !recursive
+        path: crates\organize-rs_core\tests\fixtures\filters\empty_folder
+        max_depth: 1
+        target: folders
+    filter_groups:
+      - invert: no
+        mode: must_apply
+        filters:
+          - empty
+    actions:
+      - !preview trash
+  - name: PDFs on Desktop
+    tags:
+      - !custom Documents::PDF
+    enabled: true
+    locations:
+      - !recursive
+        path: C:\Users\dailyuse\Desktop
+        max_depth: 4
+        target: files
+    filter_groups:
+      - invert: no
+        mode: must_apply
+        filters:
+          - !extension
+            exts: pdf
+    actions:
+      - !preview do_nothing

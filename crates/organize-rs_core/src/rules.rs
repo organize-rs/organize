@@ -190,13 +190,13 @@ impl RuleBuilder {
     }
 
     /// Add a single filter
-    pub fn filter(mut self, filter: FilterGroup<Vec<FilterKind>>) -> RuleBuilder {
+    pub fn filter_group(mut self, filter: FilterGroup<Vec<FilterKind>>) -> RuleBuilder {
         self.filter_groups.push(filter);
         self
     }
 
     /// Add multiple filters
-    pub fn filters(mut self, mut filters: FilterGroupCollection) -> RuleBuilder {
+    pub fn filter_groups(mut self, mut filters: FilterGroupCollection) -> RuleBuilder {
         self.filter_groups.append(&mut filters);
         self
     }

@@ -31,8 +31,9 @@ to generate copy & pastable output for config /rules
 
 - generate fully commentated example config `generate config --template`
 
-## Optional
+## De-/Serialisation
 
+1. use <https://docs.rs/serde_with/3.0.0/serde_with/index.html>
 1. implement deserializer for `py-organize` config
 
 ## General

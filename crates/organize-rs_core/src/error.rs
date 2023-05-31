@@ -1,7 +1,7 @@
 //! errors
 
 use displaydoc::Display;
-use std::error::Error as StdError;
+use std::{error::Error as StdError, path::PathBuf};
 use thiserror::Error as ThisError;
 
 /// Result type often returned from methods that can have rustic `Error`s.
@@ -65,8 +65,25 @@ pub enum ActionErrorKind {
 /// [`ConfigErrorKind`] describes the errors that can be returned for configs
 #[derive(ThisError, Debug, Display)]
 pub enum ConfigErrorKind {
-    /// parsing the config file failed: {0}
-    FailedToParseConfigFile(#[from] serde_yaml::Error),
+    /// {0}
+    #[error(transparent)]
+    YamlError(#[from] serde_yaml::Error),
+    /// {0}
+    #[error(transparent)]
+    RonError(#[from] ron::Error),
+    /// {0}
+    #[error(transparent)]
+    JsonError(#[from] serde_json::Error),
+    /// {0}
+    #[error(transparent)]
+    TomlSerializeError(#[from] toml::ser::Error),
+    /// {0}
+    #[error(transparent)]
+    TomlDeserializeError(#[from] toml::de::Error),
+    /// config file format is not supported: {0}
+    ConfigFileFormatNotSupported(String),
+    /// config file already exists: {0}
+    ConfigFileAlreadyExists(PathBuf),
 }
 
 trait ErrorMarker: StdError {}

@@ -115,7 +115,6 @@ impl Default for MaxDepth {
 /// [`OrganizeLocation] contains the directories and files
 /// organize should include in the entry discovery
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
-// #[serde(untagged)]
 pub enum LocationKind {
     /// Non-recursive discovery of directory entries
     #[serde(rename = "non_recursive")]

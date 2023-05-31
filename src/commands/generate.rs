@@ -10,7 +10,7 @@ use crate::commands::generate::{gen_completions::GenCompletionsCmd, gen_config::
 
 #[derive(Subcommand, Command, Debug, Runnable)]
 pub enum GenerateSubCmd {
-    /// Generate a *.ron config stub
+    /// Generate a config stub
     Config(GenConfigCmd),
     /// Generate completions for your shell
     Completions(GenCompletionsCmd),
