@@ -71,7 +71,7 @@ pub struct Rule {
     /// list of locations
     locations: LocationCollection,
     /// supported filters
-    filters: FilterGroupCollection,
+    filter_groups: FilterGroupCollection,
     /// supported actions
     actions: ActionApplicationCollection,
 }
@@ -83,7 +83,7 @@ impl Display for Rule {
             tags,
             enabled,
             locations,
-            filters,
+            filter_groups: filters,
             actions,
         } = self;
 
@@ -118,7 +118,7 @@ impl Rule {
     }
 
     pub fn filters(&self) -> FilterGroupCollection {
-        self.filters.clone()
+        self.filter_groups.clone()
     }
 
     pub fn actions(&self) -> ActionApplicationCollection {
@@ -141,7 +141,7 @@ pub struct RuleBuilder {
     /// list of locations
     locations: LocationCollection,
     /// supported filters
-    filters: FilterGroupCollection,
+    filter_groups: FilterGroupCollection,
     /// supported actions
     actions: ActionApplicationCollection,
 }
@@ -160,7 +160,7 @@ impl RuleBuilder {
             tags: self.tags,
             enabled: self.enabled,
             locations: self.locations,
-            filters: self.filters,
+            filter_groups: self.filter_groups,
             actions: self.actions,
         }
     }
@@ -191,13 +191,13 @@ impl RuleBuilder {
 
     /// Add a single filter
     pub fn filter(mut self, filter: FilterGroup<Vec<FilterKind>>) -> RuleBuilder {
-        self.filters.push(filter);
+        self.filter_groups.push(filter);
         self
     }
 
     /// Add multiple filters
     pub fn filters(mut self, mut filters: FilterGroupCollection) -> RuleBuilder {
-        self.filters.append(&mut filters);
+        self.filter_groups.append(&mut filters);
         self
     }
 
