@@ -5,8 +5,8 @@ use std::path::PathBuf;
 use abscissa_core::{status_err, Application, Command, Runnable};
 
 use anyhow::Result;
-use clap::{Args, Parser};
-use organize_rs_core::{config::OrganizeConfig, runner::Runner, state::Init};
+use clap::Args;
+use organize_rs_core::{runner::Runner, state::Init};
 
 use crate::application::ORGANIZE_APP;
 

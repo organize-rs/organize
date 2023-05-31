@@ -7,8 +7,8 @@ use clap::Args;
 use itertools::Itertools;
 use organize_rs_core::{
     filters::{
-        FilterApplicationKind, FilterCollection, FilterGroup, FilterGroupCollection, FilterKind,
-        FilterModeKind, RawFilterApplicationKind, RecursiveFilterArgs,
+        FilterGroup, FilterGroupCollection, FilterKind, FilterModeKind, RawFilterApplicationKind,
+        RecursiveFilterArgs,
     },
     locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
     FilteredFileWalker,

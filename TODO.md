@@ -3,6 +3,9 @@
 ## Next
 
 1. [RESEARCH] move target to `FilterGroup`, implications?
+    - each `filter_group` can independently operate on folders/files
+        - how many/which filters are affected?
+            - does it make sense overall?
     - need to move filter for `TargetKind` to a later stage?
 1. Fully annotate template config
 1. implement doctests for filters (so the yaml syntax is clear)

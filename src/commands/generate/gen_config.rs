@@ -5,20 +5,12 @@ use anyhow::{bail, Result};
 use clap::{Args, Parser};
 use dialoguer::Confirm;
 use organize_rs_core::{
-    actions::{ActionApplicationKind, ActionKind},
-    config::{ConfigFileFormat, OrganizeConfig},
-    error::ConfigErrorKind,
-    filters::{FilterGroup, FilterKind, FilterModeKind, RawFilterApplicationKind},
-    locations::{LocationKind, MaxDepth, TargetKind},
-    rules::{empty_file_rule, empty_folder_rule, pdf_on_desktop_rule, Rule, Rules},
-    tags::Tag,
+    config::{OrganizeConfig, CONFIG_TEMPLATE_YAML},
+    rules::{empty_file_rule, empty_folder_rule, pdf_on_desktop_rule, Rules},
 };
-use ron::ser::PrettyConfig;
+
 use std::io::Write;
-use std::{
-    fs::File,
-    path::{Path, PathBuf},
-};
+use std::{fs::File, path::PathBuf};
 
 use crate::application::ORGANIZE_APP;
 
@@ -98,13 +90,13 @@ impl GenConfigCmd {
 
         if File::open(&path).is_ok() {
             if Confirm::new().with_prompt("Config file already exists. We will overwrite it, do you have a backup and want to continue?").default(false).interact()? {
-                write!(&mut File::open(&path)?, "{}", crate::config::CONFIG_TEMPLATE_YAML)?;
+                write!(&mut File::open(&path)?, "{CONFIG_TEMPLATE_YAML}")?;
             } else {
                 bail!("Config file already exists at:{path}. We will overwrite it, make sure you have a backup and agree in the dialog.");
             }
         } else {
             let mut file = File::create(&path)?;
-            write!(&mut file, "{}", crate::config::CONFIG_TEMPLATE_YAML)?;
+            write!(&mut file, "{CONFIG_TEMPLATE_YAML}")?;
         };
 
         println!("organize config template has been generated successfully!");

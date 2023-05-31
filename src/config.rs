@@ -8,8 +8,6 @@ use organize_rs_core::aliases::Reference;
 use organize_rs_core::rules::Rule;
 use serde::{Deserialize, Serialize};
 
-pub static CONFIG_TEMPLATE_YAML: &str = include_str!("../config/template.yaml");
-
 /// Organize Configuration
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(deny_unknown_fields)]

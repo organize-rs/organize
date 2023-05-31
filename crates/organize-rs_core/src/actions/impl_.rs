@@ -1,6 +1,4 @@
-use std::path::Path;
-
-use jwalk::{ClientState, DirEntry};
+use jwalk::ClientState;
 
 use crate::{
     actions::{ActionClosure, ActionKind, ActionResultKind},

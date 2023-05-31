@@ -1,9 +1,7 @@
 use std::path::Path;
 
 use crate::{
-    concurrency::OffThreadExt,
     config::OrganizeConfig,
-    rules::{self, Rule},
     state::{HandleConflicts, Init, Inspect, ProcessingState, Start},
     FilteredFileWalker,
 };

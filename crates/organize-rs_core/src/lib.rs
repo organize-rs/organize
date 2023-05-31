@@ -17,13 +17,13 @@ pub mod tags;
 use crate::{
     error::{OrganizeResult, WalkerErrorKind},
     filters::{
-        FilterApplicationKind, FilterCollection, FilterFilterClosureSliceMut, FilterGroup,
-        FilterGroupCollection, FilterKind, FilterModeKind, RawFilterApplicationKind,
+        FilterFilterClosureSliceMut, FilterGroup, FilterGroupCollection, FilterKind,
+        FilterModeKind, RawFilterApplicationKind,
     },
     locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
 };
 
-use std::{fmt::Display, fs::FileType, ops::Not, path::Path};
+use std::{fmt::Display, fs::FileType, path::Path};
 
 use itertools::{Either, Itertools};
 use jwalk::{ClientState, DirEntry, WalkDir};

@@ -391,7 +391,7 @@ fn test_filter_folder_empty_passes() {
         .expect("should be able to create dir structure.");
     let filter = FilterKind::Empty;
 
-    let (before, after) = get_base_values("empty_folder", filter);
+    let (_before, after) = get_base_values("empty_folder", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [

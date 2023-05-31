@@ -5,7 +5,7 @@ use crate::{
     rules::{Rule, Rules},
 };
 use std::io::Write;
-use std::{fmt::Display, fs::File, panic, path::Path, str::FromStr, string::ParseError};
+use std::{fmt::Display, fs::File, path::Path, str::FromStr};
 
 #[cfg(feature = "cli")]
 use clap::ValueEnum;
@@ -13,7 +13,8 @@ use clap::ValueEnum;
 use displaydoc::Display;
 use ron::ser::PrettyConfig;
 use serde::{Deserialize, Serialize};
-use winnow::combinator::todo;
+
+pub static CONFIG_TEMPLATE_YAML: &str = include_str!("../../../config/config_template.yaml");
 
 /// Formats that we support for our Config files
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, Display)]

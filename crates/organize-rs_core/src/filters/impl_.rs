@@ -1,7 +1,5 @@
 use std::ops::Not;
 
-use chrono::{DateTime, Utc};
-
 use filetime::FileTime;
 use itertools::Itertools;
 use jwalk::{ClientState, DirEntry};
