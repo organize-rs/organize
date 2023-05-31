@@ -14,6 +14,10 @@ use displaydoc::Display;
 use itertools::Itertools;
 use jwalk::DirEntry;
 use serde::{Deserialize, Serialize};
+use serde_with::formats::CommaSeparator;
+use serde_with::StringWithSeparator;
+
+use serde_with::serde_as;
 
 use crate::parsers::{PeriodRange, SizeRange};
 
@@ -125,6 +129,7 @@ pub struct RecursiveFilterArgs {
 }
 
 /// Arguments for `name` filter
+#[serde_as]
 #[cfg_attr(feature = "cli", derive(Args))]
 #[derive(Display, Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "cli", group(required = true, multiple = false))]
@@ -132,15 +137,19 @@ pub struct NameFilterArgs {
     // TODO: Not implemented, searching for alternatives
     /// A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
     #[cfg_attr(feature = "cli", arg(long))]
+    #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
     simple_match: Vec<String>,
     /// The filename must begin with the given string
     #[cfg_attr(feature = "cli", arg(long))]
+    #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
     starts_with: Vec<String>,
     /// The filename must contain the given string
     #[cfg_attr(feature = "cli", arg(long))]
+    #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
     contains: Vec<String>,
     /// The filename (without extension) must end with the given string
     #[cfg_attr(feature = "cli", arg(long))]
+    #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
     ends_with: Vec<String>,
 }
 
@@ -171,6 +180,7 @@ pub enum DateUnitKind {
 
 /// [`OrganizeFilter`] contains filter variants that organize can
 /// use to apply to locations.
+#[serde_as]
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum FilterKind {
@@ -366,6 +376,7 @@ pub enum FilterKind {
     #[serde(rename = "extension")]
     Extension {
         /// The file extensions to match (without dot)
+        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
         #[cfg_attr(feature = "cli", arg(long))]
         exts: Vec<String>,
     },
@@ -427,6 +438,7 @@ pub enum FilterKind {
     IgnoreName {
         /// Matches for these Strings in the Filename
         // #[cfg_attr(feature = "cli", arg(long))]
+        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
         in_name: Vec<String>,
     },
     /// Defines a string that makes organize skip a location when found in the full path
@@ -434,6 +446,7 @@ pub enum FilterKind {
     IgnorePath {
         /// Matches for these Strings in the whole Path
         // #[cfg_attr(feature = "cli", arg(long))]
+        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
         in_path: Vec<String>,
     },
     /// Match locations by the time they were last accessed
@@ -520,6 +533,7 @@ pub enum FilterKind {
     #[serde(rename = "macos_tags")]
     MacOsTags {
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
         tags: Vec<String>,
     },
     /// Filter by MIME type associated with the file extension
@@ -549,6 +563,7 @@ pub enum FilterKind {
     #[serde(rename = "mimetype")]
     Mimetype {
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
         mimetype: Vec<String>,
     },
     /// Match locations by their name
