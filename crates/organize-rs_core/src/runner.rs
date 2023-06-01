@@ -1,10 +1,13 @@
-use std::path::Path;
+use std::{collections::HashSet, path::Path};
 
 use crate::{
     config::OrganizeConfig,
     state::{HandleConflicts, Init, Inspect, ProcessingState, Start},
+    tags::Tag,
     FilteredFileWalker,
 };
+
+use std::iter::FromIterator;
 
 pub struct Runner<S>
 where
@@ -26,15 +29,30 @@ impl Runner<Init> {
 }
 
 impl Runner<Start> {
-    pub fn apply_filters(self) -> Runner<Inspect> {
+    pub fn apply_filters(self, tags: Vec<Tag>) -> Runner<Inspect> {
         let mut entries = vec![];
         self.config.rules().iter().for_each(|rule| {
-            if rule.enabled() {
-                let mut walker = FilteredFileWalker::new();
-                walker.get_applicable_items(rule.locations(), rule.filters());
-                entries.push((rule.clone(), walker))
+            if rule.enabled() & !rule.tags().contains(&Tag::Never) {
+                // check the tags in a rule
+                let tag_applies = if !tags.is_empty() {
+                    let tag_collection = rule.tags();
+                    let rule_tag_set: HashSet<&Tag> = HashSet::from_iter(tag_collection.iter());
+                    let cli_tag_set: HashSet<&Tag> = HashSet::from_iter(tags.iter());
+                    Some(!rule_tag_set.is_disjoint(&cli_tag_set))
+                } else {
+                    None
+                };
+
+                match tag_applies {
+                    Some(true) | None => {
+                        let mut walker = FilteredFileWalker::new();
+                        walker.get_applicable_items(rule.locations(), rule.filters());
+                        entries.push((rule.clone(), walker))
+                    }
+                    Some(false) => println!("Given tags don't apply, skipping ... {rule}"),
+                }
             } else {
-                println!("Not enabled, skipping ... {rule}")
+                println!("Not enabled or should be never run, skipping ... {rule}")
             }
         });
 

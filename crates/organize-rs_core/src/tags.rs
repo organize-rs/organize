@@ -1,10 +1,12 @@
 //! tags
 
+use std::str::FromStr;
+
 use displaydoc::Display;
 use serde::{Deserialize, Serialize};
 
 #[derive(
-    Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Default,
+    Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Default, Hash,
 )]
 #[serde(transparent)]
 pub struct TagCollection(Vec<Tag>);
@@ -24,7 +26,7 @@ impl std::ops::Deref for TagCollection {
 }
 
 /// Tags that can be applied to rules
-#[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Tag {
     /// Always run filters/actions with this tag
     #[serde(rename = "always_run")]
@@ -81,6 +83,18 @@ impl Tag {
             Ok(v)
         } else {
             Err(self)
+        }
+    }
+}
+
+impl FromStr for Tag {
+    type Err = crate::error::OrganizeError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "always_run" => Ok(Self::Always),
+            "never_run" => Ok(Self::Never),
+            cst => Ok(Self::Custom(cst.to_owned())),
         }
     }
 }

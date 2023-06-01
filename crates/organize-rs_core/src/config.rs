@@ -32,7 +32,7 @@ pub enum ConfigFileFormat {
 }
 
 impl FromStr for ConfigFileFormat {
-    type Err = crate::error::ConfigErrorKind;
+    type Err = crate::error::OrganizeError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -40,9 +40,9 @@ impl FromStr for ConfigFileFormat {
             ".yaml" | ".yml" | "yaml" | "yml" => Ok(Self::Yaml),
             ".ron" | "ron" => Ok(Self::Ron),
             ".toml" | "toml" => Ok(Self::Toml),
-            _ => Err(crate::error::ConfigErrorKind::ConfigFileFormatNotSupported(
-                s.to_string(),
-            )),
+            _ => Err(
+                crate::error::ConfigErrorKind::ConfigFileFormatNotSupported(s.to_string()).into(),
+            ),
         }
     }
 }

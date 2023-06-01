@@ -7,8 +7,8 @@ use clap::Args;
 use itertools::Itertools;
 use organize_rs_core::{
     filters::{
-        FilterGroup, FilterGroupCollection, FilterKind, FilterModeKind, RawFilterApplicationKind,
-        RecursiveFilterArgs,
+        FilterApplicationKind, FilterGroup, FilterGroupCollection, FilterGroupOperationKind,
+        FilterKind, RecursiveFilterArgs,
     },
     locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
     FilteredFileWalker,
@@ -29,8 +29,8 @@ pub struct FilterCmd {
     ignore_path: Option<Vec<String>>,
 
     /// Mode, how the filters should apply
-    #[arg(short, long, global = true, default_value_t = FilterModeKind::Any, value_enum)]
-    filter_mode: FilterModeKind,
+    #[arg(short, long, global = true, default_value_t = FilterApplicationKind::Any, value_enum)]
+    filter_mode: FilterApplicationKind,
 
     #[command(flatten)]
     location_opts: LocationOpts,
@@ -54,7 +54,7 @@ pub struct LocationOpts {
 impl Runnable for FilterCmd {
     fn run(&self) {
         let filter_group0 = FilterGroup::new(
-            RawFilterApplicationKind::Include,
+            FilterGroupOperationKind::Include,
             self.filter_mode,
             vec![self.filters.clone()],
         );
@@ -74,8 +74,8 @@ impl Runnable for FilterCmd {
         };
 
         let filter_group1 = FilterGroup::new(
-            RawFilterApplicationKind::Include,
-            FilterModeKind::None,
+            FilterGroupOperationKind::Include,
+            FilterApplicationKind::None,
             filters,
         );
 

@@ -5,12 +5,6 @@ rules:
     # tags that you can give a rule
     # you can execute a single rule from a config file
     # by calling e.g. `organize run config --path <path to config> --tags Test::EmptyFile,Test::EmptyFolder`
-    tags:
-      # tags is a list containing of either [!custom, !always_run, !never_run]:
-      # `!custom` following by a customized string
-      #  `!always_run` hardcoded tag to always run this rule
-      #  `!never_run` hardcoded tag to never run this rule
-      - !custom Test::EmptyFile
     # enabling and disabling a single rule [true, false]
     enabled: true
     # the locations organize will apply the filters to
@@ -22,18 +16,31 @@ rules:
         # depth for this location, seen from `path`
         # how deep organize should traverse the file system
         max_depth: 1
-    # filter groups, that organize operates with
-    # each filter group can contain many filters
-    filter_groups:
-      # the whole group can be excluded, which means that
-      # files/folders matching this filter will not be acted upon.
-      # Say, we want to match no empty files
-      - exclude: no
-        mode: must_apply
         # target kind, to what organize should apply the filters
         # to in this location, can be either [files, folders, both]
-        target: files # TODO: think if target is an attribute of FilterGroup or Location, what are the implications
-        filters:
+        target: files
+    # filter groups is a [list] that `organize`` operates with
+    # each filter group itself can contain one or more filters
+    filter_groups:
+      # a single filter_group
+      - filters:
           - empty
+        # the whole filter_group can be excluded or included into
+        # the result set [include, exclude]
+        results: include
+        # how the filter_group should be applied to the results
+        # can be either [all, any, none]
+        match: all
+    # TODO
     actions:
+      # TODO
       - !preview trash
+    # you can assign a [list] of tags to a rule, so you can
+    # run a single rule from a [list] of rules that a config file
+    # can contain
+    tags:
+      # tags is a [list] containing of either [!custom, !always_run, !never_run]:
+      # `!custom` following by a customized string
+      # `!always_run` hardcoded tag to always run this rule
+      # `!never_run` hardcoded tag to never run this rule
+      - !custom Test::EmptyFile

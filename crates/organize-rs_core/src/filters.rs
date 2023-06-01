@@ -42,52 +42,53 @@ impl FilterGroupCollection {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct FilterCollection(Vec<(FilterModeKind, FilterApplicationKind<FilterKind>)>);
+pub struct FilterCollection(Vec<(FilterApplicationKind, FilterOperationKind<FilterKind>)>);
 
 /// Should filters be negated
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
-pub enum FilterApplicationKind<T> {
+pub enum FilterOperationKind<T> {
     /// Invert {0}
     Invert(T),
     /// Apply {0}
     Apply(T),
 }
 
-/// Should filters be negated
+/// Should filter results be included or excluded
 #[derive(Debug, Clone, Deserialize, Serialize, Display, Copy)]
-pub enum RawFilterApplicationKind {
-    /// Invert
-    #[serde(rename = "yes")]
+pub enum FilterGroupOperationKind {
+    /// Exclude
+    #[serde(rename = "include")]
     Exclude,
-    /// Apply
-    #[serde(rename = "no")]
+    /// Include
+    #[serde(rename = "exclude")]
     Include,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub struct FilterGroup<T> {
-    pub exclude: RawFilterApplicationKind,
-    pub mode: FilterModeKind,
+    #[serde(rename = "results")]
+    pub operation: FilterGroupOperationKind,
+    #[serde(rename = "match")]
+    pub mode: FilterApplicationKind,
     pub filters: T,
 }
 
 /// Application of filters, so whether "all", "any" or "none"
 /// of the filters must apply
-
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(
     Debug, Clone, Deserialize, Serialize, Display, PartialEq, Eq, PartialOrd, Ord, Copy, Hash,
 )]
 #[non_exhaustive]
-pub enum FilterModeKind {
+pub enum FilterApplicationKind {
     /// All of the filters need to apply
-    #[serde(rename = "must_apply")]
+    #[serde(rename = "all")]
     All,
     /// Any of the filters need to apply
-    #[serde(rename = "can_apply")]
+    #[serde(rename = "any")]
     Any,
     /// None of the filters need to apply
-    #[serde(rename = "must_not_apply")]
+    #[serde(rename = "none")]
     None,
 }
 

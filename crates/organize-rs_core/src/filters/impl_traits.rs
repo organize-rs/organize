@@ -7,7 +7,7 @@ use itertools::{Either, Itertools};
 
 use crate::filters::{
     DateUnitKind, DuplicateKind, FilterApplicationKind, FilterCollection, FilterGroup,
-    FilterGroupCollection, FilterKind, FilterModeKind, RawFilterApplicationKind,
+    FilterGroupCollection, FilterGroupOperationKind, FilterKind, FilterOperationKind,
 };
 
 impl Default for FilterKind {
@@ -46,18 +46,18 @@ impl Display for FilterCollection {
 
         let (all, other): (Vec<_>, Vec<_>) =
             self.0.iter().partition_map(|(mode, filter)| match mode {
-                FilterModeKind::All => Either::Left((mode, filter)),
-                FilterModeKind::Any => Either::Right((mode, filter)),
-                FilterModeKind::None => Either::Right((mode, filter)),
+                FilterApplicationKind::All => Either::Left((mode, filter)),
+                FilterApplicationKind::Any => Either::Right((mode, filter)),
+                FilterApplicationKind::None => Either::Right((mode, filter)),
             });
 
         let (any, none): (Vec<_>, Vec<_>) =
             other
                 .into_iter()
                 .partition_map(|(mode, filter)| match mode {
-                    FilterModeKind::Any => Either::Left((mode, filter)),
-                    FilterModeKind::None => Either::Right((mode, filter)),
-                    FilterModeKind::All => {
+                    FilterApplicationKind::Any => Either::Left((mode, filter)),
+                    FilterApplicationKind::None => Either::Right((mode, filter)),
+                    FilterApplicationKind::All => {
                         unreachable!(
                             "We took already care of that variant, shouldn't exist in here."
                         )
@@ -241,14 +241,14 @@ impl Default for DuplicateKind {
     }
 }
 
-impl Default for FilterModeKind {
+impl Default for FilterApplicationKind {
     fn default() -> Self {
         Self::Any
     }
 }
 
 impl std::ops::Deref for FilterCollection {
-    type Target = Vec<(FilterModeKind, FilterApplicationKind<FilterKind>)>;
+    type Target = Vec<(FilterApplicationKind, FilterOperationKind<FilterKind>)>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -258,20 +258,20 @@ impl std::ops::Deref for FilterCollection {
 impl<T: Default> Default for FilterGroup<T> {
     fn default() -> Self {
         Self {
-            exclude: RawFilterApplicationKind::default(),
-            mode: FilterModeKind::default(),
+            operation: FilterGroupOperationKind::default(),
+            mode: FilterApplicationKind::default(),
             filters: T::default(),
         }
     }
 }
 
-impl Default for RawFilterApplicationKind {
+impl Default for FilterGroupOperationKind {
     fn default() -> Self {
         Self::Include
     }
 }
 
-impl<T> Default for FilterApplicationKind<T>
+impl<T> Default for FilterOperationKind<T>
 where
     T: Default,
 {

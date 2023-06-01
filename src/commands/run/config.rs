@@ -6,22 +6,26 @@ use abscissa_core::{status_err, Application, Command, Runnable};
 
 use anyhow::Result;
 use clap::Args;
-use organize_rs_core::{runner::Runner, state::Init};
+use organize_rs_core::{runner::Runner, state::Init, tags::Tag};
 
 use crate::application::ORGANIZE_APP;
 
-/// Run a *.ron config with organize
+/// Run rules from a config file with organize
 #[derive(Command, Debug, Args)]
 pub struct RunConfigCmd {
     /// path to a compatible config file containing organize rules
     #[arg(long)]
     path: PathBuf,
+
+    /// run rules from the config file that contain this tag(s)
+    #[arg(long)]
+    tags: Vec<Tag>,
 }
 
 impl RunConfigCmd {
     fn inner_run(&self) -> Result<()> {
         let runner = Runner::<Init>::load_config(&self.path);
-        let runner = runner.apply_filters();
+        let runner = runner.apply_filters(self.tags.clone());
         runner.preview_entries();
         // let runner = runner.advance();
         // let runner: Runner<AskConfirmation> = runner.get_confirmation();

@@ -17,8 +17,8 @@ pub mod tags;
 use crate::{
     error::{OrganizeResult, WalkerErrorKind},
     filters::{
-        FilterFilterClosureSliceMut, FilterGroup, FilterGroupCollection, FilterKind,
-        FilterModeKind, RawFilterApplicationKind,
+        FilterApplicationKind, FilterFilterClosureSliceMut, FilterGroup, FilterGroupCollection,
+        FilterGroupOperationKind, FilterKind,
     },
     locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
 };
@@ -64,7 +64,7 @@ impl FilteredFileWalker {
         // extract ignore filters
         let (mut ignore_filters, other_filters): (Vec<_>, Vec<_>) =
             filters.iter().partition_map(|filter| match filter.mode() {
-                FilterModeKind::None => Either::Left(filter),
+                FilterApplicationKind::None => Either::Left(filter),
                 _ => Either::Right(filter),
             });
 
@@ -72,8 +72,8 @@ impl FilteredFileWalker {
         let (mut any_filters, mut all_filters): (Vec<_>, Vec<_>) = other_filters
             .into_iter()
             .partition_map(|filter| match filter.mode() {
-                FilterModeKind::Any => Either::Left(filter),
-                FilterModeKind::All => Either::Right(filter),
+                FilterApplicationKind::Any => Either::Left(filter),
+                FilterApplicationKind::All => Either::Right(filter),
                 _ => unreachable!("There should be no items left in `FilterModeGroupKind::None`!"),
             });
 
@@ -142,12 +142,18 @@ impl FilteredFileWalker {
             .partition(|f| *f);
 
         match (filter_group.apply(), filter_group.mode()) {
-            (RawFilterApplicationKind::Exclude, FilterModeKind::All)
-            | (RawFilterApplicationKind::Include, FilterModeKind::All) => not_matched.is_empty(),
-            (RawFilterApplicationKind::Exclude, FilterModeKind::Any)
-            | (RawFilterApplicationKind::Include, FilterModeKind::Any) => !matched.is_empty(),
-            (RawFilterApplicationKind::Exclude, FilterModeKind::None)
-            | (RawFilterApplicationKind::Include, FilterModeKind::None) => matched.is_empty(),
+            (FilterGroupOperationKind::Exclude, FilterApplicationKind::All)
+            | (FilterGroupOperationKind::Include, FilterApplicationKind::All) => {
+                not_matched.is_empty()
+            }
+            (FilterGroupOperationKind::Exclude, FilterApplicationKind::Any)
+            | (FilterGroupOperationKind::Include, FilterApplicationKind::Any) => {
+                !matched.is_empty()
+            }
+            (FilterGroupOperationKind::Exclude, FilterApplicationKind::None)
+            | (FilterGroupOperationKind::Include, FilterApplicationKind::None) => {
+                matched.is_empty()
+            }
         }
     }
 

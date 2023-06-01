@@ -11,7 +11,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     actions::{ActionApplicationCollection, ActionApplicationKind, ActionKind},
     filters::{
-        FilterGroup, FilterGroupCollection, FilterKind, FilterModeKind, RawFilterApplicationKind,
+        FilterApplicationKind, FilterGroup, FilterGroupCollection, FilterGroupOperationKind,
+        FilterKind,
     },
     locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
     tags::{Tag, TagCollection},
@@ -232,8 +233,8 @@ pub fn empty_file_rule() -> Rule {
     Rule::builder()
         .name("Empty File")
         .filter_group(FilterGroup {
-            exclude: RawFilterApplicationKind::Include,
-            mode: FilterModeKind::All,
+            operation: FilterGroupOperationKind::Include,
+            mode: FilterApplicationKind::All,
             filters: vec![FilterKind::Empty],
         })
         .action(ActionApplicationKind::Preview(ActionKind::Trash))
@@ -250,8 +251,8 @@ pub fn empty_folder_rule() -> Rule {
     Rule::builder()
         .name("Empty Directory")
         .filter_group(FilterGroup {
-            exclude: RawFilterApplicationKind::Include,
-            mode: FilterModeKind::All,
+            operation: FilterGroupOperationKind::Include,
+            mode: FilterApplicationKind::All,
             filters: vec![FilterKind::Empty],
         })
         .action(ActionApplicationKind::Preview(ActionKind::Trash))
@@ -268,8 +269,8 @@ pub fn pdf_on_desktop_rule() -> Rule {
     Rule::builder()
         .name("PDFs on Desktop")
         .filter_group(FilterGroup {
-            exclude: RawFilterApplicationKind::Include,
-            mode: FilterModeKind::All,
+            operation: FilterGroupOperationKind::Include,
+            mode: FilterApplicationKind::All,
             filters: vec![FilterKind::Extension {
                 exts: vec![String::from("pdf")],
             }],

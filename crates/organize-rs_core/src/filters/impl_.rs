@@ -8,8 +8,8 @@ use crate::{
     error::FilterErrorKind,
     filters::{
         CullKind, DateUnitKind, DuplicateKind, FilterApplicationKind, FilterClosure,
-        FilterCollection, FilterGroup, FilterKind, FilterModeKind, NameFilterArgs,
-        RawFilterApplicationKind, RecursiveFilterArgs,
+        FilterCollection, FilterGroup, FilterGroupOperationKind, FilterKind, FilterOperationKind,
+        NameFilterArgs, RecursiveFilterArgs,
     },
     parsers::{PeriodRange, SizeRange},
 };
@@ -106,11 +106,11 @@ impl FilterKind {
 
             let file_stem = make_lowercase_if(file_stem);
 
-            let to_filter_applikation_kind = |string: String| -> FilterApplicationKind<String> {
+            let to_filter_applikation_kind = |string: String| -> FilterOperationKind<String> {
                 if !string.starts_with(Self::NEGATE_STRING) {
-                    FilterApplicationKind::Apply(string)
+                    FilterOperationKind::Apply(string)
                 } else {
-                    FilterApplicationKind::Invert({
+                    FilterOperationKind::Invert({
                         string
                             .strip_prefix(Self::NEGATE_STRING)
                             .map_or_else(|| string.clone(), |f| f.to_owned())
@@ -118,31 +118,31 @@ impl FilterKind {
                 }
             };
 
-            let contains_filter =
-                |wrapped_string: FilterApplicationKind<String>| match wrapped_string {
-                    FilterApplicationKind::Invert(invert) => match file_stem.contains(&invert) {
-                        true => Err(FilterErrorKind::InvertedItem(invert)),
-                        false => Ok(false),
-                    },
-                    FilterApplicationKind::Apply(apply) => Ok(file_stem.contains(&apply)),
-                };
+            let contains_filter = |wrapped_string: FilterOperationKind<String>| match wrapped_string
+            {
+                FilterOperationKind::Invert(invert) => match file_stem.contains(&invert) {
+                    true => Err(FilterErrorKind::InvertedItem(invert)),
+                    false => Ok(false),
+                },
+                FilterOperationKind::Apply(apply) => Ok(file_stem.contains(&apply)),
+            };
 
             let starts_with_filter =
-                |wrapped_string: FilterApplicationKind<String>| match wrapped_string {
-                    FilterApplicationKind::Invert(invert) => match file_stem.starts_with(&invert) {
+                |wrapped_string: FilterOperationKind<String>| match wrapped_string {
+                    FilterOperationKind::Invert(invert) => match file_stem.starts_with(&invert) {
                         true => Err(FilterErrorKind::InvertedItem(invert)),
                         false => Ok(false),
                     },
-                    FilterApplicationKind::Apply(apply) => Ok(file_stem.starts_with(&apply)),
+                    FilterOperationKind::Apply(apply) => Ok(file_stem.starts_with(&apply)),
                 };
 
             let ends_with_filter =
-                |wrapped_string: FilterApplicationKind<String>| match wrapped_string {
-                    FilterApplicationKind::Invert(invert) => match file_stem.ends_with(&invert) {
+                |wrapped_string: FilterOperationKind<String>| match wrapped_string {
+                    FilterOperationKind::Invert(invert) => match file_stem.ends_with(&invert) {
                         true => Err(FilterErrorKind::InvertedItem(invert)),
                         false => Ok(false),
                     },
-                    FilterApplicationKind::Apply(apply) => Ok(file_stem.ends_with(&apply)),
+                    FilterOperationKind::Apply(apply) => Ok(file_stem.ends_with(&apply)),
                 };
 
             let (contains_oks, contains_errs): (Vec<_>, Vec<_>) = contains
@@ -365,7 +365,7 @@ impl DateUnitKind {
     }
 }
 
-impl<T> FilterApplicationKind<T> {
+impl<T> FilterOperationKind<T> {
     /// Returns `true` if the apply or negate filter is [`Apply`].
     ///
     /// [`Apply`]: ApplyOrNegateFilter::Apply
@@ -421,21 +421,24 @@ impl FilterCollection {
     }
 
     pub fn from_vec(
-        filter_collection: Vec<(FilterModeKind, FilterApplicationKind<FilterKind>)>,
+        filter_collection: Vec<(FilterApplicationKind, FilterOperationKind<FilterKind>)>,
     ) -> Self {
         Self(filter_collection)
     }
 
-    pub fn decompose(self) -> Vec<(FilterModeKind, FilterApplicationKind<FilterKind>)> {
+    pub fn decompose(self) -> Vec<(FilterApplicationKind, FilterOperationKind<FilterKind>)> {
         self.0
     }
 
-    pub fn push(&mut self, filter_collection: (FilterModeKind, FilterApplicationKind<FilterKind>)) {
+    pub fn push(
+        &mut self,
+        filter_collection: (FilterApplicationKind, FilterOperationKind<FilterKind>),
+    ) {
         self.0.push(filter_collection)
     }
 }
 
-impl FilterModeKind {
+impl FilterApplicationKind {
     /// Returns `true` if the organize filter mode is [`All`].
     ///
     /// [`All`]: OrganizeFilterMode::All
@@ -496,12 +499,12 @@ impl DuplicateKind {
 }
 
 impl FilterGroup<Vec<FilterKind>> {
-    pub fn set_mode(&mut self, mode: FilterModeKind) {
+    pub fn set_mode(&mut self, mode: FilterApplicationKind) {
         self.mode = mode;
     }
 
-    pub fn set_apply(&mut self, apply: RawFilterApplicationKind) {
-        self.exclude = apply;
+    pub fn set_apply(&mut self, apply: FilterGroupOperationKind) {
+        self.operation = apply;
     }
 
     pub fn set_filters(&mut self, filters: Vec<FilterKind>) {
@@ -510,19 +513,19 @@ impl FilterGroup<Vec<FilterKind>> {
 }
 
 impl<T> FilterGroup<T> {
-    pub fn new(apply: RawFilterApplicationKind, mode: FilterModeKind, filters: T) -> Self {
+    pub fn new(apply: FilterGroupOperationKind, mode: FilterApplicationKind, filters: T) -> Self {
         Self {
-            exclude: apply,
+            operation: apply,
             mode,
             filters,
         }
     }
 
-    pub fn apply(&self) -> RawFilterApplicationKind {
-        self.exclude
+    pub fn apply(&self) -> FilterGroupOperationKind {
+        self.operation
     }
 
-    pub fn mode(&self) -> FilterModeKind {
+    pub fn mode(&self) -> FilterApplicationKind {
         self.mode
     }
 
