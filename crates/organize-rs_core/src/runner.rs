@@ -3,7 +3,7 @@ use std::{collections::HashSet, path::Path};
 use crate::{
     config::OrganizeConfig,
     state::{HandleConflicts, Init, Inspect, ProcessingState, Start},
-    tags::Tag,
+    tags::{Tag, TagCollection},
     FilteredFileWalker,
 };
 
@@ -33,12 +33,8 @@ impl Runner<Start> {
         let mut entries = vec![];
         self.config.rules().iter().for_each(|rule| {
             if rule.enabled() & !rule.tags().contains(&Tag::Never) {
-                // check the tags in a rule
-                let tag_applies = if !tags.is_empty() {
-                    Self::tag_applies(rule, &tags)
-                } else {
-                    None
-                };
+                let tag_collection = rule.tags();
+                let tag_applies = Self::tag_applies(&tag_collection, &tags);
 
                 match tag_applies {
                     Some(true) | None => {
@@ -59,11 +55,15 @@ impl Runner<Start> {
         }
     }
 
-    fn tag_applies(rule: &crate::rules::Rule, tags: &[Tag]) -> Option<bool> {
-        let tag_collection = rule.tags();
-        let rule_tag_set: HashSet<&Tag> = HashSet::from_iter(tag_collection.iter());
-        let cli_tag_set: HashSet<&Tag> = HashSet::from_iter(tags.iter());
-        Some(!rule_tag_set.is_disjoint(&cli_tag_set))
+    /// Checks if a given [`Tag`] is in a [`TagCollection`] of a [`crate::rules::Rule`]
+    fn tag_applies(tag_collection: &TagCollection, tags: &[Tag]) -> Option<bool> {
+        if !tags.is_empty() {
+            let rule_tag_set: HashSet<&Tag> = HashSet::from_iter(tag_collection.iter());
+            let cli_tag_set: HashSet<&Tag> = HashSet::from_iter(tags.iter());
+            Some(!rule_tag_set.is_disjoint(&cli_tag_set))
+        } else {
+            None
+        }
     }
 }
 
