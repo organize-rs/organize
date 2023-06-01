@@ -61,6 +61,8 @@ fn test_matches_date_passes(#[case] time: i64, #[case] period: PeriodRange) {
     assert!(FilterKind::matches_date(time, &period))
 }
 
+// TODO we could use a lookup table generated at compile time with
+// TODO <https://crates.io/crates/phf_codegen>
 #[rstest]
 #[should_panic]
 fn test_filter_mimetype_image_fails() {

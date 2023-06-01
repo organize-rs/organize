@@ -40,7 +40,7 @@ rules:
     # can contain
     tags:
       # tags is a [list] containing of either [!custom, !always_run, !never_run]:
-      # `!custom` following by a customized string
+      # `!custom xyz` followed by a string that represents the tag
       # `!always_run` hardcoded tag to always run this rule
       # `!never_run` hardcoded tag to never run this rule
       - !custom Test::EmptyFile
