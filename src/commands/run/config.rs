@@ -24,9 +24,11 @@ pub struct RunConfigCmd {
 
 impl RunConfigCmd {
     fn inner_run(&self) -> Result<()> {
-        let runner = Runner::<Init>::load_config(&self.path);
-        let runner = runner.apply_filters(self.tags.clone());
-        runner.preview_entries();
+        let runner = Runner::<Init>::load_config(&self.path)
+            .apply_filters(self.tags.clone())
+            .preview_entries();
+        // ? Check how we can make state transitions better
+        // ? https://www.novatec-gmbh.de/en/blog/the-case-for-the-typestate-pattern-the-typestate-pattern-itself/
         // let runner = runner.advance();
         // let runner: Runner<AskConfirmation> = runner.get_confirmation();
         // let runner: Runner<ApplyActions> = runner.apply_actions();

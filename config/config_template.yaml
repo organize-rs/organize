@@ -31,9 +31,15 @@ rules:
         # how the filter_group should be applied to the results
         # can be either [all, any, none]
         match: all
-    # TODO
+    # actions that organize can apply to matched result entries
     actions:
-      # TODO
+      # an action can either be run in `!preview` or `!destructive` mode
+      # `!preview` will give a brief overview of what consequences an
+      # applied action will have without making any changes to the file
+      # system
+      # `!destructive` will run an action destructively, it will
+      # ask though to confirm some actions, e.g. when conflicts are
+      # existing and we are unsure how to continue
       - !preview trash
     # you can assign a [list] of tags to a rule, so you can
     # run a single rule from a [list] of rules that a config file

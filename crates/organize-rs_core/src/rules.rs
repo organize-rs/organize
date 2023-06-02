@@ -318,7 +318,7 @@ mod tests {
             filter_groups: FilterGroupCollection(
                 [
                     FilterGroup {
-                        invert: Apply,
+                        operation: Include,
                         mode: All,
                         filters: [
                             Empty,
@@ -335,18 +335,18 @@ mod tests {
             ),
         }
         "###);
-        insta::assert_display_snapshot!(rule, @r###"
+        insta::assert_display_snapshot!(rule, @r###"""
 
             Rule - Empty Directory (false)
 
             Tags: TagCollection([Custom("Test::EmptyDirectory")])
             Locations: LocationCollection([RecursiveWithMaxDepth { path: "crates\\organize-rs_core\\tests\\fixtures\\filters\\empty_folder", max_depth: MaxDepth(1), target: Directories }])
 
-            Filters: FilterGroupCollection([FilterGroup { invert: Apply, mode: All, filters: [Empty] }])
+            Filters: FilterGroupCollection([FilterGroup { operation: Include, mode: All, filters: [Empty] }])
 
             Actions: ActionApplicationCollection([Preview(Trash)])
                 
-        "###);
+        """###);
         insta::assert_yaml_snapshot!(rule, @r###"
         ---
         name: Empty Directory
@@ -359,8 +359,8 @@ mod tests {
               max_depth: 1
               target: folders
         filter_groups:
-          - invert: "no"
-            mode: must_apply
+          - results: include
+            match: all
             filters:
               - empty
         actions:
@@ -396,7 +396,7 @@ mod tests {
             filter_groups: FilterGroupCollection(
                 [
                     FilterGroup {
-                        invert: Apply,
+                        operation: Include,
                         mode: All,
                         filters: [
                             Extension {
@@ -424,12 +424,12 @@ mod tests {
             Tags: TagCollection([Custom("Documents::PDF")])
             Locations: LocationCollection([RecursiveWithMaxDepth { path: "C:\\Users\\dailyuse\\Desktop", max_depth: MaxDepth(4), target: Files }])
 
-            Filters: FilterGroupCollection([FilterGroup { invert: Apply, mode: All, filters: [Extension { exts: ["pdf"] }] }])
+            Filters: FilterGroupCollection([FilterGroup { operation: Include, mode: All, filters: [Extension { exts: ["pdf"] }] }])
 
             Actions: ActionApplicationCollection([Preview(NoAction)])
                 
         "###);
-        insta::assert_yaml_snapshot!(rule, @r###"
+        insta::assert_yaml_snapshot!(rule, @r###"""
         ---
         name: PDFs on Desktop
         tags:
@@ -441,13 +441,13 @@ mod tests {
               max_depth: 4
               target: files
         filter_groups:
-          - invert: "no"
-            mode: must_apply
+          - results: include
+            match: all
             filters:
               - extension:
                   exts: pdf
         actions:
           - preview: do_nothing
-        "###);
+        """###);
     }
 }
