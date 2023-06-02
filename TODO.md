@@ -7,7 +7,6 @@
         - how many/which filters are affected?
             - does it make sense overall?
     - need to move filter for `TargetKind` to a later stage?
-1. Fully annotate template config
 1. implement doctests for filters (so the yaml syntax is clear)
 1. generate example configs for integration test cases
     - check against py-organize documentation for feature parity

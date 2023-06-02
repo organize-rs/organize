@@ -78,6 +78,17 @@ impl OrganizeConfig {
         }
     }
 
+    pub fn load_from_string(string: &str, format: ConfigFileFormat) -> Self {
+        match format {
+            ConfigFileFormat::Yaml => {
+                serde_yaml::from_str(string).expect("config file parsing shouldn't fail")
+            }
+            ConfigFileFormat::Json => todo!(),
+            ConfigFileFormat::Toml => todo!(),
+            ConfigFileFormat::Ron => todo!(),
+        }
+    }
+
     pub fn load_from_file(path: impl AsRef<Path>) -> Self {
         let file = std::fs::File::open(path.as_ref()).expect("opening file shouldn't fail");
 

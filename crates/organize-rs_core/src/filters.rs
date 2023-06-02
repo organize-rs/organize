@@ -195,17 +195,31 @@ pub enum FilterKind {
     ///
     /// Show the date the file was added to the folder
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// let rule = r#"
     /// rules:
     ///    - name: Show the date the file was added to the folder
-    ///      locations: "~/Desktop"
-    ///      filters:
-    ///        - date_added
+    ///      enabled: true
+    ///      locations:
+    ///         - !non_recursive
+    ///           path: ~/Desktop
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - date_added
+    ///              range: 3d..14d
+    ///          results: include
+    ///          match: all
     ///      actions:
-    ///        - echo: "Date added: {date_added.strftime('%Y-%m-%d')}"
+    ///        - !preview echo: "Date added: {date_added.strftime('%Y-%m-%d')}"
+    ///      tags:
+    ///        - !custom Test::DateAdded
+    /// "#;
+    /// let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[cfg(target_os = "osx")]
-    #[serde(rename = "added")]
+    #[serde(rename = "date_added")]
     Added {
         /// This filter uses the `range` syntax (always inclusive) of Rust.
         /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
@@ -224,6 +238,34 @@ pub enum FilterKind {
     /// Careful! All items are returned, meaning in combination with
     /// an action like `Trash` it would move *all* files/folders to
     /// the trash bin.
+    ///
+    /// # Example
+    ///
+    /// Show all items in a folder
+    ///
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// let rule = r#"
+    /// rules:
+    ///    - name: Show all items in a folder
+    ///      enabled: true
+    ///      locations:
+    ///         - !non_recursive
+    ///           path: ~/Desktop
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - all_items
+    ///              i_agree_it_is_dangerous: true
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview echo: "Item: {all_items}"
+    ///      tags:
+    ///        - !custom Test::AllItems
+    /// "#;
+    /// let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
+    /// ```
     #[serde(rename = "all_items")]
     AllItems {
         #[cfg_attr(feature = "cli", arg(long))]
@@ -239,15 +281,32 @@ pub enum FilterKind {
     ///
     /// Sort pdfs by year of creation
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// let rule = r#"
     /// rules:
     ///    - name: Sort pdfs by year of creation
-    ///      locations: "~/Documents"
-    ///      filters:
-    ///        - extension: pdf
-    ///        - created
+    ///      enabled: true
+    ///      locations:
+    ///         - !non_recursive
+    ///           path: ~/Desktop
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - extension
+    ///              exts: pdf
+    ///            - created
+    ///              range: 6m..
+    ///          results: include
+    ///          match: all
     ///      actions:
-    ///        - move: "~/Documents/PDF/{created.year}/"
+    ///        - !preview move:
+    ///          path: ~/Documents/PDF/{metadata.year}/
+    ///          on_conflict: skip
+    ///      tags:
+    ///        - !custom Test::Created
+    /// "#;
+    /// let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "created")]
     Created {

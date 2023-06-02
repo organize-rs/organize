@@ -73,7 +73,6 @@ serde_with = { workspace = true }
 rustup-toolchain = "0.1.4"
 rustdoc-json = "0.8.5"
 public-api = "0.30.0"
-expect-test = "1.4.1"
 rstest = { workspace = true }
 quickcheck = { workspace = true }
 quickcheck_macros = { workspace = true }

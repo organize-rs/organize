@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use displaydoc::Display;
 use serde::{Deserialize, Serialize};
 
@@ -6,72 +8,42 @@ use clap::ValueEnum;
 
 /// Actions for conflict resolution
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub enum OnConflictKind {
     /// Keep the biggest item
+    #[serde(rename = "biggest")]
     Biggest,
     /// Keep the newest item
+    #[serde(rename = "keep_newer")]
     KeepNewer,
     /// Keep the oldest item
+    #[serde(rename = "keep_older")]
     KeepOlder,
     /// Move the item to a folder for further inspection
-    MoveToFolder,
+    #[cfg_attr(feature = "cli", clap(skip))]
+    #[serde(rename = "move_to")]
+    MoveToFolder { path: PathBuf },
     /// Overwrite the item
+    #[serde(rename = "overwrite")]
     Overwrite,
     /// Overwrite the item if it is empty
+    #[serde(rename = "overwrite_empty")]
     OverwriteEmpty,
     /// Rename the initial item
+    #[serde(rename = "rename_existing")]
     RenameExisting,
     /// Rename the newly created item
+    #[serde(rename = "rename_new")]
     RenameNew,
     /// Skip the item
+    #[serde(rename = "skip")]
     Skip,
     /// Keep the smallest item
+    #[serde(rename = "smallest")]
     Smallest,
-    /// Move the item to trash
+    /// Move all but the first item discovered to the trash
+    #[serde(rename = "trash")]
     Trash,
-}
-
-impl OnConflictKind {
-    /// Returns `true` if [`OnConflict`] is [`Skip`].
-    ///
-    /// [`Skip`]: OnConflict::Skip
-    #[must_use]
-    pub fn is_skip(&self) -> bool {
-        matches!(self, Self::Skip)
-    }
-
-    /// Returns `true` if [`OnConflict`] is [`Overwrite`].
-    ///
-    /// [`Overwrite`]: OnConflict::Overwrite
-    #[must_use]
-    pub fn is_overwrite(&self) -> bool {
-        matches!(self, Self::Overwrite)
-    }
-
-    /// Returns `true` if [`OnConflict`] is [`Trash`].
-    ///
-    /// [`Trash`]: OnConflict::Trash
-    #[must_use]
-    pub fn is_trash(&self) -> bool {
-        matches!(self, Self::Trash)
-    }
-
-    /// Returns `true` if [`OnConflict`] is [`RenameNew`].
-    ///
-    /// [`RenameNew`]: OnConflict::RenameNew
-    #[must_use]
-    pub fn is_rename_new(&self) -> bool {
-        matches!(self, Self::RenameNew)
-    }
-
-    /// Returns `true` if [`OnConflict`] is [`RenameExisting`].
-    ///
-    /// [`RenameExisting`]: OnConflict::RenameExisting
-    #[must_use]
-    pub fn is_rename_existing(&self) -> bool {
-        matches!(self, Self::RenameExisting)
-    }
 }
 
 impl Default for OnConflictKind {
