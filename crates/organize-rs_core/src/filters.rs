@@ -302,7 +302,6 @@ pub enum FilterKind {
     ///            - extension
     ///              exts: pdf
     ///            - created
-    ///              range: 6m..
     ///          results: include
     ///          match: all
     ///      actions:
@@ -370,11 +369,12 @@ pub enum FilterKind {
     ///          match: all
     ///      actions:
     ///        - !preview echo:
-    ///          msg: "{entry.duplicate} is a duplicate of {entry.original}"
+    ///          msg: "{{entry.duplicate}} is a duplicate of {{entry.original}}"
     ///      tags:
     ///        - !custom Test::Duplicate
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
+    /// ```
     #[serde(rename = "duplicate")]
     Duplicate {
         #[cfg_attr(feature = "cli", arg(long))]
@@ -388,16 +388,28 @@ pub enum FilterKind {
     ///
     /// Recursively delete empty folders
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - targets: dirs
-    ///     locations:
-    ///       - path: ~/Desktop
-    ///         max_depth: null
-    ///     filters:
-    ///       - empty
-    ///     actions:
-    ///       - delete
+    ///    - name: Recursively delete empty folders
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Desktop
+    ///           max_depth: 10
+    ///           target: folders
+    ///      filter_groups:
+    ///        - filters:
+    ///            - empty
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview delete
+    ///      tags:
+    ///        - !custom Test::EmptyFolders
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "empty")]
     Empty,
@@ -419,21 +431,35 @@ pub enum FilterKind {
     /// # Example
     ///
     /// Copy all images which contain GPS information while keeping
-    /// subfolder structure:
+    /// subfolder structure
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: "GPS demo"
-    ///     locations:
-    ///       - path: ~/Pictures
-    ///         max_depth: null
-    ///     filters:
-    ///       - exif: gps.gpsdate
-    ///     actions:
-    ///       - copy: ~/Pictures/with_gps/{relative_path}/
+    ///    - name: Copy all images which contain GPS information
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Pictures
+    ///           max_depth: 10
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - exif
+    ///              contains: gps.gpsdate
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview copy
+    ///          dst: ~/Pictures/with_gps/{{relative_path}}/
+    ///      tags:
+    ///        - !custom Test::ExifGps
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "exif")]
-    Exif,
+    Exif { contains: Vec<String> },
     /// Match locations by their file extension
     ///
     /// # Result
@@ -444,16 +470,30 @@ pub enum FilterKind {
     ///
     /// Match multiple file extensions
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: "Match multiple file extensions"
-    ///     locations: "~/Desktop"
-    ///     filters:
-    ///       - extension:
-    ///           - .jpg
-    ///           - jpeg
-    ///     actions:
-    ///       - echo: "Found JPG file: {path}"
+    ///    - name: Match multiple file extensions
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Desktop
+    ///           max_depth: 10
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - extension
+    ///              exts: ".jpg,jpeg"
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview echo
+    ///          msg: "Found JPG file: {{entry.path}}"
+    ///      tags:
+    ///        - !custom Test::Extension
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "extension")]
     Extension {
@@ -475,19 +515,35 @@ pub enum FilterKind {
     ///
     /// Match an invoice with a regular expression and sort by customer
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: "Match an invoice with a regular expression and sort by customer"
-    ///     locations: "~/Desktop"
-    ///     filters:
-    ///       - filecontent: 'Invoice.*Customer (?P<customer>\w+)'
-    ///     actions:
-    ///       - move: "~/Documents/Invoices/{filecontent.customer}/"
+    ///    - name: Match an invoice with a regular expression and sort by customer
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Desktop
+    ///           max_depth: 10
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - file_content
+    ///              expr: 'Invoice.*Customer (?P<customer>\w+)'
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview move
+    ///          dst: ~/Documents/Invoices/{{file_content.customer}}/
+    ///      tags:
+    ///        - !custom Test::FileContent
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "file_content")]
     FileContent {
         #[cfg_attr(feature = "cli", arg(long))]
-        regex: String,
+        expr: String,
     },
     // TODO: Check for available hash algorithms from organize-py
     // TODO: shake_256, sha3_256, sha1, sha3_224, sha384, sha512, blake2b,
@@ -500,22 +556,69 @@ pub enum FilterKind {
     ///
     /// # Example
     ///
-    /// Show the hashes of your files:
+    /// Show the hashes and size of your files
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: "Show the hashes and size of your files"
-    ///     locations: "~/Desktop"
-    ///     filters:
-    ///       - hash
-    ///       - size
-    ///     actions:
-    ///       - echo: "{hash} {size.decimal}"
+    ///    - name: Show the hashes and size of your files
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Desktop
+    ///           max_depth: 10
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - hash
+    ///            - size
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview echo
+    ///          msg: "{{hash}} {{size.decimal}}"
+    ///      tags:
+    ///        - !custom Test::Hash
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[cfg(feature = "research_organize")]
     #[serde(rename = "hash")]
     Hash,
     /// Defines a string that makes organize skip a location when found in the file name
+    ///
+    /// # Example
+    ///
+    /// Ignore file name
+    ///
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
+    /// rules:
+    ///    - name: Ignore file name
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Development
+    ///           max_depth: 10
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - extension
+    ///              exts: "toml"
+    ///            - ignore_filename
+    ///              in_name: "Cargo"
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview echo
+    ///          msg: "Files discovered: {{entry}}"
+    ///      tags:
+    ///        - !custom Test::IgnoreName
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
+    /// ```
     #[serde(rename = "ignore_filename")]
     IgnoreName {
         /// Matches for these Strings in the Filename
@@ -524,6 +627,38 @@ pub enum FilterKind {
         in_name: Vec<String>,
     },
     /// Defines a string that makes organize skip a location when found in the full path
+    ///
+    /// # Example
+    ///
+    /// Ignore in path
+    ///
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
+    /// rules:
+    ///    - name: Ignore in path
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Development
+    ///           max_depth: 10
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - extension
+    ///              exts: "toml"
+    ///            - ignore_path
+    ///              in_path: ".git"
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview echo
+    ///          msg: "Files discovered: {{entry}}"
+    ///      tags:
+    ///        - !custom Test::IgnorePath
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
+    /// ```
     #[serde(rename = "ignore_path")]
     IgnorePath {
         /// Matches for these Strings in the whole Path
@@ -539,16 +674,31 @@ pub enum FilterKind {
     ///
     /// # Example
     ///
-    /// Show the date the location last accessed
+    /// Show the date the location was last accessed
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
     ///    - name: Show the date the location was last accessed
-    ///      locations: "~/Desktop"
-    ///      filters:
-    ///        - last_accessed
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Desktop
+    ///           max_depth: 10
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - last_accessed
+    ///          results: include
+    ///          match: all
     ///      actions:
-    ///        - echo: "Date last used: {last_accessed.strftime('%Y-%m-%d')}"
+    ///        - !preview echo
+    ///          msg: "Date last used: {{entry.metadata.last_accessed}}"
+    ///      tags:
+    ///        - !custom Test::LastAccessed
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "last_accessed")]
     LastAccessed {
@@ -572,15 +722,32 @@ pub enum FilterKind {
     ///
     /// Sort pdfs by year of last modification
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: "Sort pdfs by year of last modification"
-    ///     locations: "~/Documents"
-    ///     filters:
-    ///       - extension: pdf
-    ///       - lastmodified
-    ///     actions:
-    ///       - move: "~/Documents/PDF/{lastmodified.year}/"
+    ///    - name: Sort pdfs by year of last modification
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Desktop
+    ///           max_depth: 10
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - last_modified
+    ///            - extension:
+    ///              exts: "pdf"
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview move
+    ///          dst: ~/Documents/PDF/{{entry.metadata.lastmodified.year}}/
+    ///          on_conflict: skip
+    ///      tags:
+    ///        - !custom Test::LastModified
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "last_modified")]
     LastModified {
@@ -600,16 +767,30 @@ pub enum FilterKind {
     ///
     /// All locations with a tag 'Invoice' (any color) or with a green tag
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: "All locations with a tag 'Invoice' (any color) or with a green tag"
-    ///     locations: "~/Downloads"
-    ///     filters:
-    ///       - macos_tags:
-    ///           - "Invoice (*)"
-    ///           - "* (green)"
-    ///     actions:
-    ///       - echo: "Match found!"
+    ///    - name: All locations with a tag 'Invoice' (any color) or with a green tag
+    ///      enabled: true
+    ///      locations:
+    ///         - !non_recursive
+    ///           path: ~/Downloads
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///           - macos_tags:
+    ///             - "Invoice (*)"
+    ///             - "* (green)"
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview echo
+    ///          msg: "Match found!"
+    ///      tags:
+    ///        - !custom Test::MacOsTags
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[cfg(target_os = "osx")]
     #[serde(rename = "macos_tags")]
@@ -632,21 +813,35 @@ pub enum FilterKind {
     ///
     /// Filter by 'image' mimetype
     ///
-    /// ```yaml
-    ///
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: "Filter by 'image' mimetype"
-    ///     locations: "~/Downloads"
-    ///     filters:
-    ///       - mimetype: image
-    ///     actions:
-    ///       - echo: "This file is an image: {mimetype}"
+    ///    - name: Filter by 'image' mimetype
+    ///      enabled: true
+    ///      locations:
+    ///         - !non_recursive
+    ///           path: ~/Downloads
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///           - mimetype:
+    ///             mime: image/*
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview echo
+    ///          msg: "This file is an image: {{entry.mimetype}}"
+    ///      tags:
+    ///        - !custom Test::Mimetype
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "mimetype")]
     Mimetype {
         #[cfg_attr(feature = "cli", arg(long))]
         #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
-        mimetype: Vec<String>,
+        mime: Vec<String>,
     },
     /// Match locations by their name
     ///
@@ -655,21 +850,32 @@ pub enum FilterKind {
     /// Match all locations starting with 'A' or 'B' containing '5' or
     /// '6' and ending with '_end'.
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - locations: "~/Desktop"
-    ///     filters:
-    ///       - name:
-    ///           startswith:
-    ///             - "A"
-    ///             - "B"
-    ///           contains:
-    ///             - "5"
-    ///             - "6"
-    ///           endswith: _end
-    ///           case_sensitive: false
-    ///     actions:
-    ///       - echo: "Found a match."
+    ///    - name: Match locations by name
+    ///      enabled: true
+    ///      locations:
+    ///         - !non_recursive
+    ///           path: ~/Desktop
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///           - name:
+    ///             starts_with: "A,B"
+    ///             ends_with: "_end"
+    ///             contains: "5,6"
+    ///             case_insensitive: true
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview echo
+    ///          msg: "Found a match {{entry}}."
+    ///      tags:
+    ///        - !custom Test::Name
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "name")]
     Name {
@@ -683,13 +889,39 @@ pub enum FilterKind {
         #[serde(rename = "case_sensitive")]
         case_insensitive: bool,
     },
-    /// Don't use any filter
+    /// Don't use any filter (Default)
     ///
     /// # Result
     ///
     /// Empty / no items due to the risk otherwise if it's used in
     /// combination with an action, that the action will be applied
     /// to all results.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
+    /// rules:
+    ///    - name: No locations
+    ///      enabled: true
+    ///      locations:
+    ///         - !non_recursive
+    ///           path: ~/Desktop
+    ///           target: both
+    ///      filter_groups:
+    ///        - filters:
+    ///           - no_items
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview echo
+    ///          msg: "Running on NoFilter."
+    ///      tags:
+    ///        - !custom Test::NoFilter
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
+    /// ```
     #[serde(rename = "no_items")]
     NoFilter,
     /// Match filenames with the given regular expression
@@ -707,13 +939,30 @@ pub enum FilterKind {
     /// and rename the invoice using the invoice number extracted via the
     /// regular expression
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - locations: ~/Desktop
-    ///     filters:
-    ///       - regex: '^RG(?P<the_number>\d{12})-sig\.pdf$'
-    ///     actions:
-    ///       - move: ~/Documents/Invoices/1und1/{regex.the_number}.pdf
+    ///    - name: Match an invoice with a regular expression
+    ///      enabled: true
+    ///      locations:
+    ///         - !non_recursive
+    ///           path: ~/Desktop
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///           - regex
+    ///             expr: '^RG(?P<the_number>\d{12})-sig\.pdf$'
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview move
+    ///          dst: ~/Documents/Invoices/1und1/{{regex.the_number}}.pdf
+    ///          on_conflict: skip
+    ///      tags:
+    ///        - !custom Test::Regex
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "regex")]
     Regex {
@@ -744,14 +993,28 @@ pub enum FilterKind {
     ///
     /// Trash big downloads
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - locations: "~/Downloads"
-    ///     target: files
-    ///     filters:
-    ///       - size: "0.5GB.."
-    ///     actions:
-    ///       - trash
+    ///    - name: Trash big downloads
+    ///      enabled: true
+    ///      locations:
+    ///         - !non_recursive
+    ///           path: ~/Downloads
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///           - size
+    ///             range: 0.5GB..
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview trash
+    ///      tags:
+    ///        - !custom Test::TrashDownloads
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     ///
     /// # Example
@@ -759,18 +1022,31 @@ pub enum FilterKind {
     /// Move all JPEGs bigger > 1MB and <10 MB. Search all subfolders and
     /// keep the original relative path.
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - locations:
-    ///       - path: "~/Pictures"
-    ///         max_depth: null
-    ///     filters:
-    ///       - extension:
-    ///           - jpg
-    ///           - jpeg
-    ///       - size: ">1mb, <10mb"
-    ///     actions:
-    ///       - move: "~/Pictures/sorted/{relative_path}/"
+    ///    - name: Move all JPEGs bigger > 1MB and <10 MB
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Pictures
+    ///           max_depth: 10
+    ///           target: both
+    ///      filter_groups:
+    ///        - filters:
+    ///           - size
+    ///             range: 1MB..10MB
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview move
+    ///          dst: ~/Pictures/sorted/{{relative_path}}/
+    ///          on_conflict: skip
+    ///      tags:
+    ///        - !custom Test::SizeSortedPictures
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "size")]
     Size {

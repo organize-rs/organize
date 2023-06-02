@@ -150,7 +150,16 @@ impl Display for FilterKind {
     "
             ),
             FilterKind::Empty => write!(f, "Filter: Empty."),
-            FilterKind::Exif => write!(f, "Filter: Exif."),
+            FilterKind::Exif { contains } => {
+                write!(
+                    f,
+                    "
+    -> Exif
+        Arguments:
+            contains: {contains:?}
+                "
+                )
+            }
             FilterKind::Extension { exts } => {
                 write!(
                     f,
@@ -161,7 +170,7 @@ impl Display for FilterKind {
                 "
                 )
             }
-            FilterKind::FileContent { regex } => {
+            FilterKind::FileContent { expr: regex } => {
                 write!(
                     f,
                     "
@@ -171,7 +180,7 @@ impl Display for FilterKind {
     "
                 )
             }
-            FilterKind::Mimetype { mimetype } => {
+            FilterKind::Mimetype { mime: mimetype } => {
                 write!(
                     f,
                     "

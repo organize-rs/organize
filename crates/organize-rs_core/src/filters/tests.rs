@@ -67,7 +67,7 @@ fn test_matches_date_passes(#[case] time: i64, #[case] period: PeriodRange) {
 #[should_panic]
 fn test_filter_mimetype_image_fails() {
     let filter = FilterKind::Mimetype {
-        mimetype: vec![String::from("image")],
+        mime: vec![String::from("image")],
     };
 
     let (mut before, after) = get_base_values("mimetype", filter);
@@ -82,7 +82,7 @@ fn test_filter_mimetype_image_fails() {
 #[rstest]
 fn test_filter_mimetype_jpg_odt_passes() {
     let filter = FilterKind::Mimetype {
-        mimetype: vec![
+        mime: vec![
             String::from("application/vnd.oasis.opendocument.text"),
             String::from("image/jpeg"),
         ],

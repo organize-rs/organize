@@ -251,7 +251,7 @@ impl Default for WriteModeKind {
     }
 }
 
-// TODO: Shell supported
+// TODO: Shell support
 // adapted from: https://organize.readthedocs.io/en/latest/actions/
 //
 /// Actions that can be used within the config file

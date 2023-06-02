@@ -8,6 +8,10 @@
             - does it make sense overall?
     - need to move filter for `TargetKind` to a later stage?
 1. implement doctests for filters (so the yaml syntax is clear)
+    - change arguments to some filters to be optional
+        - so they return a broad range of information, that can be used to `echo`
+    - or rather create a new `info`/`inspect` filter for that
+        - which we can pass as an argument, which attribute we want to inspect
 1. generate example configs for integration test cases
     - check against py-organize documentation for feature parity
 1. implement unit tests for actions and the actions themselves
