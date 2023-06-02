@@ -97,16 +97,21 @@ pub enum FilterApplicationKind {
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum DuplicateKind {
     /// The first entry sorted by creation date is the original.
+    #[serde(rename = "created")]
     Created,
     /// Whatever file is visited first is the original.
     ///
     /// This depends on the order of your location entries.
+    #[serde(rename = "first_seen")]
     FirstSeen,
     // TODO
+    #[serde(rename = "hash")]
     Hash,
     /// The first file sorted by date of last modification is the original.
+    #[serde(rename = "last_modified")]
     LastModified,
     /// The first entry sorted by name is the original.
+    #[serde(rename = "name")]
     Name,
 }
 
@@ -197,7 +202,7 @@ pub enum FilterKind {
     ///
     /// ```rust
     /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
-    /// let rule = r#"
+    /// # let rule = r#"
     /// rules:
     ///    - name: Show the date the file was added to the folder
     ///      enabled: true
@@ -215,8 +220,8 @@ pub enum FilterKind {
     ///        - !preview echo: "Date added: {date_added.strftime('%Y-%m-%d')}"
     ///      tags:
     ///        - !custom Test::DateAdded
-    /// "#;
-    /// let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[cfg(target_os = "osx")]
     #[serde(rename = "date_added")]
@@ -245,7 +250,7 @@ pub enum FilterKind {
     ///
     /// ```rust
     /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
-    /// let rule = r#"
+    /// # let rule = r#"
     /// rules:
     ///    - name: Show all items in a folder
     ///      enabled: true
@@ -260,11 +265,12 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo: "Item: {all_items}"
+    ///        - !preview echo:
+    ///          msg: "Item: {{entry.filename}}"
     ///      tags:
     ///        - !custom Test::AllItems
-    /// "#;
-    /// let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "all_items")]
     AllItems {
@@ -283,7 +289,7 @@ pub enum FilterKind {
     ///
     /// ```rust
     /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
-    /// let rule = r#"
+    /// # let rule = r#"
     /// rules:
     ///    - name: Sort pdfs by year of creation
     ///      enabled: true
@@ -301,12 +307,12 @@ pub enum FilterKind {
     ///          match: all
     ///      actions:
     ///        - !preview move:
-    ///          path: ~/Documents/PDF/{metadata.year}/
+    ///          path: ~/Documents/PDF/{{entry.created.year}}/
     ///          on_conflict: skip
     ///      tags:
     ///        - !custom Test::Created
-    /// "#;
-    /// let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "created")]
     Created {
@@ -341,18 +347,34 @@ pub enum FilterKind {
     /// Show all duplicate locations in your desktop and download folder
     /// (and their subfolders)
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: Show all duplicate locations in your desktop and download folder (and their subfolders)
-    ///     locations:
-    ///       - ~/Desktop
-    ///       - ~/Downloads
-    ///     subfolders: true
-    ///     filters:
-    ///       - duplicate
-    ///     actions:
-    ///       - echo: "{path} is a duplicate of {duplicate.original}"
-    /// ```
+    ///    - name: Show all duplicate locations in your desktop and download folder (and their subfolders)
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Desktop
+    ///           max_depth: 4
+    ///           target: files
+    ///         - !recursive
+    ///           path: ~/Downloads
+    ///           max_depth: 4
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - duplicate
+    ///              detect_original_by: name
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - !preview echo:
+    ///          msg: "{entry.duplicate} is a duplicate of {entry.original}"
+    ///      tags:
+    ///        - !custom Test::Duplicate
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     #[serde(rename = "duplicate")]
     Duplicate {
         #[cfg_attr(feature = "cli", arg(long))]

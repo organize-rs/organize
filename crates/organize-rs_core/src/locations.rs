@@ -137,6 +137,11 @@ pub enum LocationKind {
         target: TargetKind,
     },
     /// Just a bare path, takes default settings
+    ///
+    /// Default settings:
+    ///
+    /// max_depth: 1
+    /// target: files
     #[serde(rename = "default_settings")]
     BarePath(PathBuf),
 }
