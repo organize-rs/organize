@@ -32,3 +32,7 @@ pub mod config;
 pub mod error;
 pub mod prelude;
 pub mod scripting;
+
+// re-exports for documentation purposes
+pub use organize_rs_core::actions::ActionKind;
+pub use organize_rs_core::filters::FilterKind;

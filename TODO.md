@@ -33,6 +33,9 @@ to generate copy & pastable output for config->rules->`filter_groups`/`actions`
     - generate config interactively `generate config --interactive`
     - <https://crates.io/crates/ratatui/0.20.1> + <https://crates.io/crates/tui-react>
 
+1. save state/event log between runs
+    - <https://lib.rs/crates/sled>
+
 1. implement scripting
 1. build GUI
 
