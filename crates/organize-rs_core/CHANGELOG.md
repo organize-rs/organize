@@ -55,6 +55,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Chore
 
+ - <csr-id-5672b52473d2715ba320dc9e6aed45119e7b0eae/> link config template on top level
+
+### Chore
+
  - <csr-id-44a037fa00212ec2d07a0449f9b3d0aee05e3d55/> add license and config template to manifest and folder structure
 
 ### Documentation
@@ -123,9 +127,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 57 commits contributed to the release over the course of 9 calendar days.
+ - 59 commits contributed to the release over the course of 9 calendar days.
  - 9 days passed between releases.
- - 50 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 51 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -135,6 +139,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Link config template on top level ([`5672b52`](https://github.com/organize-rs/organize/commit/5672b52473d2715ba320dc9e6aed45119e7b0eae))
+    - Release organize-rs_core v0.2.2 ([`f13bef7`](https://github.com/organize-rs/organize/commit/f13bef7bc2aef5a499a8f340dcd3ba27ccd41f5f))
     - Release organize-rs_core v0.2.2, organize-rs v0.4.0 ([`38b98b8`](https://github.com/organize-rs/organize/commit/38b98b805dd984773c7445d4b3bcdcfe62965596))
     - Add license and config template to manifest and folder structure ([`44a037f`](https://github.com/organize-rs/organize/commit/44a037fa00212ec2d07a0449f9b3d0aee05e3d55))
     - Release organize-rs_core v0.2.2, organize-rs v0.4.0 ([`ed623d7`](https://github.com/organize-rs/organize/commit/ed623d73fa574d4641e11e27cf6a2d4936ed5abe))
