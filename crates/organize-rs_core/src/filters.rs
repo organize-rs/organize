@@ -200,7 +200,7 @@ pub enum FilterKind {
     /// Show the date the file was added to the folder
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Show the date the file was added to the folder
@@ -211,7 +211,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - date_added
+    ///            - !date_added
     ///              range: 3d..14d
     ///          results: include
     ///          match: all
@@ -248,7 +248,7 @@ pub enum FilterKind {
     /// Show all items in a folder
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Show all items in a folder
@@ -259,7 +259,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - all_items
+    ///            - !all_items
     ///              i_agree_it_is_dangerous: true
     ///          results: include
     ///          match: all
@@ -287,7 +287,7 @@ pub enum FilterKind {
     /// Sort pdfs by year of creation
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Sort pdfs by year of creation
@@ -298,9 +298,9 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - extension
+    ///            - !extension
     ///              exts: pdf
-    ///            - created
+    ///            - !created
     ///          results: include
     ///          match: all
     ///      actions:
@@ -346,7 +346,7 @@ pub enum FilterKind {
     /// (and their subfolders)
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Show all duplicate locations in your desktop and download folder (and their subfolders)
@@ -362,7 +362,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - duplicate
+    ///            - !duplicate
     ///              detect_original_by: name
     ///          results: include
     ///          match: all
@@ -388,7 +388,7 @@ pub enum FilterKind {
     /// Recursively delete empty folders
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Recursively delete empty folders
@@ -400,7 +400,7 @@ pub enum FilterKind {
     ///           target: folders
     ///      filter_groups:
     ///        - filters:
-    ///            - empty
+    ///            - !empty
     ///          results: include
     ///          match: all
     ///      actions:
@@ -433,7 +433,7 @@ pub enum FilterKind {
     /// subfolder structure
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Copy all images which contain GPS information
@@ -445,7 +445,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - exif
+    ///            - !exif
     ///              contains: gps.gpsdate
     ///          results: include
     ///          match: all
@@ -470,7 +470,7 @@ pub enum FilterKind {
     /// Match multiple file extensions
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Match multiple file extensions
@@ -482,7 +482,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - extension
+    ///            - !extension
     ///              exts: ".jpg,jpeg"
     ///          results: include
     ///          match: all
@@ -515,7 +515,7 @@ pub enum FilterKind {
     /// Match an invoice with a regular expression and sort by customer
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Match an invoice with a regular expression and sort by customer
@@ -527,7 +527,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - file_content
+    ///            - !file_content
     ///              expr: 'Invoice.*Customer (?P<customer>\w+)'
     ///          results: include
     ///          match: all
@@ -558,7 +558,7 @@ pub enum FilterKind {
     /// Show the hashes and size of your files
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Show the hashes and size of your files
@@ -570,8 +570,8 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - hash
-    ///            - size
+    ///            - !hash
+    ///            - !size
     ///          results: include
     ///          match: all
     ///      actions:
@@ -592,7 +592,7 @@ pub enum FilterKind {
     /// Ignore file name
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Ignore file name
@@ -604,9 +604,9 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - extension
+    ///            - !extension
     ///              exts: "toml"
-    ///            - ignore_filename
+    ///            - !ignore_filename
     ///              in_name: "Cargo"
     ///          results: include
     ///          match: all
@@ -632,7 +632,7 @@ pub enum FilterKind {
     /// Ignore in path
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Ignore in path
@@ -644,9 +644,9 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - extension
+    ///            - !extension
     ///              exts: "toml"
-    ///            - ignore_path
+    ///            - !ignore_path
     ///              in_path: ".git"
     ///          results: include
     ///          match: all
@@ -676,7 +676,7 @@ pub enum FilterKind {
     /// Show the date the location was last accessed
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Show the date the location was last accessed
@@ -688,7 +688,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - last_accessed
+    ///            - !last_accessed
     ///          results: include
     ///          match: all
     ///      actions:
@@ -722,7 +722,7 @@ pub enum FilterKind {
     /// Sort pdfs by year of last modification
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Sort pdfs by year of last modification
@@ -734,8 +734,8 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///            - last_modified
-    ///            - extension:
+    ///            - !last_modified
+    ///            - !extension:
     ///              exts: "pdf"
     ///          results: include
     ///          match: all
@@ -767,7 +767,7 @@ pub enum FilterKind {
     /// All locations with a tag 'Invoice' (any color) or with a green tag
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: All locations with a tag 'Invoice' (any color) or with a green tag
@@ -778,7 +778,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///           - macos_tags:
+    ///           - !macos_tags:
     ///             - "Invoice (*)"
     ///             - "* (green)"
     ///          results: include
@@ -813,7 +813,7 @@ pub enum FilterKind {
     /// Filter by 'image' mimetype
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Filter by 'image' mimetype
@@ -824,7 +824,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///           - mimetype:
+    ///           - !mimetype:
     ///             mime: image/*
     ///          results: include
     ///          match: all
@@ -850,7 +850,7 @@ pub enum FilterKind {
     /// '6' and ending with '_end'.
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Match locations by name
@@ -861,7 +861,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///           - name:
+    ///           - !name:
     ///             starts_with: "A,B"
     ///             ends_with: "_end"
     ///             contains: "5,6"
@@ -899,7 +899,7 @@ pub enum FilterKind {
     /// # Example
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: No locations
@@ -910,7 +910,7 @@ pub enum FilterKind {
     ///           target: both
     ///      filter_groups:
     ///        - filters:
-    ///           - no_items
+    ///           - !no_items
     ///          results: include
     ///          match: all
     ///      actions:
@@ -939,7 +939,7 @@ pub enum FilterKind {
     /// regular expression
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Match an invoice with a regular expression
@@ -950,7 +950,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///           - regex
+    ///           - !regex
     ///             expr: '^RG(?P<the_number>\d{12})-sig\.pdf$'
     ///          results: include
     ///          match: all
@@ -993,7 +993,7 @@ pub enum FilterKind {
     /// Trash big downloads
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Trash big downloads
@@ -1004,7 +1004,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///           - size
+    ///           - !size
     ///             range: 0.5GB..
     ///          results: include
     ///          match: all
@@ -1022,7 +1022,7 @@ pub enum FilterKind {
     /// keep the original relative path.
     ///
     /// ```rust
-    /// # use crate::config::{OrganizeConfig, ConfigFileFormat};
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
     /// # let rule = r#"
     /// rules:
     ///    - name: Move all JPEGs bigger > 1MB and <10 MB
@@ -1034,7 +1034,7 @@ pub enum FilterKind {
     ///           target: both
     ///      filter_groups:
     ///        - filters:
-    ///           - size
+    ///           - !size
     ///             range: 1MB..10MB
     ///          results: include
     ///          match: all
