@@ -77,7 +77,7 @@ serde_with = "3.0.0"
 serde_yaml = "0.9.21"
 # config
 toml = "0.7.4"
-ron = { git = "https://github.com/ron-rs/ron.git", branch = "master" } # TODO: back to crates
+ron = "0.8.0"
 serde_json = "1.0.96"
 # deserr = { version = "0.6.0", default-features = false }
 
