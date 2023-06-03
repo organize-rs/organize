@@ -5,7 +5,117 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.0 (2023-06-03)
+
+### Chore
+
+ - <csr-id-930593f55f0128609daf98ccee901d5e33c29223/> fully annotate template config
+ - <csr-id-cb1e1151c09afed48f40b989132ae89324f9f2b1/> cargo fix & cargo fmt
+
+### Documentation
+
+ - <csr-id-0f49e89282eaa8fc5f11a1db81553484e9a669b9/> start annotating a template config file
+
+### New Features
+
+ - <csr-id-94757b5e2eddb54b0a706634f408bb5fcabfaf94/> implement parsing rules from config files
+ - <csr-id-13388896c02874263ff7838591fd4776a7912b1e/> docs command opens browser
+ - <csr-id-d088c50c894a9a94a47b2e3b66502fa3d5fdfc59/> adding cli option for filter mode
+ - <csr-id-7c2991827f503c7caf6f82e964f9cc91f5c39d0e/> Free the way for applying multiple filters
+
+### Bug Fixes
+
+ - <csr-id-435488c65e552016a8c6a9f6849390441db2e1e6/> Fix generate completions
+
+### Other
+
+ - <csr-id-7c0b0c9ce915e8b43d4542bc79b53432dd5bc2d2/> check for tags when running rules from config file
+ - <csr-id-19110b9592fb35314402f9bac71f52791c5a7cd1/> implement template generation
+ - <csr-id-ad6f6844dc93dac07e4d1921d1dbe0ab984b15c9/> implement some snapshot testing
+ - <csr-id-22192eb528c2f95ad01ef124082dfae518e8c464/> fix naming in config
+ - <csr-id-afb116bc91add3ac76f6c55e44932391eec6e7e8/> more state changes for runner
+ - <csr-id-3f6df32eac07d369b035ffb06156c2b47b0f9121/> implement first part of rule runner
+ - <csr-id-abdc5ecfe89c8db0b3f7077681ef3a23a7797df5/> first implementation draft for a config run
+ - <csr-id-91a8840c5826eb39493384a3e2d1bbb69f38c298/> parse first parts of py-organize config
+ - <csr-id-18ee7029fa931b0f95046f11c2919b23f11c1470/> Switch to jwalk to walk the directory tree parallelized
+ - <csr-id-075f0256f0dc5c2a69e350c2232468988f31c3e2/> add new run command to run a specified rule from a config or script
+ - <csr-id-b544485a914108185f2e10e1b7ae336acdc7ac5e/> add new config command to generate and check configs
+ - <csr-id-a3163027800f1843476b8855a41f2115fdb3d3eb/> apply multiple filters to walkdir iter
+
+### Refactor
+
+ - <csr-id-85fd452e00835f14e84da9547bb5659449771cde/> split filters in seperate modules
+ - <csr-id-8b47644af39c99f79658cdd54c067f9787b02347/> flatten library structure
+ - <csr-id-2c06e62ede4f1de31c75dd786c65f87b0855dffc/> change Rule to contain new types
+ - <csr-id-fb1a2158884b70ea37df7b332acd6d4170b07e91/> make command arguments more reasonable
+ - <csr-id-54a8993981273a39fb0da07de5853a2fbc5764b4/> add scripting and shell filter, add check for config and scripts subcommand, and run subcommands for config and scripts, add generate subcommand
+ - <csr-id-99d7b0c109017a78c1ef726dcc9d40d0507b0426/> improve display
+ - <csr-id-a82a20821ebe60d386efcb9856f4d22b45ab4a2e/> Make FilterWalker more configurable for upcoming features
+ - <csr-id-fd90047424eb9e6f04481a1ef35825e360b06912/> make filters use more option/result methods
+
+### Other (BREAKING)
+
+ - <csr-id-13984918e9cbbe3a7787af715004b5729b5a58a8/> Re-export filters and actions from core library for documentation purposes
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 32 commits contributed to the release over the course of 9 calendar days.
+ - 9 days passed between releases.
+ - 29 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Re-export filters and actions from core library for documentation purposes ([`1398491`](https://github.com/organize-rs/organize/commit/13984918e9cbbe3a7787af715004b5729b5a58a8))
+    - Fully annotate template config ([`930593f`](https://github.com/organize-rs/organize/commit/930593f55f0128609daf98ccee901d5e33c29223))
+    - Check for tags when running rules from config file ([`7c0b0c9`](https://github.com/organize-rs/organize/commit/7c0b0c9ce915e8b43d4542bc79b53432dd5bc2d2))
+    - Cargo fix & cargo fmt ([`cb1e115`](https://github.com/organize-rs/organize/commit/cb1e1151c09afed48f40b989132ae89324f9f2b1))
+    - Implement template generation ([`19110b9`](https://github.com/organize-rs/organize/commit/19110b9592fb35314402f9bac71f52791c5a7cd1))
+    - Start annotating a template config file ([`0f49e89`](https://github.com/organize-rs/organize/commit/0f49e89282eaa8fc5f11a1db81553484e9a669b9))
+    - Implement some snapshot testing ([`ad6f684`](https://github.com/organize-rs/organize/commit/ad6f6844dc93dac07e4d1921d1dbe0ab984b15c9))
+    - Implement parsing rules from config files ([`94757b5`](https://github.com/organize-rs/organize/commit/94757b5e2eddb54b0a706634f408bb5fcabfaf94))
+    - Fix naming in config ([`22192eb`](https://github.com/organize-rs/organize/commit/22192eb528c2f95ad01ef124082dfae518e8c464))
+    - More state changes for runner ([`afb116b`](https://github.com/organize-rs/organize/commit/afb116bc91add3ac76f6c55e44932391eec6e7e8))
+    - Implement first part of rule runner ([`3f6df32`](https://github.com/organize-rs/organize/commit/3f6df32eac07d369b035ffb06156c2b47b0f9121))
+    - First implementation draft for a config run ([`abdc5ec`](https://github.com/organize-rs/organize/commit/abdc5ecfe89c8db0b3f7077681ef3a23a7797df5))
+    - Split filters in seperate modules ([`85fd452`](https://github.com/organize-rs/organize/commit/85fd452e00835f14e84da9547bb5659449771cde))
+    - More deserialization attempts ([`c32b4b3`](https://github.com/organize-rs/organize/commit/c32b4b30c602b61d5ce94a037ccf2a496232c935))
+    - Flatten library structure ([`8b47644`](https://github.com/organize-rs/organize/commit/8b47644af39c99f79658cdd54c067f9787b02347))
+    - Parse first parts of py-organize config ([`91a8840`](https://github.com/organize-rs/organize/commit/91a8840c5826eb39493384a3e2d1bbb69f38c298))
+    - Change Rule to contain new types ([`2c06e62`](https://github.com/organize-rs/organize/commit/2c06e62ede4f1de31c75dd786c65f87b0855dffc))
+    - Fix generate completions ([`435488c`](https://github.com/organize-rs/organize/commit/435488c65e552016a8c6a9f6849390441db2e1e6))
+    - Make command arguments more reasonable ([`fb1a215`](https://github.com/organize-rs/organize/commit/fb1a2158884b70ea37df7b332acd6d4170b07e91))
+    - Add scripting and shell filter, add check for config and scripts subcommand, and run subcommands for config and scripts, add generate subcommand ([`54a8993`](https://github.com/organize-rs/organize/commit/54a8993981273a39fb0da07de5853a2fbc5764b4))
+    - Start sketching out scripting ideas ([`54a3446`](https://github.com/organize-rs/organize/commit/54a34468662642d3e2f161425be28cb957859b78))
+    - Switch to jwalk to walk the directory tree parallelized ([`18ee702`](https://github.com/organize-rs/organize/commit/18ee7029fa931b0f95046f11c2919b23f11c1470))
+    - Add new run command to run a specified rule from a config or script ([`075f025`](https://github.com/organize-rs/organize/commit/075f0256f0dc5c2a69e350c2232468988f31c3e2))
+    - Add new config command to generate and check configs ([`b544485`](https://github.com/organize-rs/organize/commit/b544485a914108185f2e10e1b7ae336acdc7ac5e))
+    - Docs command opens browser ([`1338889`](https://github.com/organize-rs/organize/commit/13388896c02874263ff7838591fd4776a7912b1e))
+    - Improve display ([`99d7b0c`](https://github.com/organize-rs/organize/commit/99d7b0c109017a78c1ef726dcc9d40d0507b0426))
+    - Adding cli option for filter mode ([`d088c50`](https://github.com/organize-rs/organize/commit/d088c50c894a9a94a47b2e3b66502fa3d5fdfc59))
+    - Make FilterWalker more configurable for upcoming features ([`a82a208`](https://github.com/organize-rs/organize/commit/a82a20821ebe60d386efcb9856f4d22b45ab4a2e))
+    - Free the way for applying multiple filters ([`7c29918`](https://github.com/organize-rs/organize/commit/7c2991827f503c7caf6f82e964f9cc91f5c39d0e))
+    - Fix borrow issues ([`398edb2`](https://github.com/organize-rs/organize/commit/398edb29916398c43b15531779233eda4b28eef5))
+    - Apply multiple filters to walkdir iter ([`a316302`](https://github.com/organize-rs/organize/commit/a3163027800f1843476b8855a41f2115fdb3d3eb))
+    - Make filters use more option/result methods ([`fd90047`](https://github.com/organize-rs/organize/commit/fd90047424eb9e6f04481a1ef35825e360b06912))
+</details>
+
 ## 0.3.1 (2023-05-25)
+
+<csr-id-4757013ebe9fe5d37ea3d7b7cddf155910e0f5b4/>
+<csr-id-95b9b3cf0ce06a224c0c79782ae7c470c31475d8/>
+<csr-id-36d02df0f52798af534151ea4d3ed4f7876934b2/>
+<csr-id-09c428cc45bbb348ca08e5fd233c999408ca2500/>
+<csr-id-543150dd96aca886bacd0057bda1957d19b4322d/>
+<csr-id-14300ea60bcccf500d813ee267792899a278a9ff/>
+<csr-id-c005013d1c49f5d717d635c3ece760bb5c904e09/>
 
 ### New Features
 
@@ -30,7 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 11 commits contributed to the release over the course of 2 calendar days.
+ - 12 commits contributed to the release over the course of 3 calendar days.
  - 3 days passed between releases.
  - 10 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -53,6 +163,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Fix borrow issues ([`3d1b0a1`](https://github.com/organize-rs/organize/commit/3d1b0a19e71441bdec6a9b609833b91a8ef890d8))
     - Apply multiple filters to walkdir iter ([`09c428c`](https://github.com/organize-rs/organize/commit/09c428cc45bbb348ca08e5fd233c999408ca2500))
     - Make filters use more option/result methods ([`c005013`](https://github.com/organize-rs/organize/commit/c005013d1c49f5d717d635c3ece760bb5c904e09))
+    - Start sketching out scripting ideas ([`b84d301`](https://github.com/organize-rs/organize/commit/b84d3019f5d334c61bb85733db16bf85ed7072d7))
 </details>
 
 ## 0.3.0 (2023-05-21)
