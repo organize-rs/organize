@@ -23,6 +23,8 @@ rules:
     # each filter group itself can contain one or more filters
     filter_groups:
       # a single filter_group
+      # check the documentation for all available filters and examples
+      # https://docs.rs/organize-rs/latest/organize_rs/enum.FilterKind.html
       - filters:
           - empty
         # the whole filter_group can be excluded or included into
@@ -32,6 +34,8 @@ rules:
         # can be either [all, any, none]
         match: all
     # actions that organize can apply to matched result entries
+    # check the documentation for all available actions and examples
+    # https://docs.rs/organize-rs/latest/organize_rs/enum.ActionKind.html
     actions:
       # an action can either be run in `!preview` or `!destructive` mode
       # `!preview` will give a brief overview of what consequences an
