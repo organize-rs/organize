@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.4.0 (2023-06-03)
 
+<csr-id-930593f55f0128609daf98ccee901d5e33c29223/>
+<csr-id-cb1e1151c09afed48f40b989132ae89324f9f2b1/>
+<csr-id-7c0b0c9ce915e8b43d4542bc79b53432dd5bc2d2/>
+<csr-id-19110b9592fb35314402f9bac71f52791c5a7cd1/>
+<csr-id-ad6f6844dc93dac07e4d1921d1dbe0ab984b15c9/>
+<csr-id-22192eb528c2f95ad01ef124082dfae518e8c464/>
+<csr-id-afb116bc91add3ac76f6c55e44932391eec6e7e8/>
+<csr-id-3f6df32eac07d369b035ffb06156c2b47b0f9121/>
+<csr-id-abdc5ecfe89c8db0b3f7077681ef3a23a7797df5/>
+<csr-id-91a8840c5826eb39493384a3e2d1bbb69f38c298/>
+<csr-id-18ee7029fa931b0f95046f11c2919b23f11c1470/>
+<csr-id-075f0256f0dc5c2a69e350c2232468988f31c3e2/>
+<csr-id-b544485a914108185f2e10e1b7ae336acdc7ac5e/>
+<csr-id-a3163027800f1843476b8855a41f2115fdb3d3eb/>
+<csr-id-85fd452e00835f14e84da9547bb5659449771cde/>
+<csr-id-8b47644af39c99f79658cdd54c067f9787b02347/>
+<csr-id-2c06e62ede4f1de31c75dd786c65f87b0855dffc/>
+<csr-id-fb1a2158884b70ea37df7b332acd6d4170b07e91/>
+<csr-id-54a8993981273a39fb0da07de5853a2fbc5764b4/>
+<csr-id-99d7b0c109017a78c1ef726dcc9d40d0507b0426/>
+<csr-id-a82a20821ebe60d386efcb9856f4d22b45ab4a2e/>
+<csr-id-fd90047424eb9e6f04481a1ef35825e360b06912/>
+<csr-id-13984918e9cbbe3a7787af715004b5729b5a58a8/>
+
 ### Chore
 
  - <csr-id-930593f55f0128609daf98ccee901d5e33c29223/> fully annotate template config
@@ -175,8 +199,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 0.2.6 (2023-05-21)
 
 <csr-id-d2b33280185f68daaff2671d1a4470d9041f3bcb/>
-
-
 
 ### Chore
 

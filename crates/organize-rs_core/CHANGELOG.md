@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.2.2 (2023-06-03)
 
+<csr-id-930593f55f0128609daf98ccee901d5e33c29223/>
+<csr-id-cb1e1151c09afed48f40b989132ae89324f9f2b1/>
+<csr-id-a7d737c5cc9e6465c7cf724c5d020b0f7e8ad935/>
+<csr-id-a024a32327344ff109d8e6e68819f507d7c9e8ab/>
+<csr-id-28ad00049f14ec1761f26baf2fe2088854094900/>
+<csr-id-7c0b0c9ce915e8b43d4542bc79b53432dd5bc2d2/>
+<csr-id-19110b9592fb35314402f9bac71f52791c5a7cd1/>
+<csr-id-ad6f6844dc93dac07e4d1921d1dbe0ab984b15c9/>
+<csr-id-b665490feb2a7a44996847d80ee918ea82cc4772/>
+<csr-id-22192eb528c2f95ad01ef124082dfae518e8c464/>
+<csr-id-afb116bc91add3ac76f6c55e44932391eec6e7e8/>
+<csr-id-3f6df32eac07d369b035ffb06156c2b47b0f9121/>
+<csr-id-abdc5ecfe89c8db0b3f7077681ef3a23a7797df5/>
+<csr-id-c2a5e017868e9f2af2bda3576b7e342356783722/>
+<csr-id-67f506ea0f869bb0a55c1d3938d3d8b58612c979/>
+<csr-id-a52abf6e5aa902c22c3fd7eebdd3088a2b3c6a50/>
+<csr-id-2abf8ea4fb19e8d1be640fb52abe1aba9c4e08c4/>
+<csr-id-db912c4ccfbc525ff4c5dccf231fda064e9a001e/>
+<csr-id-2a75ebb8b239d79e02262e5aeb470c66b25afbb9/>
+<csr-id-2d6ad427618ab76d5b73471dba62f6280218f63e/>
+<csr-id-31c790a1b244c5b98de9bba21b5ed9052d47d788/>
+<csr-id-db2d3480a1f965e861f92b8df04079461ee2f35d/>
+<csr-id-91a8840c5826eb39493384a3e2d1bbb69f38c298/>
+<csr-id-18ee7029fa931b0f95046f11c2919b23f11c1470/>
+<csr-id-a3163027800f1843476b8855a41f2115fdb3d3eb/>
+<csr-id-b633c561839314c760bf9a1a70e5b1aadac23b12/>
+<csr-id-2dec9033ce8187cdb74b23e2363d09d65131bbdd/>
+<csr-id-5b35248f532666f09dd8fd9308be1d16cb7c9f81/>
+<csr-id-f4a9cfaa19d9f088768f2f705f14a400ad701a8b/>
+<csr-id-85fd452e00835f14e84da9547bb5659449771cde/>
+<csr-id-8b47644af39c99f79658cdd54c067f9787b02347/>
+<csr-id-2c06e62ede4f1de31c75dd786c65f87b0855dffc/>
+<csr-id-54a8993981273a39fb0da07de5853a2fbc5764b4/>
+<csr-id-0c79c6b5b75adc05c54fee49f3398ed871ffd9b3/>
+<csr-id-95d7740dfbda24d934eea7ecce21b39076cf251c/>
+<csr-id-847737a5554f76a76366cd67fe8b2870277c935b/>
+<csr-id-99d7b0c109017a78c1ef726dcc9d40d0507b0426/>
+<csr-id-a82a20821ebe60d386efcb9856f4d22b45ab4a2e/>
+<csr-id-fd90047424eb9e6f04481a1ef35825e360b06912/>
+
 ### Chore
 
  - <csr-id-930593f55f0128609daf98ccee901d5e33c29223/> fully annotate template config
@@ -78,7 +118,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 52 commits contributed to the release over the course of 9 calendar days.
+ - 53 commits contributed to the release over the course of 9 calendar days.
  - 9 days passed between releases.
  - 49 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -90,6 +130,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release organize-rs_core v0.2.2, organize-rs v0.4.0 ([`8b71b45`](https://github.com/organize-rs/organize/commit/8b71b4546f100d0003c76f80f1d6c6d07615f74e))
     - Add a bit more documentation for filters and actions ([`e39e96c`](https://github.com/organize-rs/organize/commit/e39e96c5b5b08ecad0cb197c62f49fd0809faabf))
     - Add more doctests for filters ([`a7d737c`](https://github.com/organize-rs/organize/commit/a7d737c5cc9e6465c7cf724c5d020b0f7e8ad935))
     - Add some doctests for filters ([`a024a32`](https://github.com/organize-rs/organize/commit/a024a32327344ff109d8e6e68819f507d7c9e8ab))
