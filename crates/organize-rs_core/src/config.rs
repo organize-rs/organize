@@ -14,7 +14,7 @@ use displaydoc::Display;
 use ron::ser::PrettyConfig;
 use serde::{Deserialize, Serialize};
 
-pub static CONFIG_TEMPLATE_YAML: &str = include_str!("../../../config/config_template.yaml");
+pub static CONFIG_TEMPLATE_YAML: &str = include_str!("../config/config_template.yaml");
 
 /// Formats that we support for our Config files
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, Display)]

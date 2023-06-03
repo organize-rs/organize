@@ -9,12 +9,7 @@ categories = { workspace = true }
 keywords = { workspace = true }
 description = { workspace = true }
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-include = [
-    "src/**/*",
-    "LICENSE",
-    "CHANGELOG.md",
-    "../../config/config_template.yaml",
-]
+include = ["src/**/*", "LICENSE", "CHANGELOG.md", "config/config_template.yaml"]
 
 [[example]]
 name = "size_parser"
