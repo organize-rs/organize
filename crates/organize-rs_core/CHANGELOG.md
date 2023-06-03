@@ -118,7 +118,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 53 commits contributed to the release over the course of 9 calendar days.
+ - 54 commits contributed to the release over the course of 9 calendar days.
  - 9 days passed between releases.
  - 49 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -130,6 +130,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release organize-rs_core v0.2.2, organize-rs v0.4.0 ([`27615a9`](https://github.com/organize-rs/organize/commit/27615a970fd946871a2c64f151490bc0269a45a5))
     - Release organize-rs_core v0.2.2, organize-rs v0.4.0 ([`8b71b45`](https://github.com/organize-rs/organize/commit/8b71b4546f100d0003c76f80f1d6c6d07615f74e))
     - Add a bit more documentation for filters and actions ([`e39e96c`](https://github.com/organize-rs/organize/commit/e39e96c5b5b08ecad0cb197c62f49fd0809faabf))
     - Add more doctests for filters ([`a7d737c`](https://github.com/organize-rs/organize/commit/a7d737c5cc9e6465c7cf724c5d020b0f7e8ad935))
