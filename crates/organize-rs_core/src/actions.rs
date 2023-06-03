@@ -254,7 +254,8 @@ impl Default for WriteModeKind {
 // TODO: Shell support
 // adapted from: https://organize.readthedocs.io/en/latest/actions/
 //
-/// Actions that can be used within the config file
+/// Contains action variants that organize can
+/// execute on matched [`jwalk::DirEntry`]
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum ActionKind {

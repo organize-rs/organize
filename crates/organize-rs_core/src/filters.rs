@@ -11,7 +11,6 @@ use clap::{Args, Subcommand, ValueEnum};
 
 use displaydoc::Display;
 
-use itertools::Itertools;
 use jwalk::DirEntry;
 use serde::{Deserialize, Serialize};
 use serde_with::formats::CommaSeparator;
@@ -184,8 +183,8 @@ pub enum DateUnitKind {
     Years(f64),
 }
 
-/// [`OrganizeFilter`] contains filter variants that organize can
-/// use to apply to locations.
+/// Contains filter variants that organize can
+/// use to match [`jwalk::DirEntry`] properties
 #[serde_as]
 #[cfg_attr(feature = "cli", derive(Subcommand))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
