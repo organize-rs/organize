@@ -18,6 +18,13 @@ repository = { workspace = true }
 license = { workspace = true }
 categories = { workspace = true }
 keywords = { workspace = true }
+include = [
+    "src/**/*",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    "config/config_template.yaml",
+]
 
 [workspace]
 members = ["crates/organize-rs_core", "crates/organize-rs_testing", "xtask"]
