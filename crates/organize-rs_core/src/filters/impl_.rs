@@ -145,26 +145,40 @@ impl FilterKind {
                     FilterOperationKind::Apply(apply) => Ok(file_stem.ends_with(&apply)),
                 };
 
-            let (contains_oks, contains_errs): (Vec<_>, Vec<_>) = contains
-                .into_iter()
-                .map(make_lowercase_if)
-                .map(to_filter_applikation_kind)
-                .map(contains_filter)
-                .partition_result();
+            let (contains_oks, contains_errs): (Vec<_>, Vec<_>) = if let Some(contains) = contains {
+                contains
+                    .into_iter()
+                    .map(make_lowercase_if)
+                    .map(to_filter_applikation_kind)
+                    .map(contains_filter)
+                    .partition_result()
+            } else {
+                (vec![], vec![])
+            };
 
-            let (starts_with_oks, starts_with_errs): (Vec<_>, Vec<_>) = starts_with
-                .into_iter()
-                .map(make_lowercase_if)
-                .map(to_filter_applikation_kind)
-                .map(starts_with_filter)
-                .partition_result();
+            let (starts_with_oks, starts_with_errs): (Vec<_>, Vec<_>) =
+                if let Some(starts_with) = starts_with {
+                    starts_with
+                        .into_iter()
+                        .map(make_lowercase_if)
+                        .map(to_filter_applikation_kind)
+                        .map(starts_with_filter)
+                        .partition_result()
+                } else {
+                    (vec![], vec![])
+                };
 
-            let (ends_with_oks, ends_with_errs): (Vec<_>, Vec<_>) = ends_with
-                .into_iter()
-                .map(make_lowercase_if)
-                .map(to_filter_applikation_kind)
-                .map(ends_with_filter)
-                .partition_result();
+            let (ends_with_oks, ends_with_errs): (Vec<_>, Vec<_>) =
+                if let Some(ends_with) = ends_with {
+                    ends_with
+                        .into_iter()
+                        .map(make_lowercase_if)
+                        .map(to_filter_applikation_kind)
+                        .map(ends_with_filter)
+                        .partition_result()
+                } else {
+                    (vec![], vec![])
+                };
 
             // return early if we have an item that should be skipped due to being inverted
             if !(ends_with_errs.is_empty() & starts_with_errs.is_empty() & contains_errs.is_empty())

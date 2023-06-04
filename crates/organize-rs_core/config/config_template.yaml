@@ -44,7 +44,11 @@ rules:
       # `!destructive` will run an action destructively, it will
       # ask though to confirm some actions, e.g. when conflicts are
       # existing and we are unsure how to continue
-      - !preview trash
+      - mode: preview
+        action: !trash
+      - mode: preview
+        action: !echo
+          msg: "test"
     # you can assign a [list] of tags to a rule, so you can
     # run a single rule from a [list] of rules that a config file
     # can contain

@@ -37,7 +37,7 @@ pub enum ActionResultKind {
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display, Default)]
 #[serde(transparent)]
-pub struct ActionApplicationCollection(Vec<ActionApplicationKind>);
+pub struct ActionApplicationCollection(Vec<ActionContainer>);
 
 impl std::ops::DerefMut for ActionApplicationCollection {
     fn deref_mut(&mut self) -> &mut Self::Target {
@@ -46,7 +46,7 @@ impl std::ops::DerefMut for ActionApplicationCollection {
 }
 
 impl std::ops::Deref for ActionApplicationCollection {
-    type Target = Vec<ActionApplicationKind>;
+    type Target = Vec<ActionContainer>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -58,15 +58,21 @@ impl std::ops::Deref for ActionApplicationCollection {
 pub enum ActionApplicationKind {
     /// Dry run, as in preview an action
     #[serde(rename = "preview")]
-    Preview(ActionKind),
+    Preview,
     /// Execute action destructively
     #[serde(rename = "destructive")]
-    Destructive(ActionKind),
+    Destructive,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+pub struct ActionContainer {
+    pub mode: ActionApplicationKind,
+    pub action: ActionKind,
 }
 
 impl Default for ActionApplicationKind {
     fn default() -> Self {
-        Self::Preview(ActionKind::default())
+        Self::Preview
     }
 }
 

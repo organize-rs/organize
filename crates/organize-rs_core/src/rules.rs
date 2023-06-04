@@ -11,7 +11,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{
-        conflicts::OnConflictKind, ActionApplicationCollection, ActionApplicationKind, ActionKind,
+        conflicts::OnConflictKind, ActionApplicationCollection, ActionApplicationKind,
+        ActionContainer, ActionKind,
     },
     filters::{
         FilterApplicationKind, FilterGroup, FilterGroupCollection, FilterGroupOperationKind,
@@ -208,7 +209,7 @@ impl RuleBuilder {
     }
 
     /// Add single action
-    pub fn action(mut self, action: ActionApplicationKind) -> RuleBuilder {
+    pub fn action(mut self, action: ActionContainer) -> RuleBuilder {
         self.actions.push(action);
         self
     }
@@ -240,7 +241,10 @@ pub fn empty_file_rule() -> Rule {
             mode: FilterApplicationKind::All,
             filters: vec![FilterKind::Empty],
         })
-        .action(ActionApplicationKind::Preview(ActionKind::Trash))
+        .action(ActionContainer {
+            mode: ActionApplicationKind::Preview,
+            action: ActionKind::Trash,
+        })
         .location(LocationKind::RecursiveWithMaxDepth {
             path: r"crates\organize-rs_core\tests\fixtures\filters\empty_file".into(),
             target: TargetKind::Files,
@@ -258,7 +262,10 @@ pub fn empty_folder_rule() -> Rule {
             mode: FilterApplicationKind::All,
             filters: vec![FilterKind::Empty],
         })
-        .action(ActionApplicationKind::Preview(ActionKind::Trash))
+        .action(ActionContainer {
+            mode: ActionApplicationKind::Preview,
+            action: ActionKind::Trash,
+        })
         .location(LocationKind::RecursiveWithMaxDepth {
             path: r"crates\organize-rs_core\tests\fixtures\filters\empty_folder".into(),
             target: TargetKind::Directories,
@@ -278,12 +285,15 @@ pub fn pdf_on_desktop_rule() -> Rule {
                 exts: vec![String::from("pdf")],
             }],
         })
-        .action(ActionApplicationKind::Preview(ActionKind::Move {
-            dst: "~/Desktop/PDFs".into(),
-            on_conflict: OnConflictKind::Skip,
-            rename_template: None,
-            filesystem: None,
-        }))
+        .action(ActionContainer {
+            mode: ActionApplicationKind::Preview,
+            action: ActionKind::Move {
+                dst: "~/Desktop/PDFs".into(),
+                on_conflict: OnConflictKind::Skip,
+                rename_template: None,
+                filesystem: None,
+            },
+        })
         .location(LocationKind::RecursiveWithMaxDepth {
             path: r"C:\Users\dailyuse\Desktop".into(),
             target: TargetKind::Files,
@@ -336,9 +346,10 @@ mod tests {
             ),
             actions: ActionApplicationCollection(
                 [
-                    Preview(
-                        Trash,
-                    ),
+                    ActionContainer {
+                        mode: Preview,
+                        action: Trash,
+                    },
                 ],
             ),
         }
@@ -352,7 +363,7 @@ mod tests {
 
             Filters: FilterGroupCollection([FilterGroup { operation: Include, mode: All, filters: [Empty] }])
 
-            Actions: ActionApplicationCollection([Preview(Trash)])
+            Actions: ActionApplicationCollection([ActionContainer { mode: Preview, action: Trash }])
                 
         "###);
         insta::assert_yaml_snapshot!(rule, @r###"
@@ -372,7 +383,8 @@ mod tests {
             filters:
               - empty
         actions:
-          - preview: trash
+          - mode: preview
+            action: trash
         "###);
     }
 
@@ -418,14 +430,15 @@ mod tests {
             ),
             actions: ActionApplicationCollection(
                 [
-                    Preview(
-                        Move {
+                    ActionContainer {
+                        mode: Preview,
+                        action: Move {
                             dst: "~/Desktop/PDFs",
                             on_conflict: Skip,
-                            rename_template: [],
+                            rename_template: None,
                             filesystem: None,
                         },
-                    ),
+                    },
                 ],
             ),
         }
@@ -439,7 +452,7 @@ mod tests {
 
             Filters: FilterGroupCollection([FilterGroup { operation: Include, mode: All, filters: [Extension { exts: ["pdf"] }] }])
 
-            Actions: ActionApplicationCollection([Preview(Move { dst: "~/Desktop/PDFs", on_conflict: Skip, rename_template: [], filesystem: None })])
+            Actions: ActionApplicationCollection([ActionContainer { mode: Preview, action: Move { dst: "~/Desktop/PDFs", on_conflict: Skip, rename_template: None, filesystem: None } }])
                 
         "###);
         insta::assert_yaml_snapshot!(rule, @r###"
@@ -460,11 +473,12 @@ mod tests {
               - extension:
                   exts: pdf
         actions:
-          - preview:
+          - mode: preview
+            action:
               move:
                 dst: ~/Desktop/PDFs
                 on_conflict: skip
-                rename_template: []
+                rename_template: ~
                 filesystem: ~
         "###);
     }

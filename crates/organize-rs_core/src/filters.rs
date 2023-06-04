@@ -215,9 +215,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "Date added: {date_added.strftime('%Y-%m-%d')}"
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "Date added: {date_added.strftime('%Y-%m-%d')}"
     ///      tags:
     ///        - !custom Test::DateAdded
     /// # "#;
@@ -265,9 +265,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "Item: {{entry.filename}}"
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "Item: {{entry.filename}}"
     ///      tags:
     ///        - !custom Test::AllItems
     /// # "#;
@@ -307,12 +307,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          move:
-    ///             dst: ~/Documents/PDF/{{entry.created.year}}/
-    ///             on_conflict: skip
-    ///             rename_template: []
-    ///             filesystem: None
+    ///        - mode: preview
+    ///          action: !move
+    ///            dst: ~/Documents/PDF/{{entry.created.year}}/
     ///      tags:
     ///        - !custom Test::Created
     /// # "#;
@@ -373,9 +370,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "{{entry.duplicate}} is a duplicate of {{entry.original}}"
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "{{entry.duplicate}} is a duplicate of {{entry.original}}"
     ///      tags:
     ///        - !custom Test::Duplicate
     /// # "#;
@@ -413,7 +410,8 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview delete
+    ///        - mode: preview
+    ///          action: !delete
     ///      tags:
     ///        - !custom Test::EmptyFolders
     /// # "#;
@@ -455,13 +453,14 @@ pub enum FilterKind {
     ///      filter_groups:
     ///        - filters:
     ///            - !exif
-    ///              contains: gps.gpsdate
+    ///              contains:
+    ///                - gps.gpsdate
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          copy:
-    ///             dst: ~/Pictures/with_gps/{{relative_path}}/
+    ///        - mode: preview
+    ///          action: !copy
+    ///            dst: ~/Pictures/with_gps/{{relative_path}}/
     ///      tags:
     ///        - !custom Test::ExifGps
     /// # "#;
@@ -497,9 +496,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "Found JPG file: {{entry.path}}"
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "Found JPG file: {{entry.path}}"
     ///      tags:
     ///        - !custom Test::Extension
     /// # "#;
@@ -543,9 +542,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          move:
-    ///             dst: ~/Documents/Invoices/{{file_content.customer}}/
+    ///        - mode: preview
+    ///          action: !move
+    ///            dst: ~/Documents/Invoices/{{file_content.customer}}/
     ///      tags:
     ///        - !custom Test::FileContent
     /// # "#;
@@ -587,9 +586,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "{{hash}} {{size.decimal}}"
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "{{hash}} {{size.decimal}}"
     ///      tags:
     ///        - !custom Test::Hash
     /// # "#;
@@ -624,9 +623,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "Files discovered: {{entry}}"
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "Files discovered: {{entry}}"
     ///      tags:
     ///        - !custom Test::IgnoreName
     /// # "#;
@@ -665,9 +664,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "Files discovered: {{entry}}"
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "Files discovered: {{entry}}"
     ///      tags:
     ///        - !custom Test::IgnorePath
     /// # "#;
@@ -707,9 +706,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "Date last used: {{entry.metadata.last_accessed}}"
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "Date last used: {{entry.metadata.last_accessed}}"
     ///      tags:
     ///        - !custom Test::LastAccessed
     /// # "#;
@@ -756,12 +755,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          move:
-    ///             dst: ~/Documents/PDF/{{entry.metadata.lastmodified.year}}/
-    ///             on_conflict: skip
-    ///             rename_template: []
-    ///             filesystem: None
+    ///        - mode: preview
+    ///          action: !move
+    ///            dst: ~/Documents/PDF/{{entry.metadata.lastmodified.year}}/
     ///      tags:
     ///        - !custom Test::LastModified
     /// # "#;
@@ -803,9 +799,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "Match found!"
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "Match found!"
     ///      tags:
     ///        - !custom Test::MacOsTags
     /// # "#;
@@ -849,9 +845,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "This file is an image: {{entry.mimetype}}"
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "This file is an image: {{entry.mimetype}}"
     ///      tags:
     ///        - !custom Test::Mimetype
     /// # "#;
@@ -883,16 +879,21 @@ pub enum FilterKind {
     ///      filter_groups:
     ///        - filters:
     ///           - !name
-    ///             starts_with: "A,B"
-    ///             ends_with: "_end"
-    ///             contains: "5,6"
+    ///             starts_with:
+    ///               - A
+    ///               - B
+    ///             ends_with:
+    ///               - _end
+    ///             contains:
+    ///               - "5"
+    ///               - "6"
     ///             case_insensitive: true
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "Found a match {{entry}}."
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "Found a match {{entry}}."
     ///      tags:
     ///        - !custom Test::Name
     /// # "#;
@@ -937,9 +938,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          echo:
-    ///             msg: "Running on NoFilter."
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: "Running on NoFilter."
     ///      tags:
     ///        - !custom Test::NoFilter
     /// # "#;
@@ -979,12 +980,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          move:
-    ///             dst: ~/Documents/Invoices/1und1/{{regex.the_number}}.pdf
-    ///             on_conflict: skip
-    ///             rename_template: []
-    ///             filesystem: None
+    ///        - mode: preview
+    ///          action: !move
+    ///            dst: ~/Documents/Invoices/1und1/{{regex.the_number}}.pdf
     ///      tags:
     ///        - !custom Test::Regex
     /// # "#;
@@ -1036,7 +1034,8 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview trash
+    ///        - mode: preview
+    ///          action: !trash
     ///      tags:
     ///        - !custom Test::TrashDownloads
     /// # "#;
@@ -1066,12 +1065,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview
-    ///          move:
-    ///             dst: ~/Pictures/sorted/{{relative_path}}/
-    ///             on_conflict: skip
-    ///             rename_template: []
-    ///             filesystem: None
+    ///        - mode: preview
+    ///          action: !move
+    ///            dst: ~/Pictures/sorted/{{relative_path}}/
     ///      tags:
     ///        - !custom Test::SizeSortedPictures
     /// # "#;
