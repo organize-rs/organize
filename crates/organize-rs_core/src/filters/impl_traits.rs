@@ -113,7 +113,7 @@ impl Display for FilterKind {
                     "
     -> Created
         Arguments:
-            range: {range}
+            range: {range:?}
                 "
                 )
             }
@@ -123,7 +123,7 @@ impl Display for FilterKind {
                     "
     -> LastAccessed
         Arguments:
-            range: {range}
+            range: {range:?}
                 "
                 )
             }
@@ -133,7 +133,7 @@ impl Display for FilterKind {
                     "
     -> LastModified
         Arguments:
-            range: {range}
+            range: {range:?}
     "
                 )
             }
@@ -216,7 +216,7 @@ impl Display for FilterKind {
                     "
     -> Size
         Arguments:
-            range: {range}
+            range: {range:?}
                 "
                 )
             }

@@ -37,11 +37,12 @@ impl Display for ActionKind {
     Filter: Copy
                 
     Arguments: 
-    dst: {dst},
+    dst: {},
     on_conflict: {on_conflict},
     rename_template: {rename_template:?},
     filesystem: {filesystem:?}
-            "
+            ",
+                    dst.display()
                 )
             }
             ActionKind::Delete {} => {
@@ -77,11 +78,12 @@ impl Display for ActionKind {
     Filter: Move
                 
     Arguments: 
-    dst: {dst},
+    dst: {},
     on_conflict: {on_conflict},
     rename_template: {rename_template:?},
     filesystem: {filesystem:?}
-            "
+            ",
+                    dst.display()
                 )
             }
             ActionKind::Rename {
@@ -95,10 +97,11 @@ impl Display for ActionKind {
     Filter: Rename 
                 
     Arguments: 
-    name: {name},
+    name: {},
     on_conflict: {on_conflict},
     rename_template: {rename_template:?}
-            "
+            ",
+                    name.display()
                 )
             }
             ActionKind::Symlink { dst } => {
@@ -108,8 +111,9 @@ impl Display for ActionKind {
     Filter: Symlink 
                 
     Arguments: 
-    dst: {dst},
-            "
+    dst: {},
+            ",
+                    dst.display()
                 )
             }
             ActionKind::Trash => {
@@ -134,12 +138,13 @@ impl Display for ActionKind {
 
     Arguments:
     txt: {txt},
-    file: {file},
+    file: {},
     mode: {mode},
     newline: {newline:?},
     clear_before_first_write: {clear_before_first_write:?},
     filesystem: {filesystem:?}
-            "
+            ",
+                file.display()
             ),
             ActionKind::Shell {
                 command,

@@ -1,7 +1,7 @@
 //! Actions that can be used in the config file and
 //! `organize` applieds to matching rules
 
-mod conflicts;
+pub(crate) mod conflicts;
 mod impl_;
 mod impl_traits;
 #[cfg(test)]
@@ -286,8 +286,10 @@ pub enum ActionKind {
     #[serde(rename = "confirm")]
     Confirm {
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "Option::default")]
         text: Option<String>,
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "Option::default")]
         vars: Option<Vec<String>>,
     },
     /// Copy a file or directory to a new location
@@ -319,22 +321,25 @@ pub enum ActionKind {
         /// to be a target directory and the file / dir will be
         /// copied into `dst` and keep its name.
         #[cfg_attr(feature = "cli", arg(long))]
-        dst: String,
+        dst: PathBuf,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
         /// Defaults to rename_new.
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "OnConflictKind::default")]
         on_conflict: OnConflictKind,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
-        rename_template: Vec<TemplateStringKind>,
+        #[serde(default = "Option::default")]
+        rename_template: Option<Vec<TemplateStringKind>>,
         /// An opener url of the filesystem you want to copy to.
         ///
         /// If this is not given, the local filesystem is used.
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "Option::default")]
         filesystem: Option<String>,
     },
     /// Delete a file from disk
@@ -457,22 +462,25 @@ pub enum ActionKind {
         /// to be a target directory and the file / dir will be
         /// moved into `dst`and keep its name.
         #[cfg_attr(feature = "cli", arg(long))]
-        dst: String,
+        dst: PathBuf,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
         /// Defaults to rename_new.
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "OnConflictKind::default")]
         on_conflict: OnConflictKind,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
-        rename_template: Vec<TemplateStringKind>,
+        #[serde(default = "Option::default")]
+        rename_template: Option<Vec<TemplateStringKind>>,
         /// An opener url of the filesystem you want to move to.
         ///
         /// If this is not given, the local filesystem is used.
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "Option::default")]
         filesystem: Option<String>,
     },
     /// Do nothing
@@ -498,18 +506,20 @@ pub enum ActionKind {
     Rename {
         /// The new name for the file / dir.
         #[cfg_attr(feature = "cli", arg(long))]
-        name: String,
+        name: PathBuf,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
         /// Defaults to rename_new.
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "OnConflictKind::default")]
         on_conflict: OnConflictKind,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
-        rename_template: Vec<TemplateStringKind>,
+        #[serde(default = "Option::default")]
+        rename_template: Option<Vec<TemplateStringKind>>,
     },
     /// Execute a shell command
     ///
@@ -536,15 +546,18 @@ pub enum ActionKind {
         command: String,
         /// Whether to execute in simulation mode
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "bool::default")]
         run_in_simulation: bool,
         /// Whether to continue on erros (return codes !=0)
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "bool::default")]
         ignore_errors: bool,
         /// The value of `{shell.output}` if run in simulation
         #[cfg_attr(feature = "cli", arg(long))]
         simulation_output: String,
         /// The value of `{shell.returncode}` if run in simulation
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "u64::default")]
         simulation_returncode: u64,
     },
     /// Create a symbolic link.
@@ -558,7 +571,7 @@ pub enum ActionKind {
         /// Only the local filesystem is supported.
         // TODO: Can contain placeholders?
         #[cfg_attr(feature = "cli", arg(long))]
-        dst: String,
+        dst: PathBuf,
     },
     /// Move a file or directory into the trash
     ///
@@ -614,30 +627,34 @@ pub enum ActionKind {
         ///
         // Defaults to `organize-out.txt`
         #[cfg_attr(feature = "cli", arg(long))]
-        file: String,
+        file: PathBuf,
         /// Can be either `append` (append text to the file), `prepend`
         /// (insert text as first line) or `overwrite` (overwrite content
         /// with text).
         ///
         /// Defaults to `append`.
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "WriteModeKind::default")]
         mode: WriteModeKind,
         /// Whether to append a newline to the given text.
         ///
-        /// Defaults to `true`.
+        /// Defaults to `false`.
         #[cfg_attr(feature = "cli", arg(long))]
-        newline: Option<bool>,
+        #[serde(default = "bool::default")]
+        newline: bool,
         /// Clears the file before first appending / prepending text to it.
         /// This happens only the first time write_file is run. If the rule
         /// filters don't match anything the file is left as it is.
         ///
         /// Defaults to `false`.
         #[cfg_attr(feature = "cli", arg(long))]
-        clear_before_first_write: Option<bool>,
+        #[serde(default = "bool::default")]
+        clear_before_first_write: bool,
         /// An opener url of the filesystem the textfile is on.
         ///
         /// If this is not given, the local filesystem is used.
         #[cfg_attr(feature = "cli", arg(long))]
-        filesystem: Option<String>,
+        #[serde(default = "Option::default")]
+        filesystem: Option<PathBuf>,
     },
 }

@@ -102,16 +102,16 @@ impl OrganizeConfig {
         .unwrap();
 
         match ext {
-            ConfigFileFormat::Ron => {
-                todo!("not fully supported (yet)");
-                // TODO: ron deser support
-                // ron::de::from_reader(file).expect("config file parsing shouldn't fail")
-            }
             ConfigFileFormat::Yaml => {
                 serde_yaml::from_reader(file).expect("config file parsing shouldn't fail")
             }
             ConfigFileFormat::Json => {
                 serde_json::from_reader(file).expect("config file parsing shouldn't fail")
+            }
+            ConfigFileFormat::Ron => {
+                todo!("not fully supported (yet)");
+                // TODO: ron deser support
+                // ron::de::from_reader(file).expect("config file parsing shouldn't fail")
             }
             ConfigFileFormat::Toml => {
                 todo!("not fully supported (yet)");

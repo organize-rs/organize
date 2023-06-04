@@ -58,7 +58,7 @@ fn get_base_values(root: impl AsRef<Path>, filter: FilterKind) -> (Vec<PathBuf>,
 #[case(FileTime::now().seconds() - 6 * 24 * 60 * 60, "..7d")] // 6 days
 #[case(FileTime::now().seconds() - 4 * 24 * 60 * 60, "3d..")] // 4 days
 fn test_matches_date_passes(#[case] time: i64, #[case] period: PeriodRange) {
-    assert!(FilterKind::matches_date(time, &period))
+    assert!(FilterKind::matches_date(time, &Some(period)))
 }
 
 // TODO we could use a lookup table generated at compile time with
@@ -139,10 +139,10 @@ fn test_filter_name_full_passes(#[case] case_insensitive: bool) {
     set_snapshot_suffix!("{}", case_insensitive);
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
-            contains: vec![String::from("TaSt"), String::from("-|uTEST")],
-            starts_with: vec![String::from("123")],
-            simple_match: vec![],
-            ends_with: vec![String::from("2")],
+            contains: vec![String::from("TaSt"), String::from("-|uTEST")].into(),
+            starts_with: vec![String::from("123")].into(),
+            simple_match: None,
+            ends_with: vec![String::from("2")].into(),
         },
         case_insensitive,
     };
@@ -173,10 +173,11 @@ fn test_filter_name_contains_multiple_names_and_inverted_passes(#[case] case_ins
                 String::from("test"),
                 String::from("TaSt"),
                 String::from("-|uTEST"),
-            ],
-            starts_with: vec![],
-            simple_match: vec![],
-            ends_with: vec![],
+            ]
+            .into(),
+            starts_with: None,
+            simple_match: None,
+            ends_with: None,
         },
         case_insensitive,
     };
@@ -215,10 +216,10 @@ fn test_filter_name_contains_multiple_names_passes(#[case] case_insensitive: boo
     set_snapshot_suffix!("{}", case_insensitive);
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
-            contains: vec![String::from("test"), String::from("TaSt")],
-            starts_with: vec![],
-            simple_match: vec![],
-            ends_with: vec![],
+            contains: vec![String::from("test"), String::from("TaSt")].into(),
+            starts_with: None,
+            simple_match: None,
+            ends_with: None,
         },
         case_insensitive,
     };
@@ -257,10 +258,10 @@ fn test_filter_name_contains_single_name_passes(#[case] case_insensitive: bool) 
     set_snapshot_suffix!("{}", case_insensitive);
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
-            contains: vec![String::from("test")],
-            starts_with: vec![],
-            simple_match: vec![],
-            ends_with: vec![],
+            contains: vec![String::from("test")].into(),
+            starts_with: None,
+            simple_match: None,
+            ends_with: None,
         },
         case_insensitive,
     };
@@ -298,10 +299,10 @@ fn test_filter_name_contains_single_name_passes(#[case] case_insensitive: bool) 
 fn test_filter_name_args_does_not_match_anything_passes(#[case] case_insensitive: bool) {
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
-            contains: vec![String::from("toast")],
-            starts_with: vec![],
-            simple_match: vec![],
-            ends_with: vec![],
+            contains: vec![String::from("toast")].into(),
+            starts_with: None,
+            simple_match: None,
+            ends_with: None,
         },
         case_insensitive,
     };
@@ -319,10 +320,10 @@ fn test_filter_name_args_does_not_match_anything_passes(#[case] case_insensitive
 fn test_filter_name_args_empty_passes(#[case] case_insensitive: bool) {
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
-            contains: vec![],
-            starts_with: vec![],
-            simple_match: vec![],
-            ends_with: vec![],
+            contains: None,
+            starts_with: None,
+            simple_match: None,
+            ends_with: None,
         },
         case_insensitive,
     };
@@ -421,7 +422,7 @@ fn test_filter_file_empty_passes() {
 #[rstest]
 fn test_filter_file_size_2mb_passes() {
     let filter = FilterKind::Size {
-        range: SizeRange::from_str("..2mb").unwrap(),
+        range: Some(SizeRange::from_str("..2mb").unwrap()),
     };
 
     let (mut before, after) = get_base_values("size_based", filter);
@@ -440,7 +441,7 @@ fn test_filter_file_size_2mb_passes() {
 #[rstest]
 fn test_filter_file_size_300_800_kib_passes() {
     let filter = FilterKind::Size {
-        range: SizeRange::from_str("300KiB..800kib").unwrap(),
+        range: Some(SizeRange::from_str("300KiB..800kib").unwrap()),
     };
 
     let (mut before, after) = get_base_values("size_based", filter);
@@ -456,7 +457,7 @@ fn test_filter_file_size_300_800_kib_passes() {
 #[rstest]
 fn test_filter_file_size_250kib_passes() {
     let filter = FilterKind::Size {
-        range: SizeRange::from_str("250KiB..").unwrap(),
+        range: Some(SizeRange::from_str("250KiB..").unwrap()),
     };
 
     let (mut before, after) = get_base_values("size_based", filter);

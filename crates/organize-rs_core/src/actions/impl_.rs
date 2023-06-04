@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use jwalk::ClientState;
 
 use crate::{
@@ -90,7 +92,7 @@ impl ActionKind {
         })
     }
 
-    fn action_symlink<'a, C: ClientState>(&'a self, dst: &'a str) -> ActionClosure<'a, C> {
+    fn action_symlink<'a, C: ClientState>(&'a self, dst: &'a Path) -> ActionClosure<'a, C> {
         Box::new(move |entry, preview| {
             if preview {
                 Ok(ActionResultKind::Preview {

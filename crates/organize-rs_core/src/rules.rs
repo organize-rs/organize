@@ -3,13 +3,16 @@
 
 use std::{
     fmt::Display,
+    path::PathBuf,
     slice::{Iter, IterMut},
 };
 
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    actions::{ActionApplicationCollection, ActionApplicationKind, ActionKind},
+    actions::{
+        conflicts::OnConflictKind, ActionApplicationCollection, ActionApplicationKind, ActionKind,
+    },
     filters::{
         FilterApplicationKind, FilterGroup, FilterGroupCollection, FilterGroupOperationKind,
         FilterKind,
@@ -275,7 +278,12 @@ pub fn pdf_on_desktop_rule() -> Rule {
                 exts: vec![String::from("pdf")],
             }],
         })
-        .action(ActionApplicationKind::Preview(ActionKind::NoAction))
+        .action(ActionApplicationKind::Preview(ActionKind::Move {
+            dst: "~/Desktop/PDFs".into(),
+            on_conflict: OnConflictKind::Skip,
+            rename_template: None,
+            filesystem: None,
+        }))
         .location(LocationKind::RecursiveWithMaxDepth {
             path: r"C:\Users\dailyuse\Desktop".into(),
             target: TargetKind::Files,
@@ -335,7 +343,7 @@ mod tests {
             ),
         }
         "###);
-        insta::assert_display_snapshot!(rule, @r###"""
+        insta::assert_display_snapshot!(rule, @r###"
 
             Rule - Empty Directory (false)
 
@@ -346,7 +354,7 @@ mod tests {
 
             Actions: ActionApplicationCollection([Preview(Trash)])
                 
-        """###);
+        "###);
         insta::assert_yaml_snapshot!(rule, @r###"
         ---
         name: Empty Directory
@@ -359,7 +367,7 @@ mod tests {
               max_depth: 1
               target: folders
         filter_groups:
-          - results: include
+          - results: exclude
             match: all
             filters:
               - empty
@@ -411,7 +419,12 @@ mod tests {
             actions: ActionApplicationCollection(
                 [
                     Preview(
-                        NoAction,
+                        Move {
+                            dst: "~/Desktop/PDFs",
+                            on_conflict: Skip,
+                            rename_template: [],
+                            filesystem: None,
+                        },
                     ),
                 ],
             ),
@@ -426,10 +439,10 @@ mod tests {
 
             Filters: FilterGroupCollection([FilterGroup { operation: Include, mode: All, filters: [Extension { exts: ["pdf"] }] }])
 
-            Actions: ActionApplicationCollection([Preview(NoAction)])
+            Actions: ActionApplicationCollection([Preview(Move { dst: "~/Desktop/PDFs", on_conflict: Skip, rename_template: [], filesystem: None })])
                 
         "###);
-        insta::assert_yaml_snapshot!(rule, @r###"""
+        insta::assert_yaml_snapshot!(rule, @r###"
         ---
         name: PDFs on Desktop
         tags:
@@ -441,13 +454,18 @@ mod tests {
               max_depth: 4
               target: files
         filter_groups:
-          - results: include
+          - results: exclude
             match: all
             filters:
               - extension:
                   exts: pdf
         actions:
-          - preview: do_nothing
-        """###);
+          - preview:
+              move:
+                dst: ~/Desktop/PDFs
+                on_conflict: skip
+                rename_template: []
+                filesystem: ~
+        "###);
     }
 }

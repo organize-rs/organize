@@ -134,7 +134,6 @@ pub struct RecursiveFilterArgs {
 }
 
 /// Arguments for `name` filter
-#[serde_as]
 #[cfg_attr(feature = "cli", derive(Args))]
 #[derive(Display, Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "cli", group(required = true, multiple = false))]
@@ -142,20 +141,20 @@ pub struct NameFilterArgs {
     // TODO: Not implemented, searching for alternatives
     /// A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
     #[cfg_attr(feature = "cli", arg(long))]
-    #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
-    simple_match: Vec<String>,
+    #[serde(default = "Option::default")]
+    simple_match: Option<Vec<String>>,
     /// The filename must begin with the given string
     #[cfg_attr(feature = "cli", arg(long))]
-    #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
-    starts_with: Vec<String>,
+    #[serde(default = "Option::default")]
+    starts_with: Option<Vec<String>>,
     /// The filename must contain the given string
     #[cfg_attr(feature = "cli", arg(long))]
-    #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
-    contains: Vec<String>,
+    #[serde(default = "Option::default")]
+    contains: Option<Vec<String>>,
     /// The filename (without extension) must end with the given string
     #[cfg_attr(feature = "cli", arg(long))]
-    #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
-    ends_with: Vec<String>,
+    #[serde(default = "Option::default")]
+    ends_with: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
@@ -216,7 +215,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo: "Date added: {date_added.strftime('%Y-%m-%d')}"
+    ///        - !preview
+    ///          echo:
+    ///             msg: "Date added: {date_added.strftime('%Y-%m-%d')}"
     ///      tags:
     ///        - !custom Test::DateAdded
     /// # "#;
@@ -233,7 +234,7 @@ pub enum FilterKind {
         /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
         /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
         #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
-        range: PeriodRange,
+        range: Option<PeriodRange>,
     },
     /// Output all items
     ///
@@ -264,8 +265,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo:
-    ///          msg: "Item: {{entry.filename}}"
+    ///        - !preview
+    ///          echo:
+    ///             msg: "Item: {{entry.filename}}"
     ///      tags:
     ///        - !custom Test::AllItems
     /// # "#;
@@ -274,6 +276,7 @@ pub enum FilterKind {
     #[serde(rename = "all_items")]
     AllItems {
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "bool::default")]
         i_agree_it_is_dangerous: bool,
     },
     /// Match locations by the time they were created
@@ -304,9 +307,12 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview move:
-    ///          path: ~/Documents/PDF/{{entry.created.year}}/
-    ///          on_conflict: skip
+    ///        - !preview
+    ///          move:
+    ///             dst: ~/Documents/PDF/{{entry.created.year}}/
+    ///             on_conflict: skip
+    ///             rename_template: []
+    ///             filesystem: None
     ///      tags:
     ///        - !custom Test::Created
     /// # "#;
@@ -322,7 +328,7 @@ pub enum FilterKind {
         /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
         /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
         #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
-        range: PeriodRange,
+        range: Option<PeriodRange>,
     },
     /// Match locations that have duplicates
     ///
@@ -367,8 +373,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo:
-    ///          msg: "{{entry.duplicate}} is a duplicate of {{entry.original}}"
+    ///        - !preview
+    ///          echo:
+    ///             msg: "{{entry.duplicate}} is a duplicate of {{entry.original}}"
     ///      tags:
     ///        - !custom Test::Duplicate
     /// # "#;
@@ -377,8 +384,10 @@ pub enum FilterKind {
     #[serde(rename = "duplicate")]
     Duplicate {
         #[cfg_attr(feature = "cli", arg(long))]
-        detect_original_by: Option<DuplicateKind>,
+        #[serde(default = "DuplicateKind::default")]
+        detect_original_by: DuplicateKind,
         #[cfg_attr(feature = "cli", arg(long))]
+        #[serde(default = "bool::default")]
         reverse: bool,
     },
     /// Find empty locations
@@ -450,8 +459,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview copy
-    ///          dst: ~/Pictures/with_gps/{{relative_path}}/
+    ///        - !preview
+    ///          copy:
+    ///             dst: ~/Pictures/with_gps/{{relative_path}}/
     ///      tags:
     ///        - !custom Test::ExifGps
     /// # "#;
@@ -487,8 +497,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo
-    ///          msg: "Found JPG file: {{entry.path}}"
+    ///        - !preview
+    ///          echo:
+    ///             msg: "Found JPG file: {{entry.path}}"
     ///      tags:
     ///        - !custom Test::Extension
     /// # "#;
@@ -532,8 +543,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview move
-    ///          dst: ~/Documents/Invoices/{{file_content.customer}}/
+    ///        - !preview
+    ///          move:
+    ///             dst: ~/Documents/Invoices/{{file_content.customer}}/
     ///      tags:
     ///        - !custom Test::FileContent
     /// # "#;
@@ -575,8 +587,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo
-    ///          msg: "{{hash}} {{size.decimal}}"
+    ///        - !preview
+    ///          echo:
+    ///             msg: "{{hash}} {{size.decimal}}"
     ///      tags:
     ///        - !custom Test::Hash
     /// # "#;
@@ -611,8 +624,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo
-    ///          msg: "Files discovered: {{entry}}"
+    ///        - !preview
+    ///          echo:
+    ///             msg: "Files discovered: {{entry}}"
     ///      tags:
     ///        - !custom Test::IgnoreName
     /// # "#;
@@ -651,8 +665,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo
-    ///          msg: "Files discovered: {{entry}}"
+    ///        - !preview
+    ///          echo:
+    ///             msg: "Files discovered: {{entry}}"
     ///      tags:
     ///        - !custom Test::IgnorePath
     /// # "#;
@@ -692,8 +707,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo
-    ///          msg: "Date last used: {{entry.metadata.last_accessed}}"
+    ///        - !preview
+    ///          echo:
+    ///             msg: "Date last used: {{entry.metadata.last_accessed}}"
     ///      tags:
     ///        - !custom Test::LastAccessed
     /// # "#;
@@ -709,7 +725,7 @@ pub enum FilterKind {
         /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
         /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
         #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
-        range: PeriodRange,
+        range: Option<PeriodRange>,
     },
     /// Match locations by the time they were last modified
     ///
@@ -735,14 +751,17 @@ pub enum FilterKind {
     ///      filter_groups:
     ///        - filters:
     ///            - !last_modified
-    ///            - !extension:
+    ///            - !extension
     ///              exts: "pdf"
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview move
-    ///          dst: ~/Documents/PDF/{{entry.metadata.lastmodified.year}}/
-    ///          on_conflict: skip
+    ///        - !preview
+    ///          move:
+    ///             dst: ~/Documents/PDF/{{entry.metadata.lastmodified.year}}/
+    ///             on_conflict: skip
+    ///             rename_template: []
+    ///             filesystem: None
     ///      tags:
     ///        - !custom Test::LastModified
     /// # "#;
@@ -758,7 +777,7 @@ pub enum FilterKind {
         /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
         /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
         #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
-        range: PeriodRange,
+        range: Option<PeriodRange>,
     },
     /// Filter by macOS tags
     ///
@@ -778,14 +797,15 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///           - !macos_tags:
+    ///           - !macos_tags
     ///             - "Invoice (*)"
     ///             - "* (green)"
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo
-    ///          msg: "Match found!"
+    ///        - !preview
+    ///          echo:
+    ///             msg: "Match found!"
     ///      tags:
     ///        - !custom Test::MacOsTags
     /// # "#;
@@ -824,13 +844,14 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///           - !mimetype:
+    ///           - !mimetype
     ///             mime: image/*
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo
-    ///          msg: "This file is an image: {{entry.mimetype}}"
+    ///        - !preview
+    ///          echo:
+    ///             msg: "This file is an image: {{entry.mimetype}}"
     ///      tags:
     ///        - !custom Test::Mimetype
     /// # "#;
@@ -861,7 +882,7 @@ pub enum FilterKind {
     ///           target: files
     ///      filter_groups:
     ///        - filters:
-    ///           - !name:
+    ///           - !name
     ///             starts_with: "A,B"
     ///             ends_with: "_end"
     ///             contains: "5,6"
@@ -869,8 +890,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo
-    ///          msg: "Found a match {{entry}}."
+    ///        - !preview
+    ///          echo:
+    ///             msg: "Found a match {{entry}}."
     ///      tags:
     ///        - !custom Test::Name
     /// # "#;
@@ -885,7 +907,8 @@ pub enum FilterKind {
         ///
         /// Change this to `False` to use case insensitive matching.
         #[cfg_attr(feature = "cli", arg(long))]
-        #[serde(rename = "case_sensitive")]
+        #[serde(rename = "case_insensitive")]
+        #[serde(default = "bool::default")]
         case_insensitive: bool,
     },
     /// Don't use any filter (Default)
@@ -914,8 +937,9 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview echo
-    ///          msg: "Running on NoFilter."
+    ///        - !preview
+    ///          echo:
+    ///             msg: "Running on NoFilter."
     ///      tags:
     ///        - !custom Test::NoFilter
     /// # "#;
@@ -955,9 +979,12 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview move
-    ///          dst: ~/Documents/Invoices/1und1/{{regex.the_number}}.pdf
-    ///          on_conflict: skip
+    ///        - !preview
+    ///          move:
+    ///             dst: ~/Documents/Invoices/1und1/{{regex.the_number}}.pdf
+    ///             on_conflict: skip
+    ///             rename_template: []
+    ///             filesystem: None
     ///      tags:
     ///        - !custom Test::Regex
     /// # "#;
@@ -1039,9 +1066,12 @@ pub enum FilterKind {
     ///          results: include
     ///          match: all
     ///      actions:
-    ///        - !preview move
-    ///          dst: ~/Pictures/sorted/{{relative_path}}/
-    ///          on_conflict: skip
+    ///        - !preview
+    ///          move:
+    ///             dst: ~/Pictures/sorted/{{relative_path}}/
+    ///             on_conflict: skip
+    ///             rename_template: []
+    ///             filesystem: None
     ///      tags:
     ///        - !custom Test::SizeSortedPictures
     /// # "#;
@@ -1057,6 +1087,6 @@ pub enum FilterKind {
         /// multiple-byte units. E.g., `KiB` or `KB`, `GB` or `GiB`. They
         /// will be **converted** accordingly and are **case-insensitive**.
         #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(SizeRange)))]
-        range: SizeRange,
+        range: Option<SizeRange>,
     },
 }

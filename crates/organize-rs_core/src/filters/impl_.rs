@@ -196,7 +196,7 @@ impl FilterKind {
 
     fn filter_by_last_accessed<'a, 'args, C: ClientState>(
         &'a self,
-        range: &'args PeriodRange,
+        range: &'args Option<PeriodRange>,
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |metadata| {
@@ -207,7 +207,7 @@ impl FilterKind {
     }
     fn filter_by_last_modified<'a, 'args, C: ClientState>(
         &'a self,
-        range: &'args PeriodRange,
+        range: &'args Option<PeriodRange>,
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |metadata| {
@@ -219,7 +219,7 @@ impl FilterKind {
 
     fn filter_by_created<'a, 'args, C: ClientState>(
         &'a self,
-        range: &'args PeriodRange,
+        range: &'args Option<PeriodRange>,
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             entry.metadata().ok().map_or(false, |metadata| {
@@ -230,7 +230,11 @@ impl FilterKind {
         })
     }
 
-    pub(crate) fn matches_date(item_date_secs: i64, range: &PeriodRange) -> bool {
+    pub(crate) fn matches_date(item_date_secs: i64, range: &Option<PeriodRange>) -> bool {
+        let Some(range) = range else {
+            return false
+        };
+
         let now = FileTime::now();
         let seconds_since_created = match u64::try_from(now.seconds() - item_date_secs) {
             Ok(it) => it,
@@ -274,9 +278,12 @@ impl FilterKind {
 
     fn filter_by_size<'a, 'args, C: ClientState>(
         &'a self,
-        range: &'args SizeRange,
+        range: &'args Option<SizeRange>,
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
+            let Some(range) = range.clone() else {
+                return false
+            };
             entry
                 .metadata()
                 .map_or(false, |metadata| range.in_range(metadata.len() as f64))

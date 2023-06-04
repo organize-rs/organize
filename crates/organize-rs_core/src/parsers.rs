@@ -3,6 +3,7 @@
 use std::{fmt::Display, ops::Range, str::FromStr};
 
 use serde::{Deserialize, Serialize};
+use serde_with::DeserializeFromStr;
 use winnow::{
     ascii::alpha0,
     combinator::alt,
@@ -56,7 +57,7 @@ pub fn parse_units(input: &str) -> IResult<&str, &str> {
     alpha0(input)
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, DeserializeFromStr, Serialize)]
 pub struct PeriodRange(Range<f64>);
 
 impl PeriodRange {
@@ -74,7 +75,7 @@ impl Display for PeriodRange {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, DeserializeFromStr, Serialize)]
 pub struct SizeRange(Range<f64>);
 
 impl Display for SizeRange {
