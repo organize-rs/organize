@@ -88,6 +88,10 @@ miri *ARGS:
 test: check lint
     cargo test --all-features
 
+# Runs the test suites.
+dtest: check lint
+    cargo test --doc --workspace
+
 # Runs the whole test suite with nextest.
 ntest:
     cargo nextest run --all-features --workspace
