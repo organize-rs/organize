@@ -211,10 +211,13 @@ impl TemplateStringKind {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum WriteModeKind {
     /// append text to the file
+    #[serde(rename = "append")]
     Append,
     /// insert text as first line
+    #[serde(rename = "prepend")]
     Prepend,
     /// overwrite content with text
+    #[serde(rename = "overwrite")]
     Overwrite,
 }
 
@@ -298,7 +301,7 @@ pub enum ActionKind {
     ///          match: all
     ///      actions:
     ///        - mode: input
-    ///          action: !confirm:
+    ///          action: !confirm
     ///            msg: "Delete {{entry}}?"
     ///        - mode: destructive
     ///          action: !trash
@@ -410,7 +413,7 @@ pub enum ActionKind {
     ///          match: all
     ///      actions:
     ///        - mode: input
-    ///          action: !confirm:
+    ///          action: !confirm
     ///            msg: "Delete {{entry}}?"
     ///        - mode: destructive
     ///          action: !delete
@@ -448,7 +451,7 @@ pub enum ActionKind {
     ///      actions:
     ///        - mode: preview
     ///          action: !echo
-    ///            msg: ""Found old file: {{entry}}"
+    ///            msg: "Found old file: {{entry}}"
     ///      tags:
     ///        - !custom Test::Action::Echo
     /// # "#;
@@ -467,31 +470,62 @@ pub enum ActionKind {
     ///
     /// Specify tag colors
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///  - locations: "~/Documents/Invoices"
-    ///    filters:
-    ///      - name:
-    ///          startswith: "Invoice"
-    ///      - extension: pdf
-    ///    actions:
-    ///      - macos_tags:
-    ///          - Important (green)
-    ///          - Invoice (purple)
+    ///    - name: Specify tag colors
+    ///      enabled: true
+    ///      locations:
+    ///         - !default_settings ~/Documents/Invoices
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !name
+    ///              starts_with:
+    ///                - Invoice
+    ///            - !extension
+    ///              exts:
+    ///                - pdf
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: destructive
+    ///          action: !macos_tags
+    ///            tags:
+    ///              - Important (green)
+    ///              - Invoice (purple)
+    ///      tags:
+    ///        - !custom Test::Action::MacOsTags
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     ///
     /// # Example
     ///
     /// Add a templated tag with color
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///  - locations: "~/Documents/Invoices"
-    ///    filters:
-    ///      - created
-    ///    actions:
-    ///      - macos_tags:
-    ///         - Year-{created.year} (red)
+    ///    - name: Add a templated tag with color
+    ///      enabled: true
+    ///      locations:
+    ///         - !default_settings ~/Documents/Invoices
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !created
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: destructive
+    ///          action: !macos_tags
+    ///            tags:
+    ///              - Year-{created.year} (red)
+    ///      tags:
+    ///        - !custom Test::Action::MacOsTagsTemplated
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[cfg(target_os = "osx")]
     #[serde(rename = "macos_tags")]
@@ -514,17 +548,34 @@ pub enum ActionKind {
     ///
     /// Existing files will be overwritten.
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - locations: ~/Desktop
-    ///     filters:
-    ///       - extension:
-    ///           - pdf
-    ///           - jpg
-    ///     actions:
-    ///       - move:
-    ///           dest: "~/Desktop/{extension.upper()}/"
-    ///           on_conflict: "overwrite"
+    ///    - name: Move pdfs into PDF folder
+    ///      enabled: true
+    ///      locations:
+    ///         - !default_settings ~/Desktop
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !extension
+    ///              exts:
+    ///                - pdf
+    ///                - jpg
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: input
+    ///          action: !confirm
+    ///            msg: "Move {{entry}}?"
+    ///        - mode: destructive
+    ///          action: !move
+    ///            dst: ~/Desktop/{{uppercase(extension)}}/
+    ///            on_conflict: overwrite
+    ///      tags:
+    ///        - !custom Test::Action::Move
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "move")]
     Move {
@@ -563,21 +614,36 @@ pub enum ActionKind {
     ///
     /// Convert all .PDF file extensions to lowercase (.pdf)
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: "Convert all .PDF file extensions to lowercase (.pdf)"
-    ///     locations: "~/Desktop"
-    ///     filters:
-    ///       - name
-    ///       - extension: PDF
-    ///     actions:
-    ///       - rename: "{name}.pdf"
+    ///    - name: Convert all .PDF file extensions to lowercase (.pdf)
+    ///      enabled: true
+    ///      locations:
+    ///         - !default_settings ~/Desktop
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !extension
+    ///              exts:
+    ///                - pdf
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: destructive
+    ///          action: !rename
+    ///            name: "{{lowercase(entry.name)}}"
+    ///            on_conflict: skip
+    ///      tags:
+    ///        - !custom Test::Action::Rename
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "rename")]
     Rename {
         /// The new name for the file / dir.
         #[cfg_attr(feature = "cli", arg(long))]
-        name: PathBuf,
+        name: String,
         /// What should happen in case dest already exists.
         /// One of skip, overwrite, trash, rename_new and rename_existing.
         ///
@@ -601,14 +667,31 @@ pub enum ActionKind {
     ///
     /// # Example
     ///
-    /// ```yaml
+    /// On macOS: Open all pdfs on your desktop
+    ///
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: "On macOS: Open all pdfs on your desktop"
-    ///     locations: "~/Desktop"
-    ///     filters:
-    ///       - extension: pdf
-    ///     actions:
-    ///       - shell: 'open "{path}"'
+    ///    - name: Open all pdfs on your desktop
+    ///      enabled: true
+    ///      locations:
+    ///         - !default_settings ~/Desktop
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !extension
+    ///              exts:
+    ///                - pdf
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: destructive
+    ///          action: !shell
+    ///            command: "open '{{entry}}'"
+    ///      tags:
+    ///        - !custom Test::Action::Shell
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "shell")]
     Shell {
@@ -625,7 +708,8 @@ pub enum ActionKind {
         ignore_errors: bool,
         /// The value of `{shell.output}` if run in simulation
         #[cfg_attr(feature = "cli", arg(long))]
-        simulation_output: String,
+        #[serde(default = "Option::default")]
+        simulation_output: Option<String>,
         /// The value of `{shell.returncode}` if run in simulation
         #[cfg_attr(feature = "cli", arg(long))]
         #[serde(default = "u64::default")]
@@ -651,19 +735,33 @@ pub enum ActionKind {
     /// Move all JPGs and PNGs on the desktop which are older than one
     /// year into the trash
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: Move all JPGs and PNGs on the desktop which are older than one year into the trash
-    ///     locations: "~/Desktop"
-    ///     filters:
-    ///       - lastmodified:
-    ///           years: 1
-    ///           mode: older
-    ///       - extension:
-    ///           - png
-    ///           - jpg
-    ///     actions:
-    ///       - trash
+    ///    - name: Move all JPGs and PNGs on the desktop which are older than one year into the trash
+    ///      enabled: true
+    ///      locations:
+    ///         - !non_recursive
+    ///           path: ~/Desktop
+    ///           target: files
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !last_modified
+    ///              range: 1y..
+    ///            - !extension
+    ///              exts:
+    ///                - png
+    ///                - jpg
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: destructive
+    ///          action: !trash
+    ///      tags:
+    ///        - !custom Test::Action::Trash
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "trash")]
     Trash,
@@ -676,18 +774,33 @@ pub enum ActionKind {
     /// This will create a file sizes.txt in the current working folder
     /// which contains the filesizes of everything in the ~/Downloads folder.
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///   - name: "Record file sizes"
-    ///     locations: ~/Downloads
-    ///     filters:
-    ///       - size
-    ///     actions:
-    ///       - write:
-    ///           text: "{size.traditional} -- {relative_path}"
-    ///           path: "./sizes.txt"
-    ///           mode: "append"
-    ///           clear_before_first_write: true
+    ///    - name: Record file sizes
+    ///      enabled: true
+    ///      locations:
+    ///         - !recursive
+    ///           path: ~/Downloads
+    ///           max_depth: 10
+    ///           target: both
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !size
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: preview
+    ///          action: !write
+    ///            txt: "{{size.traditional}} -- {{relative_path}}"
+    ///            file: ./sizes.txt
+    ///            mode: append
+    ///            clear_before_first_write: true
+    ///      tags:
+    ///        - !custom Test::Action::Write
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "write")]
     Write {

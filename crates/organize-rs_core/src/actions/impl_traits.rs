@@ -97,11 +97,10 @@ impl Display for ActionKind {
     Filter: Rename 
                 
     Arguments: 
-    name: {},
+    name: {name},
     on_conflict: {on_conflict},
     rename_template: {rename_template:?}
-            ",
-                    name.display()
+            "
                 )
             }
             ActionKind::Symlink { dst } => {
@@ -161,7 +160,7 @@ impl Display for ActionKind {
     command: {command},
     run_in_simulation: {run_in_simulation},
     ignore_errors: {ignore_errors},
-    simulation_output: {simulation_output},
+    simulation_output: {simulation_output:?},
     simulation_returncode: {simulation_returncode},
             "
             ),

@@ -302,7 +302,8 @@ pub enum FilterKind {
     ///      filter_groups:
     ///        - filters:
     ///            - !extension
-    ///              exts: pdf
+    ///              exts:
+    ///                - pdf
     ///            - !created
     ///          results: include
     ///          match: all
@@ -492,7 +493,9 @@ pub enum FilterKind {
     ///      filter_groups:
     ///        - filters:
     ///            - !extension
-    ///              exts: ".jpg,jpeg"
+    ///              exts:
+    ///                - .jpg
+    ///                - jpeg
     ///          results: include
     ///          match: all
     ///      actions:
@@ -508,7 +511,6 @@ pub enum FilterKind {
     Extension {
         /// The file extensions to match (without dot)
         #[cfg_attr(feature = "cli", arg(long))]
-        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
         exts: Vec<String>,
     },
     /// Match file content with the given regular expression
@@ -617,7 +619,8 @@ pub enum FilterKind {
     ///      filter_groups:
     ///        - filters:
     ///            - !extension
-    ///              exts: "toml"
+    ///              exts:
+    ///                - toml
     ///            - !ignore_filename
     ///              in_name: "Cargo"
     ///          results: include
@@ -658,7 +661,8 @@ pub enum FilterKind {
     ///      filter_groups:
     ///        - filters:
     ///            - !extension
-    ///              exts: "toml"
+    ///              exts:
+    ///                - toml
     ///            - !ignore_path
     ///              in_path: ".git"
     ///          results: include
@@ -751,7 +755,8 @@ pub enum FilterKind {
     ///        - filters:
     ///            - !last_modified
     ///            - !extension
-    ///              exts: "pdf"
+    ///              exts:
+    ///                - pdf
     ///          results: include
     ///          match: all
     ///      actions:
