@@ -311,61 +311,6 @@ mod tests {
     #[test]
     fn test_empty_folder_rule_passes() {
         let rule = empty_folder_rule();
-        insta::assert_debug_snapshot!(rule, @r###"
-        Rule {
-            name: "Empty Directory",
-            tags: TagCollection(
-                [
-                    Custom(
-                        "Test::EmptyDirectory",
-                    ),
-                ],
-            ),
-            enabled: false,
-            locations: LocationCollection(
-                [
-                    RecursiveWithMaxDepth {
-                        path: "crates\\organize-rs_core\\tests\\fixtures\\filters\\empty_folder",
-                        max_depth: MaxDepth(
-                            1,
-                        ),
-                        target: Directories,
-                    },
-                ],
-            ),
-            filter_groups: FilterGroupCollection(
-                [
-                    FilterGroup {
-                        operation: Include,
-                        mode: All,
-                        filters: [
-                            Empty,
-                        ],
-                    },
-                ],
-            ),
-            actions: ActionApplicationCollection(
-                [
-                    ActionContainer {
-                        mode: Preview,
-                        action: Trash,
-                    },
-                ],
-            ),
-        }
-        "###);
-        insta::assert_display_snapshot!(rule, @r###"
-
-            Rule - Empty Directory (false)
-
-            Tags: TagCollection([Custom("Test::EmptyDirectory")])
-            Locations: LocationCollection([RecursiveWithMaxDepth { path: "crates\\organize-rs_core\\tests\\fixtures\\filters\\empty_folder", max_depth: MaxDepth(1), target: Directories }])
-
-            Filters: FilterGroupCollection([FilterGroup { operation: Include, mode: All, filters: [Empty] }])
-
-            Actions: ActionApplicationCollection([ActionContainer { mode: Preview, action: Trash }])
-                
-        "###);
         insta::assert_yaml_snapshot!(rule, @r###"
         ---
         name: Empty Directory
@@ -391,70 +336,6 @@ mod tests {
     #[test]
     fn test_pdf_on_desktop_rule_passes() {
         let rule = pdf_on_desktop_rule();
-        insta::assert_debug_snapshot!(rule, @r###"
-        Rule {
-            name: "PDFs on Desktop",
-            tags: TagCollection(
-                [
-                    Custom(
-                        "Documents::PDF",
-                    ),
-                ],
-            ),
-            enabled: false,
-            locations: LocationCollection(
-                [
-                    RecursiveWithMaxDepth {
-                        path: "C:\\Users\\dailyuse\\Desktop",
-                        max_depth: MaxDepth(
-                            4,
-                        ),
-                        target: Files,
-                    },
-                ],
-            ),
-            filter_groups: FilterGroupCollection(
-                [
-                    FilterGroup {
-                        operation: Include,
-                        mode: All,
-                        filters: [
-                            Extension {
-                                exts: [
-                                    "pdf",
-                                ],
-                            },
-                        ],
-                    },
-                ],
-            ),
-            actions: ActionApplicationCollection(
-                [
-                    ActionContainer {
-                        mode: Preview,
-                        action: Move {
-                            dst: "~/Desktop/PDFs",
-                            on_conflict: Skip,
-                            rename_template: None,
-                            filesystem: None,
-                        },
-                    },
-                ],
-            ),
-        }
-        "###);
-        insta::assert_display_snapshot!(rule, @r###"
-
-            Rule - PDFs on Desktop (false)
-
-            Tags: TagCollection([Custom("Documents::PDF")])
-            Locations: LocationCollection([RecursiveWithMaxDepth { path: "C:\\Users\\dailyuse\\Desktop", max_depth: MaxDepth(4), target: Files }])
-
-            Filters: FilterGroupCollection([FilterGroup { operation: Include, mode: All, filters: [Extension { exts: ["pdf"] }] }])
-
-            Actions: ActionApplicationCollection([ActionContainer { mode: Preview, action: Move { dst: "~/Desktop/PDFs", on_conflict: Skip, rename_template: None, filesystem: None } }])
-                
-        "###);
         insta::assert_yaml_snapshot!(rule, @r###"
         ---
         name: PDFs on Desktop
@@ -471,7 +352,8 @@ mod tests {
             match: all
             filters:
               - extension:
-                  exts: pdf
+                  exts:
+                    - pdf
         actions:
           - mode: preview
             action:

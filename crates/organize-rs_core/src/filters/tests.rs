@@ -88,10 +88,7 @@ fn test_filter_mimetype_jpg_odt_passes() {
         ],
     };
 
-    let (mut before, after) = get_base_values("mimetype", filter);
-
-    before.remove(1);
-    before.remove(0);
+    let (_, after) = get_base_values("mimetype", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -125,9 +122,7 @@ fn test_filter_all_items_passes() {
 fn test_filter_no_filter_passes() {
     let filter = FilterKind::NoFilter;
 
-    let (mut before, after) = get_base_values("by_name", filter);
-
-    before.clear();
+    let (_, after) = get_base_values("by_name", filter);
 
     insta::assert_debug_snapshot!(after, @"[]");
 }
@@ -147,19 +142,17 @@ fn test_filter_name_full_passes(#[case] case_insensitive: bool) {
         case_insensitive,
     };
 
-    let (mut before, after) = get_base_values("by_name", filter);
+    let (_, after) = get_base_values("by_name", filter);
 
-    before.remove(5);
-    before.remove(4);
-    before.remove(0);
-
-    insta::assert_debug_snapshot!(after, @r###"
-    [
-        "tests\\fixtures\\filters\\by_name\\123test1.txt",
-        "tests\\fixtures\\filters\\by_name\\456test2.txt",
-        "tests\\fixtures\\filters\\by_name\\789TaSt.jpg",
-    ]
-    "###);
+    insta::allow_duplicates! {
+        insta::assert_debug_snapshot!(after, @r###"
+        [
+            "tests\\fixtures\\filters\\by_name\\123test1.txt",
+            "tests\\fixtures\\filters\\by_name\\456test2.txt",
+            "tests\\fixtures\\filters\\by_name\\789TaSt.jpg",
+        ]
+        "###);
+    }
 }
 
 #[rstest]
@@ -182,11 +175,9 @@ fn test_filter_name_contains_multiple_names_and_inverted_passes(#[case] case_ins
         case_insensitive,
     };
 
-    let (mut before, after) = get_base_values("by_name", filter);
+    let (_, after) = get_base_values("by_name", filter);
 
     if case_insensitive {
-        before.remove(5);
-        before.remove(0);
         insta::assert_debug_snapshot!(after, @r###"
         [
             "tests\\fixtures\\filters\\by_name\\123test1.txt",
@@ -196,9 +187,6 @@ fn test_filter_name_contains_multiple_names_and_inverted_passes(#[case] case_ins
         ]
         "###);
     } else {
-        before.remove(5);
-        before.remove(4);
-        before.remove(0);
         insta::assert_debug_snapshot!(after, @r###"
         [
             "tests\\fixtures\\filters\\by_name\\123test1.txt",
@@ -224,10 +212,9 @@ fn test_filter_name_contains_multiple_names_passes(#[case] case_insensitive: boo
         case_insensitive,
     };
 
-    let (mut before, after) = get_base_values("by_name", filter);
+    let (_, after) = get_base_values("by_name", filter);
 
     if case_insensitive {
-        before.remove(0);
         insta::assert_debug_snapshot!(after, @r###"
         [
             "tests\\fixtures\\filters\\by_name\\123test1.txt",
@@ -238,9 +225,6 @@ fn test_filter_name_contains_multiple_names_passes(#[case] case_insensitive: boo
         ]
         "###);
     } else {
-        before.remove(5);
-        before.remove(4);
-        before.remove(0);
         insta::assert_debug_snapshot!(after, @r###"
         [
             "tests\\fixtures\\filters\\by_name\\123test1.txt",
@@ -266,11 +250,9 @@ fn test_filter_name_contains_single_name_passes(#[case] case_insensitive: bool) 
         case_insensitive,
     };
 
-    let (mut before, after) = get_base_values("by_name", filter);
+    let (_, after) = get_base_values("by_name", filter);
 
     if case_insensitive {
-        before.remove(3);
-        before.remove(0);
         insta::assert_debug_snapshot!(after, @r###"
         [
             "tests\\fixtures\\filters\\by_name\\123test1.txt",
@@ -280,10 +262,6 @@ fn test_filter_name_contains_single_name_passes(#[case] case_insensitive: bool) 
         ]
         "###);
     } else {
-        before.remove(5);
-        before.remove(4);
-        before.remove(3);
-        before.remove(0);
         insta::assert_debug_snapshot!(after, @r###"
         [
             "tests\\fixtures\\filters\\by_name\\123test1.txt",
@@ -297,6 +275,7 @@ fn test_filter_name_contains_single_name_passes(#[case] case_insensitive: bool) 
 #[case(true)]
 #[case(false)]
 fn test_filter_name_args_does_not_match_anything_passes(#[case] case_insensitive: bool) {
+    set_snapshot_suffix!("{}", case_insensitive);
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
             contains: vec![String::from("toast")].into(),
@@ -307,17 +286,18 @@ fn test_filter_name_args_does_not_match_anything_passes(#[case] case_insensitive
         case_insensitive,
     };
 
-    let (mut before, after) = get_base_values("by_name", filter);
+    let (_before, after) = get_base_values("by_name", filter);
 
-    before.clear();
-
-    insta::assert_debug_snapshot!(after, @"[]");
+    insta::allow_duplicates! {
+        insta::assert_debug_snapshot!(after, @"[]");
+    }
 }
 
 #[rstest]
 #[case(true)]
 #[case(false)]
 fn test_filter_name_args_empty_passes(#[case] case_insensitive: bool) {
+    set_snapshot_suffix!("{}", case_insensitive);
     let filter = FilterKind::Name {
         arguments: NameFilterArgs {
             contains: None,
@@ -328,11 +308,11 @@ fn test_filter_name_args_empty_passes(#[case] case_insensitive: bool) {
         case_insensitive,
     };
 
-    let (mut before, after) = get_base_values("by_name", filter);
+    let (_, after) = get_base_values("by_name", filter);
 
-    before.clear();
-
-    insta::assert_debug_snapshot!(after, @"[]");
+    insta::allow_duplicates! {
+        insta::assert_debug_snapshot!(after, @"[]");
+    }
 }
 
 #[rstest]
@@ -341,9 +321,7 @@ fn test_filter_multiple_extension_with_dot_passes() {
         exts: vec![String::from(".toml"), String::from(".jpg")],
     };
 
-    let (mut before, after) = get_base_values("by_extension", filter);
-
-    before.remove(0);
+    let (_, after) = get_base_values("by_extension", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -359,9 +337,7 @@ fn test_filter_multiple_extensions_passes() {
         exts: vec![String::from("toml"), String::from("jpg")],
     };
 
-    let (mut before, after) = get_base_values("by_extension", filter);
-
-    before.remove(0);
+    let (_, after) = get_base_values("by_extension", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -377,9 +353,7 @@ fn test_filter_single_extension_passes() {
         exts: vec![String::from("toml")],
     };
 
-    let (mut before, after) = get_base_values("by_extension", filter);
-
-    before.drain(..2);
+    let (_, after) = get_base_values("by_extension", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -394,7 +368,7 @@ fn test_filter_folder_empty_passes() {
         .expect("should be able to create dir structure.");
     let filter = FilterKind::Empty;
 
-    let (_before, after) = get_base_values("empty_folder", filter);
+    let (_, after) = get_base_values("empty_folder", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -407,10 +381,7 @@ fn test_filter_folder_empty_passes() {
 fn test_filter_file_empty_passes() {
     let filter = FilterKind::Empty;
 
-    let (mut before, after) = get_base_values("empty_file", filter);
-
-    before.remove(0);
-    before.remove(1);
+    let (_, after) = get_base_values("empty_file", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -425,9 +396,7 @@ fn test_filter_file_size_2mb_passes() {
         range: Some(SizeRange::from_str("..2mb").unwrap()),
     };
 
-    let (mut before, after) = get_base_values("size_based", filter);
-
-    _ = before.remove(0);
+    let (_, after) = get_base_values("size_based", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -444,9 +413,7 @@ fn test_filter_file_size_300_800_kib_passes() {
         range: Some(SizeRange::from_str("300KiB..800kib").unwrap()),
     };
 
-    let (mut before, after) = get_base_values("size_based", filter);
-
-    before.clear();
+    let (_, after) = get_base_values("size_based", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -460,10 +427,7 @@ fn test_filter_file_size_250kib_passes() {
         range: Some(SizeRange::from_str("250KiB..").unwrap()),
     };
 
-    let (mut before, after) = get_base_values("size_based", filter);
-
-    _ = before.pop();
-    _ = before.remove(0);
+    let (_, after) = get_base_values("size_based", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -479,9 +443,7 @@ fn test_filter_ignore_single_str_is_in_path_passes() {
         in_path: vec![String::from("bump")],
     };
 
-    let (mut before, after) = get_base_values("ignore_path", filter);
-
-    _ = before.drain(5..);
+    let (_, after) = get_base_values("ignore_path", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -500,9 +462,7 @@ fn test_filter_ignore_multiple_strs_is_in_path_passes() {
         in_path: vec![String::from("bump"), String::from("bemp")],
     };
 
-    let (mut before, after) = get_base_values("ignore_path", filter);
-
-    _ = before.drain(3..);
+    let (_, after) = get_base_values("ignore_path", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [
@@ -519,9 +479,8 @@ fn test_filter_ignore_single_str_is_in_name_passes() {
         in_name: vec![String::from("ignore")],
     };
 
-    let (mut before, after) = get_base_values("ignore_name", filter);
+    let (_, after) = get_base_values("ignore_name", filter);
 
-    before.remove(4);
     insta::assert_debug_snapshot!(after, @r###"
     [
         "tests\\fixtures\\filters\\ignore_name",
@@ -546,11 +505,7 @@ fn test_filter_ignore_multiple_strs_is_in_name_passes() {
         ],
     };
 
-    let (mut before, after) = get_base_values("ignore_name", filter);
-
-    before.drain(6..9);
-    before.remove(4);
-    before.remove(1);
+    let (_, after) = get_base_values("ignore_name", filter);
 
     insta::assert_debug_snapshot!(after, @r###"
     [

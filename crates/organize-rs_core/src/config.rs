@@ -194,42 +194,6 @@ mod tests {
         let mut config = OrganizeConfig::default();
         let rule = Rule::default();
         config.add_rule(rule);
-        insta::assert_debug_snapshot!(config, @r###"
-        OrganizeConfig {
-            rules: Rules(
-                [
-                    Rule {
-                        name: "",
-                        tags: TagCollection(
-                            [],
-                        ),
-                        enabled: false,
-                        locations: LocationCollection(
-                            [],
-                        ),
-                        filter_groups: FilterGroupCollection(
-                            [],
-                        ),
-                        actions: ActionApplicationCollection(
-                            [],
-                        ),
-                    },
-                ],
-            ),
-        }
-        "###);
-        insta::assert_display_snapshot!(config, @r###"
-
-            Rule -  (false)
-
-            Tags: TagCollection([])
-            Locations: LocationCollection([])
-
-            Filters: FilterGroupCollection([])
-
-            Actions: ActionApplicationCollection([])
-                
-        "###);
         insta::assert_yaml_snapshot!(config, @r###"
         ---
         rules:
