@@ -219,7 +219,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "Date added: {date_added.strftime('%Y-%m-%d')}"
     ///      tags:
-    ///        - !custom Test::DateAdded
+    ///        - !custom Test::Filter::DateAdded
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -269,7 +269,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "Item: {{entry.filename}}"
     ///      tags:
-    ///        - !custom Test::AllItems
+    ///        - !custom Test::Filter::AllItems
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -311,7 +311,7 @@ pub enum FilterKind {
     ///          action: !move
     ///            dst: ~/Documents/PDF/{{entry.created.year}}/
     ///      tags:
-    ///        - !custom Test::Created
+    ///        - !custom Test::Filter::Created
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -374,7 +374,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "{{entry.duplicate}} is a duplicate of {{entry.original}}"
     ///      tags:
-    ///        - !custom Test::Duplicate
+    ///        - !custom Test::Filter::Duplicate
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -413,7 +413,7 @@ pub enum FilterKind {
     ///        - mode: preview
     ///          action: !delete
     ///      tags:
-    ///        - !custom Test::EmptyFolders
+    ///        - !custom Test::Filter::EmptyFolders
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -462,7 +462,7 @@ pub enum FilterKind {
     ///          action: !copy
     ///            dst: ~/Pictures/with_gps/{{relative_path}}/
     ///      tags:
-    ///        - !custom Test::ExifGps
+    ///        - !custom Test::Filter::ExifGps
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -500,7 +500,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "Found JPG file: {{entry.path}}"
     ///      tags:
-    ///        - !custom Test::Extension
+    ///        - !custom Test::Filter::Extension
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -546,7 +546,7 @@ pub enum FilterKind {
     ///          action: !move
     ///            dst: ~/Documents/Invoices/{{file_content.customer}}/
     ///      tags:
-    ///        - !custom Test::FileContent
+    ///        - !custom Test::Filter::FileContent
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -590,7 +590,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "{{hash}} {{size.decimal}}"
     ///      tags:
-    ///        - !custom Test::Hash
+    ///        - !custom Test::Filter::Hash
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -627,7 +627,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "Files discovered: {{entry}}"
     ///      tags:
-    ///        - !custom Test::IgnoreName
+    ///        - !custom Test::Filter::IgnoreName
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -668,7 +668,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "Files discovered: {{entry}}"
     ///      tags:
-    ///        - !custom Test::IgnorePath
+    ///        - !custom Test::Filter::IgnorePath
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -710,7 +710,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "Date last used: {{entry.metadata.last_accessed}}"
     ///      tags:
-    ///        - !custom Test::LastAccessed
+    ///        - !custom Test::Filter::LastAccessed
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -759,7 +759,7 @@ pub enum FilterKind {
     ///          action: !move
     ///            dst: ~/Documents/PDF/{{entry.metadata.lastmodified.year}}/
     ///      tags:
-    ///        - !custom Test::LastModified
+    ///        - !custom Test::Filter::LastModified
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -794,8 +794,8 @@ pub enum FilterKind {
     ///      filter_groups:
     ///        - filters:
     ///           - !macos_tags
-    ///             - "Invoice (*)"
-    ///             - "* (green)"
+    ///               - "Invoice (*)"
+    ///               - "* (green)"
     ///          results: include
     ///          match: all
     ///      actions:
@@ -803,7 +803,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "Match found!"
     ///      tags:
-    ///        - !custom Test::MacOsTags
+    ///        - !custom Test::Filter::MacOsTags
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -849,7 +849,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "This file is an image: {{entry.mimetype}}"
     ///      tags:
-    ///        - !custom Test::Mimetype
+    ///        - !custom Test::Filter::Mimetype
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -895,7 +895,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "Found a match {{entry}}."
     ///      tags:
-    ///        - !custom Test::Name
+    ///        - !custom Test::Filter::Name
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -942,7 +942,7 @@ pub enum FilterKind {
     ///          action: !echo
     ///            msg: "Running on NoFilter."
     ///      tags:
-    ///        - !custom Test::NoFilter
+    ///        - !custom Test::Filter::NoFilter
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -984,7 +984,7 @@ pub enum FilterKind {
     ///          action: !move
     ///            dst: ~/Documents/Invoices/1und1/{{regex.the_number}}.pdf
     ///      tags:
-    ///        - !custom Test::Regex
+    ///        - !custom Test::Filter::Regex
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -1037,7 +1037,7 @@ pub enum FilterKind {
     ///        - mode: preview
     ///          action: !trash
     ///      tags:
-    ///        - !custom Test::TrashDownloads
+    ///        - !custom Test::Filter::TrashDownloads
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
@@ -1069,7 +1069,7 @@ pub enum FilterKind {
     ///          action: !move
     ///            dst: ~/Pictures/sorted/{{relative_path}}/
     ///      tags:
-    ///        - !custom Test::SizeSortedPictures
+    ///        - !custom Test::Filter::SortPicturesBySize
     /// # "#;
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```

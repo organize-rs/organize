@@ -13,7 +13,7 @@ impl Display for ActionKind {
     "
                 )
             }
-            ActionKind::Confirm { text, vars } => {
+            ActionKind::Confirm { msg: text, vars } => {
                 write!(
                     f,
                     "

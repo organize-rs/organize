@@ -31,7 +31,7 @@ impl ActionKind {
                 rename_template: _,
                 filesystem: _,
             } => todo!("not implemented (yet)!"),
-            ActionKind::Confirm { text: _, vars: _ } => todo!("not implemented (yet)!"),
+            ActionKind::Confirm { msg: _, vars: _ } => todo!("not implemented (yet)!"),
             ActionKind::Echo { msg: _ } => todo!("not implemented (yet)!"),
             ActionKind::Write {
                 txt: _,

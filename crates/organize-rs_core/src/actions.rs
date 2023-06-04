@@ -1,7 +1,7 @@
 //! Actions that can be used in the config file and
 //! `organize` applieds to matching rules
 
-pub(crate) mod conflicts;
+pub mod conflicts;
 mod impl_;
 mod impl_traits;
 #[cfg(test)]
@@ -62,6 +62,9 @@ pub enum ActionApplicationKind {
     /// Execute action destructively
     #[serde(rename = "destructive")]
     Destructive,
+    /// Wait for user input
+    #[serde(rename = "input")]
+    UserInput,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
@@ -275,25 +278,40 @@ pub enum ActionKind {
     ///
     /// Confirm before deleting a duplicate
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    /// - name: "Delete duplicates with confirmation"
-    ///     locations:
-    ///     - ~/Downloads
-    ///     - ~/Documents
-    ///     filters:
-    ///     - not empty
-    ///     - duplicate
-    ///     - name
-    ///     actions:
-    ///     - confirm: "Delete {name}?"
-    ///     - trash
+    ///    - name: Delete duplicates with confirmation
+    ///      enabled: true
+    ///      locations:
+    ///         - !default_settings ~/Downloads
+    ///         - !default_settings ~/Documents
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !empty
+    ///          results: exclude
+    ///          match: all
+    ///        - filters:
+    ///            - !duplicate
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: input
+    ///          action: !confirm:
+    ///            msg: "Delete {{entry}}?"
+    ///        - mode: destructive
+    ///          action: !trash
+    ///      tags:
+    ///        - !custom Test::Action::Confirm
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "confirm")]
     Confirm {
         #[cfg_attr(feature = "cli", arg(long))]
         #[serde(default = "Option::default")]
-        text: Option<String>,
+        msg: Option<String>,
         #[cfg_attr(feature = "cli", arg(long))]
         #[serde(default = "Option::default")]
         vars: Option<Vec<String>>,
@@ -308,17 +326,31 @@ pub enum ActionKind {
     /// and all .jpg files into a "JPG" folder. Existing files will
     /// be overwritten.
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///  - locations: ~/Desktop
-    ///    filters:
-    ///      - extension:
-    ///          - pdf
-    ///          - jpg
-    ///    actions:
-    ///      - copy:
-    ///          dest: "~/Desktop/{extension.upper()}/"
-    ///          on_conflict: overwrite
+    ///    - name: Copy pdfs into PDF folder
+    ///      enabled: true
+    ///      locations:
+    ///         - !default_settings ~/Desktop
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !extension
+    ///              exts:
+    ///                - pdf
+    ///                - jpg
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: destructive
+    ///          action: !copy
+    ///            dst: ~/Desktop/{{uppercase(extension)}}
+    ///            on_conflict: overwrite
+    ///      tags:
+    ///        - !custom Test::Action::Copy
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "copy")]
     Copy {
@@ -355,17 +387,37 @@ pub enum ActionKind {
     ///
     /// # Example
     ///
-    /// ```yaml
+    /// Delete *.png and *.jpg inside the downloads folder that haven't been
+    /// modified in the last 365 days
+    ///
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    /// - locations: "~/Downloads"
-    ///     filters:
-    ///     - lastmodified:
-    ///         days: 365
-    ///     - extension:
-    ///         - png
-    ///         - jpg
-    ///     actions:
-    ///     - delete
+    ///    - name: Delete png and jpg with confirmation
+    ///      enabled: true
+    ///      locations:
+    ///         - !default_settings ~/Downloads
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !extension
+    ///              exts:
+    ///                - png
+    ///                - jpg
+    ///            - !last_modified
+    ///              range: 365d..
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: input
+    ///          action: !confirm:
+    ///            msg: "Delete {{entry}}?"
+    ///        - mode: destructive
+    ///          action: !delete
+    ///      tags:
+    ///        - !custom Test::Action::Delete
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "delete")]
     Delete,
@@ -376,18 +428,31 @@ pub enum ActionKind {
     ///
     /// # Example
     ///
-    /// Prints `Found old file` whenever a file is discovered that was
+    /// Prints `Found old file: {filename}` whenever a file is discovered that was
     /// modified longer than 365 days ago.
     ///
-    /// ```yaml
+    /// ```rust
+    /// # use organize_rs_core::config::{OrganizeConfig, ConfigFileFormat};
+    /// # let rule = r#"
     /// rules:
-    ///  - name: "Find files older than a year"
-    ///    locations: ~/Desktop
-    ///    filters:
-    ///      - lastmodified:
-    ///          days: 365
-    ///    actions:
-    ///      - echo: "Found old file"
+    ///    - name: Find files older than a year
+    ///      enabled: true
+    ///      locations:
+    ///         - !default_settings ~/Desktop
+    ///      filter_groups:
+    ///        - filters:
+    ///            - !last_modified
+    ///              range: 365d..
+    ///          results: include
+    ///          match: all
+    ///      actions:
+    ///        - mode: preview
+    ///          action: !echo
+    ///            msg: ""Found old file: {{entry}}"
+    ///      tags:
+    ///        - !custom Test::Action::Echo
+    /// # "#;
+    /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "echo")]
     Echo {
