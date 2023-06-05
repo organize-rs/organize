@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::{
-        conflicts::OnConflictKind, ActionApplicationCollection, ActionApplicationKind,
+        conflicts::ConflictResolutionKind, ActionApplicationCollection, ActionApplicationKind,
         ActionContainer, ActionKind,
     },
     filters::{
@@ -288,7 +288,7 @@ pub fn pdf_on_desktop_rule() -> Rule {
             mode: ActionApplicationKind::Preview,
             action: ActionKind::Move {
                 dst: "~/Desktop/PDFs".into(),
-                on_conflict: OnConflictKind::Skip,
+                on_conflict: ConflictResolutionKind::Skip,
                 rename_template: None,
                 filesystem: None,
             },

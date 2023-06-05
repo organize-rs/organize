@@ -6,10 +6,17 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "cli")]
 use clap::ValueEnum;
 
+/// possible conflicts
+#[derive(Debug, Clone, Deserialize, Serialize, Display)]
+pub enum ConflictKind {
+    /// file already exists
+    AlreadyExisting,
+}
+
 /// Actions for conflict resolution
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
-pub enum OnConflictKind {
+pub enum ConflictResolutionKind {
     /// Keep the biggest item
     #[serde(rename = "biggest")]
     Biggest,
@@ -46,7 +53,7 @@ pub enum OnConflictKind {
     Trash,
 }
 
-impl Default for OnConflictKind {
+impl Default for ConflictResolutionKind {
     fn default() -> Self {
         Self::Skip
     }

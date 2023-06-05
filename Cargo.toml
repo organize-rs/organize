@@ -40,6 +40,7 @@ organize-rs_core = { version = "0.2.0", path = "crates/organize-rs_core", featur
 organize-rs_testing = { path = "crates/organize-rs_testing" }
 clap = { version = "4.3.0", features = ["derive", "env", "wrap_help"] }
 directories = "5.0.1"
+console = { version = "0.15.7", features = ["windows-console-colors"] }
 
 thiserror = "1.0.40"
 anyhow = "1.0.71"
@@ -173,6 +174,7 @@ dialoguer = { workspace = true }
 ron = { workspace = true }
 open = { workspace = true }
 serde_with = { workspace = true }
+console = { workspace = true }
 
 
 [dev-dependencies]

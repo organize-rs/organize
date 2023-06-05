@@ -3,7 +3,7 @@ use std::{collections::HashSet, path::Path};
 use itertools::Itertools;
 
 use crate::{
-    actions::{ActionApplicationKind, ActionResultKind},
+    actions::ActionResultKind,
     actors::{filter_applicator::FilterApplicator, location_walker::LocationWalker},
     config::OrganizeConfig,
     error::OrganizeResult,
@@ -97,11 +97,9 @@ impl Runner<Inspection> {
 }
 
 impl Runner<ActionPreview> {
-    pub fn preview_actions(self) -> OrganizeResult<()> {
-        // * if action::mode == `is_preview()` we return Runner<Reporting>
-        // * and only println!() what an action might do
-        // * else we continue to Runner<ActionApplication>
-        self.extra.entries().iter().for_each(|(rule, entry)| {
+    pub fn preview_actions(self) -> OrganizeResult<Runner<ActionApplication>> {
+        let entries = self.extra.entries();
+        entries.iter().for_each(|(rule, entry)| {
             rule.actions().iter().for_each(|action_container| {
                 entry.iter().for_each(|entry| {
                     match action_container.action.get_action()(
@@ -121,11 +119,11 @@ impl Runner<ActionPreview> {
                 })
             })
         });
-        Ok(())
-    }
 
-    pub fn ask_confirmation(self) -> OrganizeResult<Runner<ActionApplication>> {
-        todo!()
+        Ok(Runner::<ActionApplication> {
+            configs: self.configs,
+            extra: ActionApplication::with_entries(entries),
+        })
     }
 }
 

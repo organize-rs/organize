@@ -6,6 +6,7 @@ use abscissa_core::{status_err, Application, Command, Runnable};
 
 use anyhow::Result;
 use clap::Args;
+use dialoguer::Confirm;
 use organize_rs_core::{runner::Runner, state::Initialize, tags::Tag};
 
 use crate::application::ORGANIZE_APP;
@@ -26,24 +27,26 @@ impl RunConfigCmd {
     fn inner_run(&self) -> Result<()> {
         let runner = Runner::<Initialize>::load_configs(&self.paths)
             .apply_filters(self.tags.clone())
-            .inspect_entries()
+            // .inspect_entries()
             .finish_inspection()
             .preview_actions()?;
-        // .ask_confirmation()?
-        // .apply_actions()?;
 
-        // ? Conflict handling
-        // * Probably done in a loop until all the conflicts are handled
-        // * loop can be interrupted
-        // * should jump to report of actions
-        // loop {
-        //      runner
-        //      .check_conflicts()
-        //      .view_conflicts()
-        //      .preview_actions()
-        //      .ask_confirmation()?
-        //      .apply_actions()?
-        // }
+        if Confirm::new().with_prompt("Are you sure, that you want to execute the previewed actions? This is irreversible.").default(false).interact()? {
+
+            runner.apply_actions()?;
+            // ? Conflict handling
+            // * Probably done in a loop until all the conflicts are handled
+            // * loop can be interrupted
+            // * should jump to report of actions
+            // loop {
+            //      runner
+            //      .check_conflicts()
+            //      .view_conflicts()
+            //      .preview_actions()
+            //      .ask_confirmation()?
+            //      .apply_actions()?
+            // }
+        }
 
         // runner.print_report();
         Ok(())

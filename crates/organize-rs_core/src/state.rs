@@ -4,7 +4,7 @@
 use jwalk::DirEntry;
 
 use crate::{
-    actions::conflicts::OnConflictKind, actors::location_walker::DirEntryData, rules::Rule,
+    actions::conflicts::ConflictResolutionKind, actors::location_walker::DirEntryData, rules::Rule,
 };
 
 // States
@@ -57,7 +57,7 @@ pub struct AskConfirmation;
 #[derive(Debug, Default)]
 pub struct ActionPreview {
     entries: Vec<(Rule, DirEntryData)>,
-    conflicts: Option<Vec<OnConflictKind>>,
+    conflicts: Option<Vec<ConflictResolutionKind>>,
 }
 
 impl ActionPreview {
@@ -73,7 +73,22 @@ impl ActionPreview {
 }
 
 #[derive(Debug, Default)]
-pub struct ActionApplication;
+pub struct ActionApplication {
+    entries: Vec<(Rule, DirEntryData)>,
+    conflicts: Option<Vec<ConflictResolutionKind>>,
+}
+
+impl ActionApplication {
+    pub fn with_entries(entries: Vec<(Rule, DirEntryData)>) -> Self {
+        Self {
+            entries,
+            conflicts: None,
+        }
+    }
+    pub fn entries(self) -> Vec<(Rule, DirEntryData)> {
+        self.entries
+    }
+}
 
 #[derive(Debug, Clone, Default)]
 pub struct Reporting;

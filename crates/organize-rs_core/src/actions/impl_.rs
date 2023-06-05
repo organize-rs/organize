@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use console::style;
 use jwalk::ClientState;
 
 use crate::{
@@ -56,7 +57,11 @@ impl ActionKind {
     fn action_no_action<C: ClientState>(&self) -> ActionClosure<C> {
         Box::new(|entry, _preview| {
             Ok(ActionResultKind::Preview {
-                msg: format!("(Preview) No action: {}", entry.path().display()),
+                msg: format!(
+                    "{} No action: '{}'",
+                    style("(Preview)").green(),
+                    entry.path().display()
+                ),
                 path: entry.path(),
                 action: self.to_owned(),
             })
@@ -67,7 +72,11 @@ impl ActionKind {
         Box::new(|entry, preview| {
             if preview {
                 Ok(ActionResultKind::Preview {
-                    msg: format!("(Preview) Trash: {}", entry.path().display()),
+                    msg: format!(
+                        "{} Trash: '{}'",
+                        style("(Preview)").green(),
+                        entry.path().display()
+                    ),
                     path: entry.path(),
                     action: self.to_owned(),
                 })
@@ -83,7 +92,11 @@ impl ActionKind {
         Box::new(|entry, preview| {
             if preview {
                 Ok(ActionResultKind::Preview {
-                    msg: format!("(Preview) Delete: {}", entry.path().display()),
+                    msg: format!(
+                        "{} Delete: '{}'",
+                        style("(Preview)").green(),
+                        entry.path().display()
+                    ),
                     path: entry.path(),
                     action: self.to_owned(),
                 })
@@ -100,7 +113,8 @@ impl ActionKind {
             if preview {
                 Ok(ActionResultKind::Preview {
                     msg: format!(
-                        "(Preview) Symlink: {} -> {}",
+                        "{} Symlink: {} -> '{}'",
+                        style("(Preview)").green(),
                         dst.display(),
                         entry.path().display()
                     ),

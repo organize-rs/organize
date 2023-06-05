@@ -16,7 +16,10 @@ use displaydoc::Display;
 use jwalk::DirEntry;
 use serde::{Deserialize, Serialize};
 
-use crate::{actions::conflicts::OnConflictKind, error::OrganizeError};
+use crate::{
+    actions::conflicts::{ConflictKind, ConflictResolutionKind},
+    error::OrganizeError,
+};
 
 type ActionClosure<'a, C> =
     Box<dyn FnMut(&DirEntry<C>, bool) -> Result<ActionResultKind, OrganizeError> + 'a>;
@@ -35,6 +38,8 @@ pub enum ActionResultKind {
     },
     /// action has been successful
     Successful,
+    /// conflict
+    Conflicted(ConflictKind),
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display, Default)]
@@ -380,8 +385,8 @@ pub enum ActionKind {
         ///
         /// Defaults to rename_new.
         #[cfg_attr(feature = "cli", arg(long))]
-        #[serde(default = "OnConflictKind::default")]
-        on_conflict: OnConflictKind,
+        #[serde(default = "ConflictResolutionKind::default")]
+        on_conflict: ConflictResolutionKind,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
@@ -602,8 +607,8 @@ pub enum ActionKind {
         ///
         /// Defaults to rename_new.
         #[cfg_attr(feature = "cli", arg(long))]
-        #[serde(default = "OnConflictKind::default")]
-        on_conflict: OnConflictKind,
+        #[serde(default = "ConflictResolutionKind::default")]
+        on_conflict: ConflictResolutionKind,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`
@@ -661,8 +666,8 @@ pub enum ActionKind {
         ///
         /// Defaults to rename_new.
         #[cfg_attr(feature = "cli", arg(long))]
-        #[serde(default = "OnConflictKind::default")]
-        on_conflict: OnConflictKind,
+        #[serde(default = "ConflictResolutionKind::default")]
+        on_conflict: ConflictResolutionKind,
         /// A template for renaming the file / dir in case of a conflict.
         ///
         /// Defaults to `{name}_{counter}{extension}`

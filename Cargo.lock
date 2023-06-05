@@ -1209,6 +1209,7 @@ dependencies = [
  "chrono",
  "clap",
  "clap_complete",
+ "console",
  "dialoguer",
  "directories",
  "duct",
@@ -1238,6 +1239,7 @@ dependencies = [
  "byte-unit",
  "chrono",
  "clap",
+ "console",
  "crossbeam",
  "directories",
  "displaydoc",
@@ -1371,9 +1373,9 @@ dependencies = [
 
 [[package]]
 name = "public-api"
-version = "0.30.0"
+version = "0.31.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9fea4e0455803160cb10d7e877cfef954e7e667fa881ff536a51b550cc7efec5"
+checksum = "35047c72acd2982ad054e8c458079e65d21ef9ad836ffca6a5070a4eb140d20a"
 dependencies = [
  "hashbag",
  "rustdoc-types",

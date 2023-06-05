@@ -34,5 +34,7 @@ pub mod prelude;
 pub mod scripting;
 
 // re-exports for documentation purposes
-pub use organize_rs_core::actions::{conflicts::OnConflictKind, ActionKind, TemplateStringKind};
+pub use organize_rs_core::actions::{
+    conflicts::ConflictResolutionKind, ActionKind, TemplateStringKind,
+};
 pub use organize_rs_core::filters::FilterKind;
