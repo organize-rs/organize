@@ -6,7 +6,8 @@
 //! > organize is a command line, open-source alternative to apps like Hazel (macOS) or File Juggler (Windows).
 //!  
 //! This is a Rust implementation of the same concept.
-//! Application based on the [Abscissa] framework.
+//!
+//! This application is based on the [Abscissa] framework.
 //!
 //! [Abscissa]: https://github.com/iqlusioninc/abscissa
 

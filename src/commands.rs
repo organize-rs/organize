@@ -38,13 +38,13 @@ pub const CONFIG_FILE: &str = "organize.toml";
 /// Subcommands need to be listed in an enum.
 #[derive(Subcommand, Command, Debug, Runnable)]
 pub enum OrganizeCmd {
-    /// Actions that organize can apply
+    /// Config snippets for actions that organize can apply
     Action(ActionCmd),
     /// Check configs and scripts for errors
     Check(CheckCmd),
     /// Show the documentation
     Docs(DocsCmd),
-    /// Filters that organize can apply
+    /// Config snippets for filters that organize can apply
     Filter(FilterCmd),
     /// Generate completions for your shell, and organize config and script files
     Generate(GenerateCmd),
