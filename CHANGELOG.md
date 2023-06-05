@@ -5,9 +5,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.1 (2023-06-05)
+
+### New Features
+
+ - <csr-id-ea7d2648b7adc1fb4cef184f2a4b1c9b2868c46d/> Reuse existing commands filter/action to output config snippets
+ - <csr-id-975995c36897e3c9e68c99daf065cc4c52f8b71c/> Implement confirmation dialogue before irreversibly applying an action
+ - <csr-id-37aad75d242f73091b3fc1058db28c40bbe6da70/> implement previewing an action
+ - <csr-id-27f0ad6f0613eee61df03bf8f2385cee94799f85/> split the pipeline into several actors that could be run in parallel if needed
+
+### Bug Fixes
+
+ - <csr-id-404d0b8af5c2b16b454fdcc3b3bcfdef7c709356/> Fix descriptions for commands
+ - <csr-id-859f50fdfab805a51567808f0631a24a3b522298/> Reexport TemplateStringKind for documentation
+
+### Other
+
+ - <csr-id-7144ddda26a7a4368d5c5af3a3108df8217cee4f/> add doctests for some actions
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 7 commits contributed to the release over the course of 1 calendar day.
+ - 2 days passed between releases.
+ - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Fix descriptions for commands ([`404d0b8`](https://github.com/organize-rs/organize/commit/404d0b8af5c2b16b454fdcc3b3bcfdef7c709356))
+    - Reuse existing commands filter/action to output config snippets ([`ea7d264`](https://github.com/organize-rs/organize/commit/ea7d2648b7adc1fb4cef184f2a4b1c9b2868c46d))
+    - Implement confirmation dialogue before irreversibly applying an action ([`975995c`](https://github.com/organize-rs/organize/commit/975995c36897e3c9e68c99daf065cc4c52f8b71c))
+    - Implement previewing an action ([`37aad75`](https://github.com/organize-rs/organize/commit/37aad75d242f73091b3fc1058db28c40bbe6da70))
+    - Split the pipeline into several actors that could be run in parallel if needed ([`27f0ad6`](https://github.com/organize-rs/organize/commit/27f0ad6f0613eee61df03bf8f2385cee94799f85))
+    - Reexport TemplateStringKind for documentation ([`859f50f`](https://github.com/organize-rs/organize/commit/859f50fdfab805a51567808f0631a24a3b522298))
+    - Add doctests for some actions ([`7144ddd`](https://github.com/organize-rs/organize/commit/7144ddda26a7a4368d5c5af3a3108df8217cee4f))
+</details>
+
 ## 0.4.0 (2023-06-03)
 
 <csr-id-930593f55f0128609daf98ccee901d5e33c29223/>
+<csr-id-cb1e1151c09afed48f40b989132ae89324f9f2b1/>
+<csr-id-7c0b0c9ce915e8b43d4542bc79b53432dd5bc2d2/>
+<csr-id-19110b9592fb35314402f9bac71f52791c5a7cd1/>
+<csr-id-ad6f6844dc93dac07e4d1921d1dbe0ab984b15c9/>
+<csr-id-22192eb528c2f95ad01ef124082dfae518e8c464/>
+<csr-id-afb116bc91add3ac76f6c55e44932391eec6e7e8/>
+<csr-id-3f6df32eac07d369b035ffb06156c2b47b0f9121/>
+<csr-id-abdc5ecfe89c8db0b3f7077681ef3a23a7797df5/>
+<csr-id-91a8840c5826eb39493384a3e2d1bbb69f38c298/>
+<csr-id-18ee7029fa931b0f95046f11c2919b23f11c1470/>
+<csr-id-075f0256f0dc5c2a69e350c2232468988f31c3e2/>
+<csr-id-b544485a914108185f2e10e1b7ae336acdc7ac5e/>
+<csr-id-a3163027800f1843476b8855a41f2115fdb3d3eb/>
+<csr-id-85fd452e00835f14e84da9547bb5659449771cde/>
+<csr-id-8b47644af39c99f79658cdd54c067f9787b02347/>
+<csr-id-2c06e62ede4f1de31c75dd786c65f87b0855dffc/>
+<csr-id-fb1a2158884b70ea37df7b332acd6d4170b07e91/>
+<csr-id-54a8993981273a39fb0da07de5853a2fbc5764b4/>
+<csr-id-99d7b0c109017a78c1ef726dcc9d40d0507b0426/>
+<csr-id-a82a20821ebe60d386efcb9856f4d22b45ab4a2e/>
+<csr-id-fd90047424eb9e6f04481a1ef35825e360b06912/>
+<csr-id-13984918e9cbbe3a7787af715004b5729b5a58a8/>
+
+
 <csr-id-cb1e1151c09afed48f40b989132ae89324f9f2b1/>
 <csr-id-7c0b0c9ce915e8b43d4542bc79b53432dd5bc2d2/>
 <csr-id-19110b9592fb35314402f9bac71f52791c5a7cd1/>
@@ -141,6 +208,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <csr-id-14300ea60bcccf500d813ee267792899a278a9ff/>
 <csr-id-c005013d1c49f5d717d635c3ece760bb5c904e09/>
 
+
+<csr-id-95b9b3cf0ce06a224c0c79782ae7c470c31475d8/>
+<csr-id-36d02df0f52798af534151ea4d3ed4f7876934b2/>
+<csr-id-09c428cc45bbb348ca08e5fd233c999408ca2500/>
+<csr-id-543150dd96aca886bacd0057bda1957d19b4322d/>
+<csr-id-14300ea60bcccf500d813ee267792899a278a9ff/>
+<csr-id-c005013d1c49f5d717d635c3ece760bb5c904e09/>
+
 ### New Features
 
  - <csr-id-1246468f87132a8b52169fd186f3626f357817bd/> docs command opens browser
@@ -199,6 +274,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 0.2.6 (2023-05-21)
 
 <csr-id-d2b33280185f68daaff2671d1a4470d9041f3bcb/>
+
+
 
 ### Chore
 

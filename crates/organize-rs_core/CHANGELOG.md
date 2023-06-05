@@ -5,9 +5,105 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.2.3 (2023-06-05)
+
+### Documentation
+
+ - <csr-id-042926f2d1b8bab5f24deb81456c917420d0ae73/> update config template with links to filters and actions in documentation
+
+### New Features
+
+ - <csr-id-ea7d2648b7adc1fb4cef184f2a4b1c9b2868c46d/> Reuse existing commands filter/action to output config snippets
+ - <csr-id-975995c36897e3c9e68c99daf065cc4c52f8b71c/> Implement confirmation dialogue before irreversibly applying an action
+ - <csr-id-37aad75d242f73091b3fc1058db28c40bbe6da70/> implement previewing an action
+ - <csr-id-27f0ad6f0613eee61df03bf8f2385cee94799f85/> split the pipeline into several actors that could be run in parallel if needed
+
+### Bug Fixes
+
+ - <csr-id-ede34ff4ce333005e9df9962cf971dcaf6039ef1/> Fix insta snapshot tests
+ - <csr-id-c73eca59bcfd3a9163e624fc7eb318b9fb7364c2/> make doctests for actions pass
+ - <csr-id-8631500aa5d4ea355cc824e7ac83c2045244d512/> make doctests for filters pass
+ - <csr-id-9eb60bbe08727df18baf2325bf7eab76e3cf28de/> implement some more fixes for filter doctests
+ - <csr-id-ecac2d3a398ca759db1afacb1f75c70a91c658eb/> fix syntax of filters in doc tests
+
+### Other
+
+ - <csr-id-7144ddda26a7a4368d5c5af3a3108df8217cee4f/> add doctests for some actions
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 11 commits contributed to the release over the course of 2 calendar days.
+ - 2 days passed between releases.
+ - 11 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Reuse existing commands filter/action to output config snippets ([`ea7d264`](https://github.com/organize-rs/organize/commit/ea7d2648b7adc1fb4cef184f2a4b1c9b2868c46d))
+    - Implement confirmation dialogue before irreversibly applying an action ([`975995c`](https://github.com/organize-rs/organize/commit/975995c36897e3c9e68c99daf065cc4c52f8b71c))
+    - Implement previewing an action ([`37aad75`](https://github.com/organize-rs/organize/commit/37aad75d242f73091b3fc1058db28c40bbe6da70))
+    - Split the pipeline into several actors that could be run in parallel if needed ([`27f0ad6`](https://github.com/organize-rs/organize/commit/27f0ad6f0613eee61df03bf8f2385cee94799f85))
+    - Fix insta snapshot tests ([`ede34ff`](https://github.com/organize-rs/organize/commit/ede34ff4ce333005e9df9962cf971dcaf6039ef1))
+    - Make doctests for actions pass ([`c73eca5`](https://github.com/organize-rs/organize/commit/c73eca59bcfd3a9163e624fc7eb318b9fb7364c2))
+    - Add doctests for some actions ([`7144ddd`](https://github.com/organize-rs/organize/commit/7144ddda26a7a4368d5c5af3a3108df8217cee4f))
+    - Make doctests for filters pass ([`8631500`](https://github.com/organize-rs/organize/commit/8631500aa5d4ea355cc824e7ac83c2045244d512))
+    - Implement some more fixes for filter doctests ([`9eb60bb`](https://github.com/organize-rs/organize/commit/9eb60bbe08727df18baf2325bf7eab76e3cf28de))
+    - Fix syntax of filters in doc tests ([`ecac2d3`](https://github.com/organize-rs/organize/commit/ecac2d3a398ca759db1afacb1f75c70a91c658eb))
+    - Update config template with links to filters and actions in documentation ([`042926f`](https://github.com/organize-rs/organize/commit/042926f2d1b8bab5f24deb81456c917420d0ae73))
+</details>
+
 ## 0.2.2 (2023-06-03)
 
 <csr-id-930593f55f0128609daf98ccee901d5e33c29223/>
+<csr-id-cb1e1151c09afed48f40b989132ae89324f9f2b1/>
+<csr-id-a7d737c5cc9e6465c7cf724c5d020b0f7e8ad935/>
+<csr-id-a024a32327344ff109d8e6e68819f507d7c9e8ab/>
+<csr-id-28ad00049f14ec1761f26baf2fe2088854094900/>
+<csr-id-7c0b0c9ce915e8b43d4542bc79b53432dd5bc2d2/>
+<csr-id-19110b9592fb35314402f9bac71f52791c5a7cd1/>
+<csr-id-ad6f6844dc93dac07e4d1921d1dbe0ab984b15c9/>
+<csr-id-b665490feb2a7a44996847d80ee918ea82cc4772/>
+<csr-id-22192eb528c2f95ad01ef124082dfae518e8c464/>
+<csr-id-afb116bc91add3ac76f6c55e44932391eec6e7e8/>
+<csr-id-3f6df32eac07d369b035ffb06156c2b47b0f9121/>
+<csr-id-abdc5ecfe89c8db0b3f7077681ef3a23a7797df5/>
+<csr-id-c2a5e017868e9f2af2bda3576b7e342356783722/>
+<csr-id-67f506ea0f869bb0a55c1d3938d3d8b58612c979/>
+<csr-id-a52abf6e5aa902c22c3fd7eebdd3088a2b3c6a50/>
+<csr-id-2abf8ea4fb19e8d1be640fb52abe1aba9c4e08c4/>
+<csr-id-db912c4ccfbc525ff4c5dccf231fda064e9a001e/>
+<csr-id-2a75ebb8b239d79e02262e5aeb470c66b25afbb9/>
+<csr-id-2d6ad427618ab76d5b73471dba62f6280218f63e/>
+<csr-id-31c790a1b244c5b98de9bba21b5ed9052d47d788/>
+<csr-id-db2d3480a1f965e861f92b8df04079461ee2f35d/>
+<csr-id-91a8840c5826eb39493384a3e2d1bbb69f38c298/>
+<csr-id-18ee7029fa931b0f95046f11c2919b23f11c1470/>
+<csr-id-a3163027800f1843476b8855a41f2115fdb3d3eb/>
+<csr-id-b633c561839314c760bf9a1a70e5b1aadac23b12/>
+<csr-id-2dec9033ce8187cdb74b23e2363d09d65131bbdd/>
+<csr-id-5b35248f532666f09dd8fd9308be1d16cb7c9f81/>
+<csr-id-f4a9cfaa19d9f088768f2f705f14a400ad701a8b/>
+<csr-id-85fd452e00835f14e84da9547bb5659449771cde/>
+<csr-id-8b47644af39c99f79658cdd54c067f9787b02347/>
+<csr-id-2c06e62ede4f1de31c75dd786c65f87b0855dffc/>
+<csr-id-54a8993981273a39fb0da07de5853a2fbc5764b4/>
+<csr-id-0c79c6b5b75adc05c54fee49f3398ed871ffd9b3/>
+<csr-id-95d7740dfbda24d934eea7ecce21b39076cf251c/>
+<csr-id-847737a5554f76a76366cd67fe8b2870277c935b/>
+<csr-id-99d7b0c109017a78c1ef726dcc9d40d0507b0426/>
+<csr-id-a82a20821ebe60d386efcb9856f4d22b45ab4a2e/>
+<csr-id-fd90047424eb9e6f04481a1ef35825e360b06912/>
+<csr-id-44a037fa00212ec2d07a0449f9b3d0aee05e3d55/>
+<csr-id-5672b52473d2715ba320dc9e6aed45119e7b0eae/>
+
+
 <csr-id-cb1e1151c09afed48f40b989132ae89324f9f2b1/>
 <csr-id-a7d737c5cc9e6465c7cf724c5d020b0f7e8ad935/>
 <csr-id-a024a32327344ff109d8e6e68819f507d7c9e8ab/>
@@ -127,7 +223,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 59 commits contributed to the release over the course of 9 calendar days.
+ - 60 commits contributed to the release over the course of 9 calendar days.
  - 9 days passed between releases.
  - 51 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -139,6 +235,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release organize-rs_core v0.2.2, organize-rs v0.4.0 ([`ccc3ad1`](https://github.com/organize-rs/organize/commit/ccc3ad1bd579f8407d6267e31562e86352d7df57))
     - Link config template on top level ([`5672b52`](https://github.com/organize-rs/organize/commit/5672b52473d2715ba320dc9e6aed45119e7b0eae))
     - Release organize-rs_core v0.2.2 ([`f13bef7`](https://github.com/organize-rs/organize/commit/f13bef7bc2aef5a499a8f340dcd3ba27ccd41f5f))
     - Release organize-rs_core v0.2.2, organize-rs v0.4.0 ([`38b98b8`](https://github.com/organize-rs/organize/commit/38b98b805dd984773c7445d4b3bcdcfe62965596))
@@ -203,6 +300,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 0.2.1 (2023-05-25)
 
 <csr-id-4757013ebe9fe5d37ea3d7b7cddf155910e0f5b4/>
+<csr-id-09c428cc45bbb348ca08e5fd233c999408ca2500/>
+<csr-id-48dd7daf79444deee11134c5c42fe4e9aa4e18ba/>
+<csr-id-8504e820eca6dd8be66d707695e56d0c8c8f3be6/>
+<csr-id-9d55a017ae9ba14b726fe542a9354fcf045b06f3/>
+<csr-id-543150dd96aca886bacd0057bda1957d19b4322d/>
+<csr-id-14300ea60bcccf500d813ee267792899a278a9ff/>
+<csr-id-c005013d1c49f5d717d635c3ece760bb5c904e09/>
+
+
 <csr-id-09c428cc45bbb348ca08e5fd233c999408ca2500/>
 <csr-id-48dd7daf79444deee11134c5c42fe4e9aa4e18ba/>
 <csr-id-8504e820eca6dd8be66d707695e56d0c8c8f3be6/>

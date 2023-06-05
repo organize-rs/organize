@@ -1202,7 +1202,7 @@ checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
 
 [[package]]
 name = "organize-rs"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "abscissa_core",
  "anyhow",
@@ -1234,7 +1234,7 @@ dependencies = [
 
 [[package]]
 name = "organize-rs_core"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "byte-unit",
  "chrono",

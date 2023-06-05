@@ -9,7 +9,7 @@ description = "organize - a file management automation tool"
 
 [package]
 name = "organize-rs"
-version = "0.4.0"
+version = "0.4.1"
 documentation = "https://docs.rs/organize-rs"
 edition = { workspace = true }
 description = { workspace = true }
