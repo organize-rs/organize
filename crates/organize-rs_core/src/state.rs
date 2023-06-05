@@ -4,7 +4,8 @@
 use jwalk::DirEntry;
 
 use crate::{
-    actions::conflicts::ConflictResolutionKind, actors::location_walker::DirEntryData, rules::Rule,
+    actions::conflicts::ConflictResolutionKind, actors::location_walker::DirEntryData,
+    rules::SingleRule,
 };
 
 // States
@@ -16,17 +17,17 @@ pub struct Filtering;
 
 #[derive(Debug, Default)]
 pub struct Inspection {
-    entries: Vec<(Rule, DirEntryData)>,
+    entries: Vec<(SingleRule, DirEntryData)>,
 }
 
 #[derive(Debug, Default)]
 pub struct ConflictHandling {
-    entries: Vec<(Rule, DirEntryData)>,
+    entries: Vec<(SingleRule, DirEntryData)>,
     conflicts: Vec<DirEntry<((), ())>>,
 }
 
 impl Inspection {
-    pub fn with_entries(entries: Vec<(Rule, DirEntryData)>) -> Self {
+    pub fn with_entries(entries: Vec<(SingleRule, DirEntryData)>) -> Self {
         Self { entries }
     }
 
@@ -37,13 +38,13 @@ impl Inspection {
         })
     }
 
-    pub fn entries(self) -> Vec<(Rule, DirEntryData)> {
+    pub fn entries(self) -> Vec<(SingleRule, DirEntryData)> {
         self.entries
     }
 }
 
 impl ConflictHandling {
-    pub fn with_entries(entries: Vec<(Rule, DirEntryData)>) -> Self {
+    pub fn with_entries(entries: Vec<(SingleRule, DirEntryData)>) -> Self {
         Self {
             entries,
             conflicts: vec![],
@@ -56,36 +57,36 @@ pub struct AskConfirmation;
 
 #[derive(Debug, Default)]
 pub struct ActionPreview {
-    entries: Vec<(Rule, DirEntryData)>,
+    entries: Vec<(SingleRule, DirEntryData)>,
     conflicts: Option<Vec<ConflictResolutionKind>>,
 }
 
 impl ActionPreview {
-    pub fn with_entries(entries: Vec<(Rule, DirEntryData)>) -> Self {
+    pub fn with_entries(entries: Vec<(SingleRule, DirEntryData)>) -> Self {
         Self {
             entries,
             conflicts: None,
         }
     }
-    pub fn entries(self) -> Vec<(Rule, DirEntryData)> {
+    pub fn entries(self) -> Vec<(SingleRule, DirEntryData)> {
         self.entries
     }
 }
 
 #[derive(Debug, Default)]
 pub struct ActionApplication {
-    entries: Vec<(Rule, DirEntryData)>,
+    entries: Vec<(SingleRule, DirEntryData)>,
     conflicts: Option<Vec<ConflictResolutionKind>>,
 }
 
 impl ActionApplication {
-    pub fn with_entries(entries: Vec<(Rule, DirEntryData)>) -> Self {
+    pub fn with_entries(entries: Vec<(SingleRule, DirEntryData)>) -> Self {
         Self {
             entries,
             conflicts: None,
         }
     }
-    pub fn entries(self) -> Vec<(Rule, DirEntryData)> {
+    pub fn entries(self) -> Vec<(SingleRule, DirEntryData)> {
         self.entries
     }
 }

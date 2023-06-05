@@ -229,7 +229,7 @@
                 "run",
                 "config",
                 "--paths",
-                "config\\empty.yaml",
+                "config\\empty.yaml"
             ],
             "cwd": "${workspaceFolder}"
         },

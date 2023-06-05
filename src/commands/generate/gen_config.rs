@@ -16,9 +16,9 @@ use crate::application::ORGANIZE_APP;
 
 #[derive(Command, Debug, Parser, Clone)]
 pub struct GenConfigCmd {
-    /// path to an existing or to be created config file
+    /// path where the config file should be created at
     #[clap(short, long)]
-    path: PathBuf,
+    output_path: PathBuf,
 
     #[clap(flatten)]
     config_opts: GenConfigOpts,
@@ -71,14 +71,14 @@ impl GenConfigCmd {
 
         config.add_rules(rules);
 
-        if File::open(&self.path).is_ok() {
+        if File::open(&self.output_path).is_ok() {
             if Confirm::new().with_prompt("Config file already exists. We will overwrite it, do you have a backup and want to continue?").default(false).interact()? {
-                config.write_to_file(&self.path, true)?;
+                config.write_to_file(&self.output_path, true)?;
             } else {
                 bail!("Config file already exists. We will overwrite it, make sure you have a backup and agree in the dialog.");
             }
         } else {
-            config.write_to_file(&self.path, true)?;
+            config.write_to_file(&self.output_path, true)?;
         };
 
         Ok(())
@@ -86,7 +86,7 @@ impl GenConfigCmd {
 
     fn generate_config_template_yaml(&self) -> Result<()> {
         // TODO: Handle in a better way
-        let path = format!("{}{}", self.path.as_path().display(), ".tmpl.yaml");
+        let path = format!("{}{}", self.output_path.as_path().display(), ".tmpl.yaml");
 
         if File::open(&path).is_ok() {
             if Confirm::new().with_prompt("Config file already exists. We will overwrite it, do you have a backup and want to continue?").default(false).interact()? {

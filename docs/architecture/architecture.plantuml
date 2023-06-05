@@ -1,0 +1,36 @@
+@startuml organize
+package Filters {
+    interface Filter
+    class *variousArgs implements Filter
+    ' class AddedArgs implements Filter
+    ' class AllItemsArgs implements Filter
+    ' class CreatedArgs implements Filter
+    ' class DuplicateArgs implements Filter
+    ' class EmptyArgs implements Filter
+    ' class ExifArgs implements Filter
+    ' class ExtensionArgs implements Filter
+    ' class FileContentArgs implements Filter
+    ' class HashArgs implements Filter
+    ' class IgnoreNameArgs implements Filter
+    ' class IgnorePathArgs implements Filter
+    ' class LastAccessedArgs implements Filter
+    ' class LastModifiedArgs implements Filter
+    ' class MacOsTagsArgs implements Filter
+    ' class MimeTypeArgs implements Filter
+    ' class NameArgs implements Filter
+    ' class NoFilterArgs implements Filter
+    ' class RegexArgs implements Filter
+    ' class SizeArgs implements Filter
+}
+
+package Actions {
+    interface Action
+}
+
+package Rules {
+    interface Rule
+}
+
+package Templating {}
+
+@enduml

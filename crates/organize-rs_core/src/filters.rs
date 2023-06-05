@@ -1,6 +1,27 @@
 //! Filters that `organize` operates with
+#[cfg(target_os = "osx")]
+pub mod added;
+pub mod all_items;
+pub mod created;
+pub mod duplicate;
+pub mod empty;
+pub mod exif;
+pub mod extension;
+pub mod file_content;
+pub mod hash;
+pub mod ignore_name;
+pub mod ignore_path;
 mod impl_;
 mod impl_traits;
+pub mod last_accessed;
+pub mod last_modified;
+#[cfg(target_os = "osx")]
+pub mod mac_os_tags;
+pub mod mimetype;
+pub mod name;
+pub mod no_filter;
+pub mod regex;
+pub mod size;
 #[cfg(test)]
 mod tests;
 
@@ -13,16 +34,32 @@ use displaydoc::Display;
 
 use jwalk::DirEntry;
 use serde::{Deserialize, Serialize};
-use serde_with::formats::CommaSeparator;
-use serde_with::StringWithSeparator;
 
 use serde_with::serde_as;
 
-use crate::parsers::{PeriodRange, SizeRange};
+#[cfg(feature = "research_organize")]
+use crate::filters::hash::HashArgs;
 
-pub type FilterClosure<'a, C> = Box<dyn FnMut(&DirEntry<C>) -> bool + 'a>;
-pub type FilterClosureCollection<'a, C> = Vec<FilterClosure<'a, C>>;
-pub type FilterFilterClosureSliceMut<'a, C> = &'a mut [Box<dyn FnMut(&DirEntry<C>) -> bool>];
+#[cfg(target_os = "osx")]
+use crate::filters::{added::AddedArgs, mac_os_tags::MacOsTagsArgs};
+use crate::filters::{
+    all_items::AllItemsArgs, created::CreatedArgs, duplicate::DuplicateArgs, empty::EmptyArgs,
+    exif::ExifArgs, extension::ExtensionArgs, file_content::FileContentArgs,
+    ignore_name::IgnoreNameArgs, ignore_path::IgnorePathArgs, last_accessed::LastAccessedArgs,
+    last_modified::LastModifiedArgs, mimetype::MimeTypeArgs, name::NameArgs,
+    no_filter::NoFilterArgs, regex::RegexArgs, size::SizeArgs,
+};
+
+pub type FilterClosureCollection = Vec<dyn Filter>;
+pub type FilterFilterClosureSliceMut<'a> = &'a mut [Box<dyn Filter>];
+
+pub mod constants {
+    pub const NEGATE_STRING: &str = "-|";
+}
+
+pub trait Filter: Send + Debug + 'static {
+    fn apply(&self, entry: &DirEntry<((), ())>) -> bool;
+}
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum CullKind {
@@ -91,29 +128,6 @@ pub enum FilterApplicationKind {
     None,
 }
 
-/// Duplication detection
-#[cfg_attr(feature = "cli", derive(ValueEnum))]
-#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
-pub enum DuplicateKind {
-    /// The first entry sorted by creation date is the original.
-    #[serde(rename = "created")]
-    Created,
-    /// Whatever file is visited first is the original.
-    ///
-    /// This depends on the order of your location entries.
-    #[serde(rename = "first_seen")]
-    FirstSeen,
-    // TODO
-    #[serde(rename = "hash")]
-    Hash,
-    /// The first file sorted by date of last modification is the original.
-    #[serde(rename = "last_modified")]
-    LastModified,
-    /// The first entry sorted by name is the original.
-    #[serde(rename = "name")]
-    Name,
-}
-
 #[cfg_attr(feature = "cli", derive(Args))]
 #[derive(Display, Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "cli", group(required = false, multiple = true))]
@@ -131,30 +145,6 @@ pub struct RecursiveFilterArgs {
         arg(short, long, global = true, default_value_t = 1, requires = "recurse")
     )]
     max_depth: u64,
-}
-
-/// Arguments for `name` filter
-#[cfg_attr(feature = "cli", derive(Args))]
-#[derive(Display, Debug, Clone, Deserialize, Serialize)]
-#[cfg_attr(feature = "cli", group(required = true, multiple = false))]
-pub struct NameFilterArgs {
-    // TODO: Not implemented, searching for alternatives
-    /// A matching string in [simplematch-syntax](https://github.com/tfeldmann/simplematch)
-    #[cfg_attr(feature = "cli", arg(long))]
-    #[serde(default = "Option::default")]
-    simple_match: Option<Vec<String>>,
-    /// The filename must begin with the given string
-    #[cfg_attr(feature = "cli", arg(long))]
-    #[serde(default = "Option::default")]
-    starts_with: Option<Vec<String>>,
-    /// The filename must contain the given string
-    #[cfg_attr(feature = "cli", arg(long))]
-    #[serde(default = "Option::default")]
-    contains: Option<Vec<String>>,
-    /// The filename (without extension) must end with the given string
-    #[cfg_attr(feature = "cli", arg(long))]
-    #[serde(default = "Option::default")]
-    ends_with: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
@@ -217,7 +207,7 @@ pub enum FilterKind {
     ///      actions:
     ///        - mode: preview
     ///          action: !echo
-    ///            msg: "Date added: {date_added.strftime('%Y-%m-%d')}"
+    ///            msg: "Date added: {{date_added.strftime('%Y-%m-%d')}}"
     ///      tags:
     ///        - !custom Test::Filter::DateAdded
     /// # "#;
@@ -225,17 +215,7 @@ pub enum FilterKind {
     /// ```
     #[cfg(target_os = "osx")]
     #[serde(rename = "date_added")]
-    Added {
-        /// This filter uses the `range` syntax (always inclusive) of Rust.
-        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
-        /// between 1 to 2 days old. Left and right boundary need to have the same units.
-        /// [possible values: y, mo, w, d, h, m, s]
-        ///
-        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
-        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
-        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
-        range: Option<PeriodRange>,
-    },
+    Added(AddedArgs),
     /// Output all items
     ///
     /// # Result
@@ -274,11 +254,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "all_items")]
-    AllItems {
-        #[cfg_attr(feature = "cli", arg(long))]
-        #[serde(default = "bool::default")]
-        i_agree_it_is_dangerous: bool,
-    },
+    AllItems(AllItemsArgs),
     /// Match locations by the time they were created
     ///
     /// # Result
@@ -317,17 +293,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "created")]
-    Created {
-        /// This filter uses the `range` syntax (always inclusive) of Rust.
-        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
-        /// between 1 to 2 days old. Left and right boundary need to have the same units.
-        /// [possible values: y, mo, w, d, h, m, s]
-        ///
-        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
-        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
-        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
-        range: Option<PeriodRange>,
-    },
+    Created(CreatedArgs),
     /// Match locations that have duplicates
     ///
     /// This filter compares locations byte by byte and finds identical
@@ -380,14 +346,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "duplicate")]
-    Duplicate {
-        #[cfg_attr(feature = "cli", arg(long))]
-        #[serde(default = "DuplicateKind::default")]
-        detect_original_by: DuplicateKind,
-        #[cfg_attr(feature = "cli", arg(long))]
-        #[serde(default = "bool::default")]
-        reverse: bool,
-    },
+    Duplicate(DuplicateArgs),
     /// Find empty locations
     ///
     /// # Example
@@ -419,7 +378,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "empty")]
-    Empty,
+    Empty(EmptyArgs),
     /// Filter images by their EXIF data
     ///
     /// The exif filter can be used as a filter as well as a way to
@@ -468,7 +427,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "exif")]
-    Exif { contains: Vec<String> },
+    Exif(ExifArgs),
     /// Match locations by their file extension
     ///
     /// # Result
@@ -508,11 +467,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "extension")]
-    Extension {
-        /// The file extensions to match (without dot)
-        #[cfg_attr(feature = "cli", arg(long))]
-        exts: Vec<String>,
-    },
+    Extension(ExtensionArgs),
     /// Match file content with the given regular expression
     ///
     /// Any named groups `((?P<groupname>.*))` in your regular
@@ -553,10 +508,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "file_content")]
-    FileContent {
-        #[cfg_attr(feature = "cli", arg(long))]
-        expr: String,
-    },
+    FileContent(FileContentArgs),
     // TODO: Check for available hash algorithms from organize-py
     // TODO: shake_256, sha3_256, sha1, sha3_224, sha384, sha512, blake2b,
     // TODO: blake2s, sha256, sha224, shake_128, sha3_512, sha3_384 and md5
@@ -598,7 +550,7 @@ pub enum FilterKind {
     /// ```
     #[cfg(feature = "research_organize")]
     #[serde(rename = "hash")]
-    Hash,
+    Hash(HashArgs),
     /// Defines a string that makes organize skip a location when found in the file name
     ///
     /// # Example
@@ -635,12 +587,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "ignore_filename")]
-    IgnoreName {
-        /// Matches for these Strings in the Filename
-        // #[cfg_attr(feature = "cli", arg(long))]
-        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
-        in_name: Vec<String>,
-    },
+    IgnoreName(IgnoreNameArgs),
     /// Defines a string that makes organize skip a location when found in the full path
     ///
     /// # Example
@@ -677,12 +624,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "ignore_path")]
-    IgnorePath {
-        /// Matches for these Strings in the whole Path
-        // #[cfg_attr(feature = "cli", arg(long))]
-        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
-        in_path: Vec<String>,
-    },
+    IgnorePath(IgnorePathArgs),
     /// Match locations by the time they were last accessed
     ///
     /// # Result
@@ -719,17 +661,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "last_accessed")]
-    LastAccessed {
-        /// This filter uses the `range` syntax (always inclusive) of Rust.
-        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
-        /// between 1 to 2 days old. Left and right boundary need to have the same units.
-        /// [possible values: y, mo, w, d, h, m, s]
-        ///
-        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
-        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
-        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
-        range: Option<PeriodRange>,
-    },
+    LastAccessed(LastAccessedArgs),
     /// Match locations by the time they were last modified
     ///
     /// # Result
@@ -769,17 +701,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "last_modified")]
-    LastModified {
-        /// This filter uses the `range` syntax (always inclusive) of Rust.
-        /// ..7d => in the last 7 days; 2mo.. => older than 2 months and onwards; 1d..2d =>
-        /// between 1 to 2 days old. Left and right boundary need to have the same units.
-        /// [possible values: y, mo, w, d, h, m, s]
-        ///
-        /// **NOTE**: You can one of `['y', 'mo', 'w', 'd', 'h', 'm', 's']`. They
-        /// will be **converted** to `seconds` accordingly and are **case-insensitive**.
-        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(PeriodRange)))]
-        range: Option<PeriodRange>,
-    },
+    LastModified(LastModifiedArgs),
     /// Filter by macOS tags
     ///
     /// # Example
@@ -814,11 +736,7 @@ pub enum FilterKind {
     /// ```
     #[cfg(target_os = "osx")]
     #[serde(rename = "macos_tags")]
-    MacOsTags {
-        #[cfg_attr(feature = "cli", arg(long))]
-        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
-        tags: Vec<String>,
-    },
+    MacOsTags(MacOsTagsArgs),
     /// Filter by MIME type associated with the file extension
     ///
     /// Supports a single string or list of MIME type strings as argument.
@@ -859,11 +777,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "mimetype")]
-    Mimetype {
-        #[cfg_attr(feature = "cli", arg(long))]
-        #[serde_as(as = "StringWithSeparator::<CommaSeparator, String>")]
-        mime: Vec<String>,
-    },
+    Mimetype(MimeTypeArgs),
     /// Match locations by their name
     ///
     /// # Example
@@ -905,18 +819,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "name")]
-    Name {
-        #[cfg_attr(feature = "cli", command(flatten))]
-        #[serde(flatten)]
-        arguments: NameFilterArgs,
-        /// By default, the matching is case sensitive.
-        ///
-        /// Change this to `False` to use case insensitive matching.
-        #[cfg_attr(feature = "cli", arg(long))]
-        #[serde(rename = "case_insensitive")]
-        #[serde(default = "bool::default")]
-        case_insensitive: bool,
-    },
+    Name(NameArgs),
     /// Don't use any filter (Default)
     ///
     /// # Result
@@ -952,7 +855,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "no_items")]
-    NoFilter,
+    NoFilter(NoFilterArgs),
     /// Match filenames with the given regular expression
     ///
     /// Any named groups `((?P<groupname>.*))` in your regular
@@ -994,10 +897,7 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "regex")]
-    Regex {
-        #[cfg_attr(feature = "cli", arg(long))]
-        expr: String,
-    },
+    Regex(RegexArgs),
     /// Match files by their size
     ///
     /// Accepts file size conditions, e.g: "500MB..", "..20kb", "0KB..", "10KiB..".
@@ -1079,15 +979,11 @@ pub enum FilterKind {
     /// # let config = OrganizeConfig::load_from_string(rule, ConfigFileFormat::Yaml);
     /// ```
     #[serde(rename = "size")]
-    Size {
-        /// This filter uses the `range` syntax (always inclusive) of Rust.
-        /// ..11MB => smaller than; 15MB.. => bigger than; 10KB..20MiB =>
-        /// bigger than 10 KB, but smaller than 20 MiB
-        ///
-        /// **NOTE**: You can use `decimal` (metric) and `binary` (IEC)
-        /// multiple-byte units. E.g., `KiB` or `KB`, `GB` or `GiB`. They
-        /// will be **converted** accordingly and are **case-insensitive**.
-        #[cfg_attr(feature = "cli", arg(long, value_parser = clap::value_parser!(SizeRange)))]
-        range: Option<SizeRange>,
-    },
+    Size(SizeArgs),
+}
+
+impl Default for FilterKind {
+    fn default() -> Self {
+        Self::NoFilter(NoFilterArgs)
+    }
 }

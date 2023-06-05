@@ -16,15 +16,31 @@ use crate::{
 
 use std::iter::FromIterator;
 
+/// A state machine that runs through the different stages of the organize process.
+///
+/// # Type Parameters
+///
+/// * `S` - The current stage of the organize process.
 pub struct Runner<S>
 where
     S: ProcessingStage,
 {
+    /// The organize configurations to use.
     configs: Vec<OrganizeConfig>,
+    /// The extra data for the current stage.
     extra: S,
 }
 
 impl Runner<Initialize> {
+    /// Create a runner from a list of organize configuration files.
+    ///
+    /// # Arguments
+    ///
+    /// * `paths` - The paths to the organize configuration files.
+    ///
+    /// # Returns
+    ///
+    /// A runner in the filtering stage.
     pub fn load_configs(paths: &[impl AsRef<Path>]) -> Runner<Filtering> {
         let mut configs = vec![];
         paths.iter().for_each(|path| {
@@ -40,6 +56,15 @@ impl Runner<Initialize> {
 }
 
 impl Runner<Filtering> {
+    /// Apply the filters to the entries.
+    ///
+    /// # Arguments
+    ///
+    /// * `tags` - The tags to apply to the filters.
+    ///
+    /// # Returns
+    ///
+    /// A runner in the inspection stage.
     pub fn apply_filters(self, tags: Vec<Tag>) -> Runner<Inspection> {
         let mut entries = vec![];
         self.configs.iter().for_each(|config| {
@@ -71,6 +96,17 @@ impl Runner<Filtering> {
     }
 
     /// Checks if a given [`Tag`] is in a [`TagCollection`] of a [`crate::rules::Rule`]
+    ///
+    /// # Arguments
+    ///
+    /// * `tag_collection` - The [`TagCollection`] to check if the [`Tag`] is in.
+    /// * `tags` - The [`Tag`]s to check if they are in the [`TagCollection`].
+    ///
+    /// # Returns
+    ///
+    /// * `Some(true)` - If the [`TagCollection`] is empty or the [`Tag`]s are empty.
+    /// * `Some(false)` - If the [`TagCollection`] is not empty and the [`Tag`]s are not empty.
+    /// * `None` - If the [`TagCollection`] is empty and the [`Tag`]s are not empty.
     fn tag_applies(tag_collection: &TagCollection, tags: &[Tag]) -> Option<bool> {
         if !tags.is_empty() {
             let rule_tag_set: HashSet<&Tag> = HashSet::from_iter(tag_collection.iter());
@@ -83,6 +119,11 @@ impl Runner<Filtering> {
 }
 
 impl Runner<Inspection> {
+    /// Finish the inspection stage and move to the preview stage.
+    ///
+    /// # Returns
+    ///
+    /// A runner in the preview stage.
     pub fn finish_inspection(self) -> Runner<ActionPreview> {
         Runner::<ActionPreview> {
             configs: self.configs,
@@ -90,6 +131,11 @@ impl Runner<Inspection> {
         }
     }
 
+    /// Inspect the entries.
+    ///
+    /// # Returns
+    ///
+    /// A runner in the inspection stage.
     pub fn inspect_entries(self) -> Runner<Inspection> {
         self.extra.print_entries();
         self
@@ -97,6 +143,16 @@ impl Runner<Inspection> {
 }
 
 impl Runner<ActionPreview> {
+    /// Preview the actions.
+    ///
+    /// # Errors
+    ///
+    /// * [`OrganizeError::ActionError`] - If an action fails.
+    ///
+    /// # Returns
+    ///
+    /// A runner in the action application stage.
+
     pub fn preview_actions(self) -> OrganizeResult<Runner<ActionApplication>> {
         let entries = self.extra.entries();
         entries.iter().for_each(|(rule, entry)| {
@@ -128,10 +184,12 @@ impl Runner<ActionPreview> {
 }
 
 impl Runner<ActionApplication> {
+    /// Apply the actions to the entries.
     pub fn apply_actions(self) -> OrganizeResult<Runner<ActionApplication>> {
         todo!()
     }
 
+    /// Check for conflicts if the actions would be applied.
     pub fn check_conflicts(self) -> Runner<ConflictHandling> {
         todo!()
     }
@@ -146,6 +204,7 @@ impl Runner<ActionApplication> {
 //     }
 // }
 impl Runner<ConflictHandling> {
+    /// View the conflicts that would occur if the actions were applied.
     pub fn view_conflicts(self) -> Runner<ActionPreview> {
         todo!()
     }

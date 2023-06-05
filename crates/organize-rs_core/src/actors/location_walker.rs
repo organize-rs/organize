@@ -80,8 +80,6 @@ pub struct LocationWalker {
 }
 
 impl LocationWalker {
-    pub const DEFAULT_MAX_DEPTH: usize = 0;
-
     pub fn new(locations: LocationCollection) -> Self {
         Self {
             locations,
@@ -89,58 +87,17 @@ impl LocationWalker {
         }
     }
 
-    pub fn collect_dir_entry_data(&mut self) -> DirEntryData {
+    pub fn collect_dir_entry_data(self) -> DirEntryData {
         let entries = self
             .locations
             .iter()
             .unique()
-            .map(|location| match location {
-                LocationKind::RecursiveWithMaxDepth {
-                    path,
-                    max_depth,
-                    target,
-                } => Self::populate_entries(path, *max_depth, *target),
-                LocationKind::NonRecursive { path, target } => {
-                    Self::populate_entries(path, None, *target)
-                }
-                LocationKind::BarePath(path) => {
-                    Self::populate_entries(path, None, TargetKind::default())
-                }
-            })
+            // TODO: Implement trait
+            .map(|location| location.get_location().populate_entries())
             .flatten_ok()
             .flat_map(std::result::Result::ok)
             .collect_vec();
 
         DirEntryData::from(entries)
-    }
-
-    fn populate_entries<A>(
-        path: A,
-        max_depth: impl Into<Option<MaxDepth>>,
-        targets: TargetKind,
-    ) -> OrganizeResult<Vec<jwalk::DirEntry<((), ())>>>
-    where
-        A: AsRef<Path>,
-    {
-        let depth = if let Some(max_depth) = max_depth.into() {
-            usize::try_from(*max_depth).map_err(WalkerErrorKind::FailedToConvertNumbers)?
-        } else {
-            Self::DEFAULT_MAX_DEPTH
-        };
-
-        // TODO: Initialize indicatif progress bar
-
-        let files = jwalk::WalkDir::new(path)
-            .max_depth(depth)
-            .into_iter()
-            .flat_map(|f| f.ok())
-            .filter(|f| match targets {
-                TargetKind::Directories => FileType::is_dir(&f.file_type()),
-                TargetKind::Files => FileType::is_file(&f.file_type()),
-                TargetKind::Both => true,
-            })
-            .collect_vec();
-
-        Ok(files)
     }
 }

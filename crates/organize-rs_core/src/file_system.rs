@@ -8,6 +8,17 @@ use std::{
     path::Path,
 };
 
+/// Check if the given path already exists and return an error if it does.
+///
+/// This is a convenience function to avoid having to check for the existence of a file before creating it.
+///
+/// # Arguments
+///
+/// * `dst` - The path to check for existence.
+///
+/// # Errors
+///
+/// * [`std::io::ErrorKind::AlreadyExists`] if the given path already exists.
 fn already_exists<A>(dst: &A) -> std::io::Result<()>
 where
     A: AsRef<Path>,
@@ -22,7 +33,16 @@ where
     }
 }
 
-pub(crate) fn move_to_trash<A>(src: A) -> std::io::Result<()>
+/// Move the item at the given path to the trash.
+///
+/// # Arguments
+///
+/// * `src` - The path to the item to be moved to the trash.
+///
+/// # Errors
+///
+/// * [`std::io::ErrorKind::Other`] if the given path is not a file, directory or symlink.
+pub fn move_to_trash<A>(src: A) -> std::io::Result<()>
 where
     A: AsRef<Path>,
 {
@@ -58,6 +78,15 @@ where
     Ok(())
 }
 
+/// Irrecoverably remove the item at the given path.
+///
+/// # Arguments
+///
+/// * `src` - The path to the item to be removed.
+///
+/// # Errors
+///
+/// * [`std::io::ErrorKind::Other`] if the given path is not a file, directory or symlink.
 pub(crate) fn remove_irrecoverably<A>(src: A) -> std::io::Result<()>
 where
     A: AsRef<Path>,
@@ -86,7 +115,21 @@ where
     Ok(())
 }
 
-/// wrapper around rename_to for convenience and clarity
+/// Move the item at the given path to the given destination.
+///
+/// If the destination already exists, an error is returned.
+///
+/// Wrapper around [`rename_to`] for convenience and clarity.
+///
+/// # Arguments
+///
+/// * `src` - The path to the item to be moved.
+/// * `dst` - The path to the destination.
+///
+/// # Errors
+///
+/// * [`std::io::ErrorKind::AlreadyExists`] if the given destination already exists.
+/// * [`std::io::ErrorKind::Other`] if the given path is not a file.
 pub(crate) fn move_to<A, D>(src: A, dst: D) -> std::io::Result<()>
 where
     A: AsRef<Path>,
@@ -95,6 +138,19 @@ where
     rename_to(src, dst)
 }
 
+/// Rename the item at the given path to the given destination.
+///
+/// If the destination already exists, an error is returned.
+///
+/// # Arguments
+///
+/// * `src` - The path to the item to be renamed.
+/// * `dst` - The path to the destination.
+///
+/// # Errors
+///
+/// * [`std::io::ErrorKind::AlreadyExists`] if the given destination already exists.
+/// * [`std::io::ErrorKind::Other`] if the given path is not a file.
 pub(crate) fn rename_to<A, D>(src: A, dst: D) -> std::io::Result<()>
 where
     A: AsRef<Path>,
@@ -116,6 +172,19 @@ where
     Ok(())
 }
 
+/// Create a symlink to the given src with the given link name.
+///
+/// If the destination already exists, an error is returned.
+///
+/// # Arguments
+///
+/// * `src` - The path to the item to be linked.
+/// * `dst` - The path to the destination.
+///
+/// # Errors
+///
+/// * [`std::io::ErrorKind::AlreadyExists`] if the given destination already exists.
+/// * [`std::io::ErrorKind::Other`] if the given path is not a file or directory.
 pub(crate) fn symlink_to<A, D>(src: A, dst: D) -> std::io::Result<()>
 where
     A: AsRef<Path>,
@@ -139,6 +208,19 @@ where
     Ok(())
 }
 
+/// Copy the existing item `src` to the target path `dst`
+///
+/// If the destination already exists, an error is returned.
+///
+/// # Arguments
+///
+/// * `src` - The path to the item to be copied.
+/// * `dst` - The path to the destination.
+///
+/// # Errors
+///
+/// * [`std::io::ErrorKind::AlreadyExists`] if the given destination already exists.
+/// * [`std::io::ErrorKind::Other`] if the given path is not a file or directory.
 pub(crate) fn copy_to<A, D>(src: A, dst: D) -> std::io::Result<()>
 where
     A: AsRef<Path>,
@@ -163,6 +245,18 @@ where
 }
 
 /// Copy the existing directory `src` to the target path `dst`
+///
+/// If the `src` already exists at the destination, an error is returned.
+///
+/// # Arguments
+///
+/// * `src` - The path to the directory to be copied.
+/// * `dst` - The path to the destination.
+///
+/// # Errors
+///
+/// * [`std::io::ErrorKind::AlreadyExists`] if the given destination already exists.
+/// * [`std::io::ErrorKind::Other`] if the given path is not a directory.
 pub(crate) fn copy_dir_to<A, D>(src: A, dst: D) -> std::io::Result<()>
 where
     A: AsRef<Path>,
@@ -184,13 +278,25 @@ where
 }
 
 /// Create a directory symlink to the given src with the given link name.
-/// taken from: https://github.com/Byron/jwalk/blob/0079deb9faed6be48e77676494351f06411db5de/tests/util/mod.rs#L174
-/// Copyright (c) 2019 Jesse Grosjean
+///
+/// If the destination already exists, an error is returned.
+///
+/// # Arguments
+///
+/// * `src` - The path to the item to be linked.
+/// * `dst` - The path to the destination.
+///
+/// # Errors
+///
+/// * [`std::io::ErrorKind::AlreadyExists`] if the given destination already exists.
+/// * [`std::io::ErrorKind::Other`] if the given path is not a directory.
 pub fn symlink_dir<A, D>(src: A, dst: D) -> std::io::Result<()>
 where
     A: AsRef<Path>,
     D: AsRef<Path>,
 {
+    // taken from: https://github.com/Byron/jwalk/blob/0079deb9faed6be48e77676494351f06411db5de/tests/util/mod.rs#L174
+    // Copyright (c) 2019 Jesse Grosjean
     // TODO: Conflict handling here
     already_exists(&dst)?;
 
@@ -220,13 +326,25 @@ where
 }
 
 /// Create a file symlink to the given src with the given link name.
-/// taken from https://github.com/Byron/jwalk/blob/0079deb9faed6be48e77676494351f06411db5de/tests/util/mod.rs#L147
-/// Copyright (c) 2019 Jesse Grosjean
+///
+/// If the destination already exists, an error is returned.
+///
+/// # Arguments
+///
+/// * `src` - The path to the item to be linked.
+/// * `dst` - The path to the destination.
+///
+/// # Errors
+///
+/// * [`std::io::ErrorKind::AlreadyExists`] if the given destination already exists.
+/// * [`std::io::ErrorKind::Other`] if the given path is not a file.
 pub fn symlink_file<A, D>(src: A, dst: D) -> std::io::Result<()>
 where
     A: AsRef<Path>,
     D: AsRef<Path>,
 {
+    // taken from https://github.com/Byron/jwalk/blob/0079deb9faed6be48e77676494351f06411db5de/tests/util/mod.rs#L147
+    // Copyright (c) 2019 Jesse Grosjean
     // TODO: Conflict handling here
     already_exists(&dst)?;
 

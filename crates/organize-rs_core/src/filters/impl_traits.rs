@@ -6,15 +6,13 @@ use clap::{Args, Subcommand, ValueEnum};
 use itertools::{Either, Itertools};
 
 use crate::filters::{
-    DateUnitKind, DuplicateKind, FilterApplicationKind, FilterCollection, FilterGroup,
-    FilterGroupCollection, FilterGroupOperationKind, FilterKind, FilterOperationKind,
+    all_items::AllItemsArgs, created::CreatedArgs, duplicate::DuplicateArgs, exif::ExifArgs,
+    extension::ExtensionArgs, file_content::FileContentArgs, ignore_name::IgnoreNameArgs,
+    ignore_path::IgnorePathArgs, last_accessed::LastAccessedArgs, last_modified::LastModifiedArgs,
+    mimetype::MimeTypeArgs, name::NameArgs, regex::RegexArgs, size::SizeArgs, DateUnitKind,
+    FilterApplicationKind, FilterCollection, FilterGroup, FilterGroupCollection,
+    FilterGroupOperationKind, FilterKind, FilterOperationKind,
 };
-
-impl Default for FilterKind {
-    fn default() -> Self {
-        Self::NoFilter
-    }
-}
 
 impl From<(f64, &str)> for DateUnitKind {
     fn from(value: (f64, &str)) -> Self {
@@ -91,15 +89,15 @@ impl Display for FilterCollection {
 impl Display for FilterKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            FilterKind::NoFilter => write!(
+            FilterKind::NoFilter(_) => write!(
                 f,
                 "
     -> NoFilter
             "
             ),
-            FilterKind::AllItems {
+            FilterKind::AllItems(AllItemsArgs {
                 i_agree_it_is_dangerous,
-            } => write!(
+            }) => write!(
                 f,
                 "
     -> All items
@@ -107,7 +105,7 @@ impl Display for FilterKind {
             consent: {i_agree_it_is_dangerous}
             "
             ),
-            FilterKind::Created { range } => {
+            FilterKind::Created(CreatedArgs { range }) => {
                 write!(
                     f,
                     "
@@ -117,7 +115,7 @@ impl Display for FilterKind {
                 "
                 )
             }
-            FilterKind::LastAccessed { range } => {
+            FilterKind::LastAccessed(LastAccessedArgs { range }) => {
                 write!(
                     f,
                     "
@@ -127,7 +125,7 @@ impl Display for FilterKind {
                 "
                 )
             }
-            FilterKind::LastModified { range } => {
+            FilterKind::LastModified(LastModifiedArgs { range }) => {
                 write!(
                     f,
                     "
@@ -137,10 +135,10 @@ impl Display for FilterKind {
     "
                 )
             }
-            FilterKind::Duplicate {
+            FilterKind::Duplicate(DuplicateArgs {
                 detect_original_by,
                 reverse,
-            } => write!(
+            }) => write!(
                 f,
                 "
     -> Duplicate
@@ -149,8 +147,8 @@ impl Display for FilterKind {
             reverse: {reverse}
     "
             ),
-            FilterKind::Empty => write!(f, "Filter: Empty."),
-            FilterKind::Exif { contains } => {
+            FilterKind::Empty(_) => write!(f, "Filter: Empty."),
+            FilterKind::Exif(ExifArgs { contains }) => {
                 write!(
                     f,
                     "
@@ -160,7 +158,7 @@ impl Display for FilterKind {
                 "
                 )
             }
-            FilterKind::Extension { exts } => {
+            FilterKind::Extension(ExtensionArgs { exts }) => {
                 write!(
                     f,
                     "
@@ -170,30 +168,30 @@ impl Display for FilterKind {
                 "
                 )
             }
-            FilterKind::FileContent { expr: regex } => {
+            FilterKind::FileContent(FileContentArgs { expr }) => {
                 write!(
                     f,
                     "
     -> Filecontent
         Arguments:
-            regex: {regex}
+            regex: {expr}
     "
                 )
             }
-            FilterKind::Mimetype { mime: mimetype } => {
+            FilterKind::Mimetype(MimeTypeArgs { mime }) => {
                 write!(
                     f,
                     "
     -> Mimetype
         Arguments:
-            mimetypes: {mimetype:?}
+            mimetypes: {mime:?}
                 "
                 )
             }
-            FilterKind::Name {
+            FilterKind::Name(NameArgs {
                 arguments,
                 case_insensitive,
-            } => write!(
+            }) => write!(
                 f,
                 "
     -> Name
@@ -202,7 +200,7 @@ impl Display for FilterKind {
             case_insensitive: {case_insensitive}
                 "
             ),
-            FilterKind::Regex { expr } => write!(
+            FilterKind::Regex(RegexArgs { expr }) => write!(
                 f,
                 "
     -> Regex
@@ -210,7 +208,7 @@ impl Display for FilterKind {
         expr: {expr}
             "
             ),
-            FilterKind::Size { range } => {
+            FilterKind::Size(SizeArgs { range }) => {
                 write!(
                     f,
                     "
@@ -220,7 +218,7 @@ impl Display for FilterKind {
                 "
                 )
             }
-            FilterKind::IgnorePath { in_path } => {
+            FilterKind::IgnorePath(IgnorePathArgs { in_path }) => {
                 write!(
                     f,
                     "
@@ -230,7 +228,7 @@ impl Display for FilterKind {
                 "
                 )
             }
-            FilterKind::IgnoreName { in_name } => {
+            FilterKind::IgnoreName(IgnoreNameArgs { in_name }) => {
                 write!(
                     f,
                     "
@@ -241,12 +239,6 @@ impl Display for FilterKind {
                 )
             }
         }
-    }
-}
-
-impl Default for DuplicateKind {
-    fn default() -> Self {
-        Self::Name
     }
 }
 

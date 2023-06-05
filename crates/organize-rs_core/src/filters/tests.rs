@@ -18,8 +18,13 @@ use pretty_assertions::assert_eq;
 use filetime::{self, FileTime};
 
 use crate::{
-    filters::{FilterKind, NameFilterArgs},
-    parsers::{PeriodRange, SizeRange},
+    filters::{
+        all_items::AllItemsArgs, empty::EmptyArgs, extension::ExtensionArgs,
+        ignore_name::IgnoreNameArgs, ignore_path::IgnorePathArgs, impl_::matches_date,
+        mimetype::MimeTypeArgs, name::NameArgs, name::NameFilterArgs, no_filter::NoFilterArgs,
+        size::SizeArgs, Filter,
+    },
+    parsers::{period_range::PeriodRange, size_range::SizeRange},
 };
 
 fn get_fixtures_dir() -> PathBuf {
@@ -35,11 +40,11 @@ fn get_fixture_entries(sub_dir: impl AsRef<Path>) -> Vec<DirEntry<((), ())>> {
         .collect_vec()
 }
 
-fn get_base_values(root: impl AsRef<Path>, filter: FilterKind) -> (Vec<PathBuf>, Vec<PathBuf>) {
+fn get_base_values(root: impl AsRef<Path>, filter: impl Filter) -> (Vec<PathBuf>, Vec<PathBuf>) {
     let mut entries = get_fixture_entries(root);
     let before = entries.iter().map(|f| f.path()).collect_vec();
 
-    entries.retain(|f| (filter.get_filter()(f)));
+    entries.retain(|f| (filter.apply(f)));
     let after = entries.iter().map(|f| f.path()).collect_vec();
 
     (before, after)
@@ -58,7 +63,7 @@ fn get_base_values(root: impl AsRef<Path>, filter: FilterKind) -> (Vec<PathBuf>,
 #[case(FileTime::now().seconds() - 6 * 24 * 60 * 60, "..7d")] // 6 days
 #[case(FileTime::now().seconds() - 4 * 24 * 60 * 60, "3d..")] // 4 days
 fn test_matches_date_passes(#[case] time: i64, #[case] period: PeriodRange) {
-    assert!(FilterKind::matches_date(time, &Some(period)))
+    assert!(matches_date(time, &Some(period)))
 }
 
 // TODO we could use a lookup table generated at compile time with
@@ -66,7 +71,7 @@ fn test_matches_date_passes(#[case] time: i64, #[case] period: PeriodRange) {
 #[rstest]
 #[should_panic]
 fn test_filter_mimetype_image_fails() {
-    let filter = FilterKind::Mimetype {
+    let filter = MimeTypeArgs {
         mime: vec![String::from("image")],
     };
 
@@ -81,7 +86,7 @@ fn test_filter_mimetype_image_fails() {
 
 #[rstest]
 fn test_filter_mimetype_jpg_odt_passes() {
-    let filter = FilterKind::Mimetype {
+    let filter = MimeTypeArgs {
         mime: vec![
             String::from("application/vnd.oasis.opendocument.text"),
             String::from("image/jpeg"),
@@ -100,7 +105,7 @@ fn test_filter_mimetype_jpg_odt_passes() {
 
 #[rstest]
 fn test_filter_all_items_passes() {
-    let filter = FilterKind::AllItems {
+    let filter = AllItemsArgs {
         i_agree_it_is_dangerous: true,
     };
 
@@ -120,7 +125,7 @@ fn test_filter_all_items_passes() {
 
 #[rstest]
 fn test_filter_no_filter_passes() {
-    let filter = FilterKind::NoFilter;
+    let filter = NoFilterArgs;
 
     let (_, after) = get_base_values("by_name", filter);
 
@@ -132,7 +137,7 @@ fn test_filter_no_filter_passes() {
 #[case(false)]
 fn test_filter_name_full_passes(#[case] case_insensitive: bool) {
     set_snapshot_suffix!("{}", case_insensitive);
-    let filter = FilterKind::Name {
+    let filter = NameArgs {
         arguments: NameFilterArgs {
             contains: vec![String::from("TaSt"), String::from("-|uTEST")].into(),
             starts_with: vec![String::from("123")].into(),
@@ -160,7 +165,7 @@ fn test_filter_name_full_passes(#[case] case_insensitive: bool) {
 #[case(false)]
 fn test_filter_name_contains_multiple_names_and_inverted_passes(#[case] case_insensitive: bool) {
     set_snapshot_suffix!("{}", case_insensitive);
-    let filter = FilterKind::Name {
+    let filter = NameArgs {
         arguments: NameFilterArgs {
             contains: vec![
                 String::from("test"),
@@ -202,7 +207,7 @@ fn test_filter_name_contains_multiple_names_and_inverted_passes(#[case] case_ins
 #[case(false)]
 fn test_filter_name_contains_multiple_names_passes(#[case] case_insensitive: bool) {
     set_snapshot_suffix!("{}", case_insensitive);
-    let filter = FilterKind::Name {
+    let filter = NameArgs {
         arguments: NameFilterArgs {
             contains: vec![String::from("test"), String::from("TaSt")].into(),
             starts_with: None,
@@ -240,7 +245,7 @@ fn test_filter_name_contains_multiple_names_passes(#[case] case_insensitive: boo
 #[case(false)]
 fn test_filter_name_contains_single_name_passes(#[case] case_insensitive: bool) {
     set_snapshot_suffix!("{}", case_insensitive);
-    let filter = FilterKind::Name {
+    let filter = NameArgs {
         arguments: NameFilterArgs {
             contains: vec![String::from("test")].into(),
             starts_with: None,
@@ -276,7 +281,7 @@ fn test_filter_name_contains_single_name_passes(#[case] case_insensitive: bool) 
 #[case(false)]
 fn test_filter_name_args_does_not_match_anything_passes(#[case] case_insensitive: bool) {
     set_snapshot_suffix!("{}", case_insensitive);
-    let filter = FilterKind::Name {
+    let filter = NameArgs {
         arguments: NameFilterArgs {
             contains: vec![String::from("toast")].into(),
             starts_with: None,
@@ -298,7 +303,7 @@ fn test_filter_name_args_does_not_match_anything_passes(#[case] case_insensitive
 #[case(false)]
 fn test_filter_name_args_empty_passes(#[case] case_insensitive: bool) {
     set_snapshot_suffix!("{}", case_insensitive);
-    let filter = FilterKind::Name {
+    let filter = NameArgs {
         arguments: NameFilterArgs {
             contains: None,
             starts_with: None,
@@ -317,7 +322,7 @@ fn test_filter_name_args_empty_passes(#[case] case_insensitive: bool) {
 
 #[rstest]
 fn test_filter_multiple_extension_with_dot_passes() {
-    let filter = FilterKind::Extension {
+    let filter = ExtensionArgs {
         exts: vec![String::from(".toml"), String::from(".jpg")],
     };
 
@@ -333,7 +338,7 @@ fn test_filter_multiple_extension_with_dot_passes() {
 
 #[rstest]
 fn test_filter_multiple_extensions_passes() {
-    let filter = FilterKind::Extension {
+    let filter = ExtensionArgs {
         exts: vec![String::from("toml"), String::from("jpg")],
     };
 
@@ -349,7 +354,7 @@ fn test_filter_multiple_extensions_passes() {
 
 #[rstest]
 fn test_filter_single_extension_passes() {
-    let filter = FilterKind::Extension {
+    let filter = ExtensionArgs {
         exts: vec![String::from("toml")],
     };
 
@@ -366,7 +371,7 @@ fn test_filter_single_extension_passes() {
 fn test_filter_folder_empty_passes() {
     std::fs::create_dir_all(get_fixtures_dir().join("empty_folder"))
         .expect("should be able to create dir structure.");
-    let filter = FilterKind::Empty;
+    let filter = EmptyArgs;
 
     let (_, after) = get_base_values("empty_folder", filter);
 
@@ -379,7 +384,7 @@ fn test_filter_folder_empty_passes() {
 
 #[rstest]
 fn test_filter_file_empty_passes() {
-    let filter = FilterKind::Empty;
+    let filter = EmptyArgs;
 
     let (_, after) = get_base_values("empty_file", filter);
 
@@ -392,7 +397,7 @@ fn test_filter_file_empty_passes() {
 
 #[rstest]
 fn test_filter_file_size_2mb_passes() {
-    let filter = FilterKind::Size {
+    let filter = SizeArgs {
         range: Some(SizeRange::from_str("..2mb").unwrap()),
     };
 
@@ -409,7 +414,7 @@ fn test_filter_file_size_2mb_passes() {
 
 #[rstest]
 fn test_filter_file_size_300_800_kib_passes() {
-    let filter = FilterKind::Size {
+    let filter = SizeArgs {
         range: Some(SizeRange::from_str("300KiB..800kib").unwrap()),
     };
 
@@ -423,7 +428,7 @@ fn test_filter_file_size_300_800_kib_passes() {
 }
 #[rstest]
 fn test_filter_file_size_250kib_passes() {
-    let filter = FilterKind::Size {
+    let filter = SizeArgs {
         range: Some(SizeRange::from_str("250KiB..").unwrap()),
     };
 
@@ -439,7 +444,7 @@ fn test_filter_file_size_250kib_passes() {
 
 #[rstest]
 fn test_filter_ignore_single_str_is_in_path_passes() {
-    let filter = FilterKind::IgnorePath {
+    let filter = IgnorePathArgs {
         in_path: vec![String::from("bump")],
     };
 
@@ -458,7 +463,7 @@ fn test_filter_ignore_single_str_is_in_path_passes() {
 
 #[rstest]
 fn test_filter_ignore_multiple_strs_is_in_path_passes() {
-    let filter = FilterKind::IgnorePath {
+    let filter = IgnorePathArgs {
         in_path: vec![String::from("bump"), String::from("bemp")],
     };
 
@@ -475,7 +480,7 @@ fn test_filter_ignore_multiple_strs_is_in_path_passes() {
 
 #[rstest]
 fn test_filter_ignore_single_str_is_in_name_passes() {
-    let filter = FilterKind::IgnoreName {
+    let filter = IgnoreNameArgs {
         in_name: vec![String::from("ignore")],
     };
 
@@ -497,7 +502,7 @@ fn test_filter_ignore_single_str_is_in_name_passes() {
 
 #[rstest]
 fn test_filter_ignore_multiple_strs_is_in_name_passes() {
-    let filter = FilterKind::IgnoreName {
+    let filter = IgnoreNameArgs {
         in_name: vec![
             String::from("ignore"),
             String::from("a.txt"),

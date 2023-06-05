@@ -14,18 +14,22 @@ use crate::{
         ActionContainer, ActionKind,
     },
     filters::{
-        FilterApplicationKind, FilterGroup, FilterGroupCollection, FilterGroupOperationKind,
-        FilterKind,
+        empty::EmptyArgs, extension::ExtensionArgs, FilterApplicationKind, FilterGroup,
+        FilterGroupCollection, FilterGroupOperationKind, FilterKind,
     },
-    locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
+    locations::{
+        LocationCollection, LocationKind, MaxDepth, RecursiveWithMaxDepthArgs, TargetKind,
+    },
     tags::{Tag, TagCollection},
 };
 
-/// [`Rules`] contains a list of [`Rule`] objects with the required keys
+pub trait Rule {}
+
+/// [`Rules`] contains a list of [`SingleRule`] objects with the required keys
 /// "locations" and "actions". One config can have many [`Rules`].
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 #[serde(transparent)]
-pub struct Rules(Vec<Rule>);
+pub struct Rules(Vec<SingleRule>);
 
 impl Rules {
     pub fn new() -> Self {
@@ -40,11 +44,11 @@ impl Rules {
         todo!()
     }
 
-    pub fn iter(&self) -> Iter<'_, Rule> {
+    pub fn iter(&self) -> Iter<'_, SingleRule> {
         self.0.iter()
     }
 
-    pub fn iter_mut(&mut self) -> IterMut<'_, Rule> {
+    pub fn iter_mut(&mut self) -> IterMut<'_, SingleRule> {
         self.0.iter_mut()
     }
 }
@@ -56,18 +60,18 @@ impl std::ops::DerefMut for Rules {
 }
 
 impl std::ops::Deref for Rules {
-    type Target = Vec<Rule>;
+    type Target = Vec<SingleRule>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-/// [`Rule`] contains a objects with the required keys
+/// [`SingleRule`] contains a objects with the required keys
 /// "locations" and "actions". One config can have many [`Rules].
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 #[serde(default, rename = "rule")]
-pub struct Rule {
+pub struct SingleRule {
     /// rule name
     name: String,
     /// tag for a rule, so you can run a set of rules by passing `--tags` or `--skip-tags`
@@ -82,9 +86,9 @@ pub struct Rule {
     actions: ActionApplicationCollection,
 }
 
-impl Display for Rule {
+impl Display for SingleRule {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let Rule {
+        let SingleRule {
             name,
             tags,
             enabled,
@@ -109,7 +113,7 @@ impl Display for Rule {
     }
 }
 
-impl Rule {
+impl SingleRule {
     // This method will help users to discover the builder
     pub fn builder() -> RuleBuilder {
         RuleBuilder::default()
@@ -160,8 +164,8 @@ impl RuleBuilder {
         }
     }
 
-    pub fn build(self) -> Rule {
-        Rule {
+    pub fn build(self) -> SingleRule {
+        SingleRule {
             name: self.name,
             tags: self.tags,
             enabled: self.enabled,
@@ -232,57 +236,61 @@ impl RuleBuilder {
     }
 }
 
-pub fn empty_file_rule() -> Rule {
-    Rule::builder()
+pub fn empty_file_rule() -> SingleRule {
+    SingleRule::builder()
         .name("Empty File")
         .filter_group(FilterGroup {
             operation: FilterGroupOperationKind::Include,
             mode: FilterApplicationKind::All,
-            filters: vec![FilterKind::Empty],
+            filters: vec![FilterKind::Empty(EmptyArgs)],
         })
         .action(ActionContainer {
             mode: ActionApplicationKind::Preview,
             action: ActionKind::Trash,
         })
-        .location(LocationKind::RecursiveWithMaxDepth {
-            path: r"crates\organize-rs_core\tests\fixtures\filters\empty_file".into(),
-            target: TargetKind::Files,
-            max_depth: MaxDepth::new(1),
-        })
+        .location(LocationKind::RecursiveWithMaxDepth(
+            RecursiveWithMaxDepthArgs {
+                path: r"crates\organize-rs_core\tests\fixtures\filters\empty_file".into(),
+                target: TargetKind::Files,
+                max_depth: MaxDepth::new(1),
+            },
+        ))
         .tag(Tag::Custom("Test::EmptyFile".to_string()))
         .build()
 }
 
-pub fn empty_folder_rule() -> Rule {
-    Rule::builder()
+pub fn empty_folder_rule() -> SingleRule {
+    SingleRule::builder()
         .name("Empty Directory")
         .filter_group(FilterGroup {
             operation: FilterGroupOperationKind::Include,
             mode: FilterApplicationKind::All,
-            filters: vec![FilterKind::Empty],
+            filters: vec![FilterKind::Empty(EmptyArgs)],
         })
         .action(ActionContainer {
             mode: ActionApplicationKind::Preview,
             action: ActionKind::Trash,
         })
-        .location(LocationKind::RecursiveWithMaxDepth {
-            path: r"crates\organize-rs_core\tests\fixtures\filters\empty_folder".into(),
-            target: TargetKind::Directories,
-            max_depth: MaxDepth::new(1),
-        })
+        .location(LocationKind::RecursiveWithMaxDepth(
+            RecursiveWithMaxDepthArgs {
+                path: r"crates\organize-rs_core\tests\fixtures\filters\empty_folder".into(),
+                target: TargetKind::Directories,
+                max_depth: MaxDepth::new(1),
+            },
+        ))
         .tag(Tag::Custom("Test::EmptyDirectory".to_string()))
         .build()
 }
 
-pub fn pdf_on_desktop_rule() -> Rule {
-    Rule::builder()
+pub fn pdf_on_desktop_rule() -> SingleRule {
+    SingleRule::builder()
         .name("PDFs on Desktop")
         .filter_group(FilterGroup {
             operation: FilterGroupOperationKind::Include,
             mode: FilterApplicationKind::All,
-            filters: vec![FilterKind::Extension {
+            filters: vec![FilterKind::Extension(ExtensionArgs {
                 exts: vec![String::from("pdf")],
-            }],
+            })],
         })
         .action(ActionContainer {
             mode: ActionApplicationKind::Preview,
@@ -293,11 +301,13 @@ pub fn pdf_on_desktop_rule() -> Rule {
                 filesystem: None,
             },
         })
-        .location(LocationKind::RecursiveWithMaxDepth {
-            path: r"C:\Users\dailyuse\Desktop".into(),
-            target: TargetKind::Files,
-            max_depth: MaxDepth::new(4),
-        })
+        .location(LocationKind::RecursiveWithMaxDepth(
+            RecursiveWithMaxDepthArgs {
+                path: r"C:\Users\dailyuse\Desktop".into(),
+                target: TargetKind::Files,
+                max_depth: MaxDepth::new(4),
+            },
+        ))
         .tag(Tag::Custom("Documents::PDF".to_string()))
         .build()
 }

@@ -5,7 +5,7 @@
 //! for specifying it.
 
 use organize_rs_core::aliases::Reference;
-use organize_rs_core::rules::Rule;
+use organize_rs_core::rules::SingleRule;
 use serde::{Deserialize, Serialize};
 
 /// Organize Configuration
@@ -13,5 +13,5 @@ use serde::{Deserialize, Serialize};
 #[serde(deny_unknown_fields)]
 pub struct OrganizeAppConfig {
     aliases: Vec<Reference>,
-    rules: Vec<Rule>,
+    rules: Vec<SingleRule>,
 }

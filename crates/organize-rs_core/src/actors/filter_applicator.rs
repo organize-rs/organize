@@ -1,13 +1,9 @@
 use crate::{actors::location_walker::DirEntryData, filters::FilterGroupCollection};
 use itertools::{Either, Itertools};
 
-
-
-use crate::{
-    filters::{
-        FilterApplicationKind, FilterFilterClosureSliceMut, FilterGroup, FilterGroupOperationKind,
-        FilterKind,
-    },
+use crate::filters::{
+    FilterApplicationKind, FilterFilterClosureSliceMut, FilterGroup, FilterGroupOperationKind,
+    FilterKind,
 };
 
 #[derive(Debug, Default)]
@@ -47,7 +43,7 @@ impl FilterApplicator {
 
     pub fn apply_filters(
         entries: Vec<jwalk::DirEntry<((), ())>>,
-        filters: FilterFilterClosureSliceMut<((), ())>,
+        filters: FilterFilterClosureSliceMut,
     ) -> Vec<jwalk::DirEntry<((), ())>> {
         entries
             .into_iter()
@@ -55,7 +51,7 @@ impl FilterApplicator {
                 let mut results = vec![];
                 filters
                     .iter_mut()
-                    .for_each(|filter| results.push(filter(entry)));
+                    .for_each(|filter| results.push(filter.apply(entry)));
                 results.contains(&true)
             })
             .collect_vec()
@@ -68,7 +64,7 @@ impl FilterApplicator {
         let (matched, not_matched): (Vec<bool>, Vec<bool>) = filter_group
             .filters()
             .iter()
-            .map(|single_filter| single_filter.get_filter()(entry))
+            .map(|single_filter| single_filter.get_filter().apply(entry))
             .partition(|f| *f);
 
         match (filter_group.apply(), filter_group.mode()) {

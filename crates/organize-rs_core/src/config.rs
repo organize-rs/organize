@@ -1,8 +1,9 @@
 //! organize-rs config
 
 use crate::{
+    aliases::Aliases,
     error::{ConfigErrorKind, OrganizeResult},
-    rules::{Rule, Rules},
+    rules::{Rules, SingleRule},
 };
 use std::io::Write;
 use std::{fmt::Display, fs::File, path::Path, str::FromStr};
@@ -12,6 +13,7 @@ use clap::ValueEnum;
 
 use displaydoc::Display;
 use ron::ser::PrettyConfig;
+use semver::{BuildMetadata, Prerelease, Version};
 use serde::{Deserialize, Serialize};
 
 pub static CONFIG_TEMPLATE_YAML: &str = include_str!("../config/config_template.yaml");
@@ -53,17 +55,34 @@ impl Default for ConfigFileFormat {
     }
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct OrganizeConfigVersion(Version);
+
+impl Default for OrganizeConfigVersion {
+    fn default() -> Self {
+        Self(Version {
+            major: 1,
+            minor: 0,
+            patch: 0,
+            pre: Prerelease::EMPTY,
+            build: BuildMetadata::EMPTY,
+        })
+    }
+}
+
 /// Organize Configuration
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 // #[serde(deny_unknown_fields)]
 #[serde(default)]
 pub struct OrganizeConfig {
-    // aliases: Vec<Reference>,
+    aliases: Aliases,
+    version: OrganizeConfigVersion,
     rules: Rules,
 }
 
 impl Display for OrganizeConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Config-Version: {:?}", self.version)?;
         for rule in self.rules.iter() {
             write!(f, "{rule}")?;
         }
@@ -171,7 +190,7 @@ impl OrganizeConfig {
         Ok(())
     }
 
-    pub fn add_rule(&mut self, rule: Rule) {
+    pub fn add_rule(&mut self, rule: SingleRule) {
         self.rules.push(rule)
     }
 
@@ -192,10 +211,12 @@ mod tests {
     #[test]
     fn test_default_config_serialization_passes() {
         let mut config = OrganizeConfig::default();
-        let rule = Rule::default();
+        let rule = SingleRule::default();
         config.add_rule(rule);
         insta::assert_yaml_snapshot!(config, @r###"
         ---
+        aliases: []
+        version: 1.0.0
         rules:
           - name: ""
             tags: []
@@ -205,6 +226,9 @@ mod tests {
             actions: []
         "###);
         insta::assert_toml_snapshot!(config, @r###"
+        aliases = []
+        version = '1.0.0'
+
         [[rules]]
         name = ''
         tags = []
@@ -215,6 +239,8 @@ mod tests {
         "###);
         insta::assert_json_snapshot!(config, @r###"
         {
+          "aliases": [],
+          "version": "1.0.0",
           "rules": [
             {
               "name": "",
@@ -229,6 +255,8 @@ mod tests {
         "###);
         insta::assert_ron_snapshot!(config, @r###"
         OrganizeConfig(
+          aliases: [],
+          version: OrganizeConfigVersion("1.0.0"),
           rules: [
             rule(
               name: "",
