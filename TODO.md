@@ -2,6 +2,7 @@
 
 ## Next
 
+1. update screenshots and Readme.md
 1. change arguments to some filters to be optional
     - so they return a broad range of information, that can be used to `echo`
     - or rather create a new `info`/`inspect` filter for that
