@@ -2,24 +2,21 @@
 
 ## Next
 
-1. [RESEARCH] move target to `FilterGroup`, implications?
-    - each `filter_group` can independently operate on folders/files
-        - how many/which filters are affected?
-            - does it make sense overall?
-    - need to move filter for `TargetKind` to a later stage?
-1. implement doctests for filters (so the yaml syntax is clear)
-    - change arguments to some filters to be optional
-        - so they return a broad range of information, that can be used to `echo`
+1. change arguments to some filters to be optional
+    - so they return a broad range of information, that can be used to `echo`
     - or rather create a new `info`/`inspect` filter for that
         - which we can pass as an argument, which attribute we want to inspect
 1. generate example configs for integration test cases
     - check against py-organize documentation for feature parity
 1. implement unit tests for actions and the actions themselves
 1. implement `organize run config` with preview and destructive run
-1. implement `organize filter` / `organize action` in a way it can be used
-to generate copy & pastable output for config->rules->`filter_groups`/`actions`
 
 ## Features
+
+1. implement global ignore list
+    - .py
+    - .js
+    - .ini
 
 1. implement file name templating
     - e.g. with <https://lib.rs/crates/tinytemplate> or <https://lib.rs/crates/handlebars>
@@ -51,16 +48,10 @@ to generate copy & pastable output for config->rules->`filter_groups`/`actions`
 ## General
 
 - it would be reasonable to have each rule only result in `1` destructive action (e.g. move, trash, delete, rename) so conflicts are already minimized
-  - check which actions are parallelizable
+  - [RESEARCH] check which actions are parallelizable and for which actions it would make sense especially
   - add confirmation dialog for manual conflict handling  
 
 ## Filters
-
-- global ignore list
-  - .py
-  - .js
-  - .ini
-  -
 
 ### Filters impl
 
@@ -88,25 +79,19 @@ to generate copy & pastable output for config->rules->`filter_groups`/`actions`
 
 ### Actions impl
 
-- [ ] Trash
-  - `move_to_trash`
 - [ ] Copy
   - `copy_to`
-- [ ] Symlink
-  - `symlink_to`
 - [ ] Move
   - `move_to`
 - [ ] Rename
   - `rename_to`
-- [ ] Delete
-  - `remove_irrecoverably`
 - [ ] Write
+- [ ] Echo
+- [ ] Confirm
 
 #### Later
 
-- [ ] Confirm
 - [ ] Shell
-- [ ] Echo
 - [ ] Email
   - <https://crates.io/crates/lettre>
   - think about the best use case
