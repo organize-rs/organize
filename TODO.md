@@ -10,6 +10,13 @@
     - check against py-organize documentation for feature parity
 1. implement unit tests for actions and the actions themselves
 1. implement `organize run config` with preview and destructive run
+1. implement `Alias` being just defined via `Vec<Reference>` and used with the templating syntax `{{alias_name}}`
+    - check places where it is applicable
+    - theoretically everywhere, where we take a `PathBuf` or `String` as part of a `Path`
+      - e.g. extensions, locations, ignore_name, ignore_path
+    - not usable in actions, or good error handling
+      - e.g. someone could use an alias for a `move::dst`, which would essentially copy the file to these places
+        - this should error out and actually be able to be checked beforehand, e.g. don't accept an alias that references more than one location string
 
 ## Features
 
