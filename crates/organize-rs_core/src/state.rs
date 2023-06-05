@@ -3,7 +3,10 @@
 
 use jwalk::DirEntry;
 
-use crate::{rules::Rule, FilteredFileWalker};
+use crate::{
+    rules::Rule,
+    actors::location_walker::{DirEntryData},
+};
 
 // States
 #[derive(Debug, Clone, Copy, Default)]
@@ -14,34 +17,34 @@ pub struct Start;
 
 #[derive(Debug, Default)]
 pub struct Inspect {
-    entries: Vec<(Rule, FilteredFileWalker)>,
+    entries: Vec<(Rule, DirEntryData)>,
 }
 
 impl Inspect {
-    pub fn with_entries(entries: Vec<(Rule, FilteredFileWalker)>) -> Self {
+    pub fn with_entries(entries: Vec<(Rule, DirEntryData)>) -> Self {
         Self { entries }
     }
 
     pub fn print_entries(&self) {
-        self.entries.iter().for_each(|(rule, walker)| {
-            walker.print_entries();
+        self.entries.iter().for_each(|(rule, entries)| {
+            entries.print_entries();
             println!("Rule: {rule}");
         })
     }
 
-    pub fn entries(self) -> Vec<(Rule, FilteredFileWalker)> {
+    pub fn entries(self) -> Vec<(Rule, DirEntryData)> {
         self.entries
     }
 }
 
 #[derive(Debug, Default)]
 pub struct HandleConflicts {
-    entries: Vec<(Rule, FilteredFileWalker)>,
+    entries: Vec<(Rule, DirEntryData)>,
     conflicts: Vec<DirEntry<((), ())>>,
 }
 
 impl HandleConflicts {
-    pub fn with_entries(entries: Vec<(Rule, FilteredFileWalker)>) -> Self {
+    pub fn with_entries(entries: Vec<(Rule, DirEntryData)>) -> Self {
         Self {
             entries,
             conflicts: vec![],

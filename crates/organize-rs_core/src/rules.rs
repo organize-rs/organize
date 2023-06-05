@@ -3,7 +3,6 @@
 
 use std::{
     fmt::Display,
-    path::PathBuf,
     slice::{Iter, IterMut},
 };
 

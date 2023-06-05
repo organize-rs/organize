@@ -1,10 +1,12 @@
 use std::{collections::HashSet, path::Path};
 
+use itertools::Itertools;
+
 use crate::{
+    actors::{filter_applicator::FilterApplicator, location_walker::LocationWalker},
     config::OrganizeConfig,
     state::{HandleConflicts, Init, Inspect, ProcessingState, Start},
     tags::{Tag, TagCollection},
-    FilteredFileWalker,
 };
 
 use std::iter::FromIterator;
@@ -13,16 +15,20 @@ pub struct Runner<S>
 where
     S: ProcessingState,
 {
-    config: OrganizeConfig,
+    configs: Vec<OrganizeConfig>,
     extra: S,
 }
 
 impl Runner<Init> {
-    pub fn load_config(path: impl AsRef<Path>) -> Runner<Start> {
-        let config = OrganizeConfig::load_from_file(path);
+    pub fn load_configs(paths: &[impl AsRef<Path>]) -> Runner<Start> {
+        let mut configs = vec![];
+        paths.into_iter().for_each(|path| {
+            let config = OrganizeConfig::load_from_file(path);
+            configs.push(config);
+        });
 
         Runner::<Start> {
-            config,
+            configs,
             extra: Start::default(),
         }
     }
@@ -31,26 +37,30 @@ impl Runner<Init> {
 impl Runner<Start> {
     pub fn apply_filters(self, tags: Vec<Tag>) -> Runner<Inspect> {
         let mut entries = vec![];
-        self.config.rules().iter().for_each(|rule| {
-            if rule.enabled() & !rule.tags().contains(&Tag::Never) {
-                let tag_collection = rule.tags();
-                let tag_applies = Self::tag_applies(&tag_collection, &tags);
+        self.configs.iter().for_each(|config| {
+            config.rules().iter().for_each(|rule| {
+                if rule.enabled() & !rule.tags().contains(&Tag::Never) {
+                    let tag_collection = rule.tags();
+                    let tag_applies = Self::tag_applies(&tag_collection, &tags);
 
-                match tag_applies {
-                    Some(true) | None => {
-                        let mut walker = FilteredFileWalker::new();
-                        walker.get_applicable_items(rule.locations(), rule.filters());
-                        entries.push((rule.clone(), walker))
+                    match tag_applies {
+                        Some(true) | None => {
+                            let data =
+                                LocationWalker::new(rule.locations()).collect_dir_entry_data();
+                            let filtered_data =
+                                FilterApplicator::new(rule.filters()).get_applicable_items(data);
+                            entries.push((rule.clone(), filtered_data))
+                        }
+                        Some(false) => println!("Given tags don't apply, skipping ... {rule}"),
                     }
-                    Some(false) => println!("Given tags don't apply, skipping ... {rule}"),
+                } else {
+                    println!("Not enabled or should be never run, skipping ... {rule}")
                 }
-            } else {
-                println!("Not enabled or should be never run, skipping ... {rule}")
-            }
+            })
         });
 
         Runner::<Inspect> {
-            config: self.config,
+            configs: self.configs,
             extra: Inspect::with_entries(entries),
         }
     }
@@ -68,17 +78,18 @@ impl Runner<Start> {
 }
 
 impl Runner<Inspect> {
-    pub fn advance(self) -> Runner<HandleConflicts> {
+    pub fn handle_conflicts(self) -> Runner<HandleConflicts> {
         let entries = self.extra.entries();
 
         Runner::<HandleConflicts> {
-            config: self.config,
+            configs: self.configs,
             extra: HandleConflicts::with_entries(entries),
         }
     }
 
-    pub fn preview_entries(&self) {
+    pub fn inspect_entries(self) -> Runner<Inspect> {
         self.extra.print_entries();
+        self
     }
 }
 

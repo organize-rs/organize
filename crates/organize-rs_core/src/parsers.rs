@@ -2,7 +2,7 @@
 
 use std::{fmt::Display, ops::Range, str::FromStr};
 
-use serde::{Deserialize, Serialize};
+use serde::{Serialize};
 use serde_with::DeserializeFromStr;
 use winnow::{
     ascii::alpha0,

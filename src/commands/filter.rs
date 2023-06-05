@@ -6,12 +6,12 @@ use abscissa_core::{Command, Runnable};
 use clap::Args;
 use itertools::Itertools;
 use organize_rs_core::{
+    actors::{filter_applicator::FilterApplicator, location_walker::LocationWalker},
     filters::{
         FilterApplicationKind, FilterGroup, FilterGroupCollection, FilterGroupOperationKind,
         FilterKind, RecursiveFilterArgs,
     },
     locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
-    FilteredFileWalker,
 };
 
 /// `filter` subcommand
@@ -88,8 +88,6 @@ impl Runnable for FilterCmd {
 
 impl FilterCmd {
     fn inner_run(&self, filters: FilterGroupCollection) {
-        let mut filter_walker = FilteredFileWalker::new();
-
         // Convert to OrganizeLocation
         let locations = self
             .location_opts
@@ -111,10 +109,11 @@ impl FilterCmd {
             .collect_vec();
 
         let location_collection = LocationCollection::from_vec(locations);
+        let entries = LocationWalker::new(location_collection).collect_dir_entry_data();
 
-        filter_walker.get_applicable_items(location_collection, filters);
+        let filtered_entries = FilterApplicator::new(filters).get_applicable_items(entries);
 
-        filter_walker.print_entries();
+        filtered_entries.print_entries();
 
         // let _test = filter_walker
         //     .entries()
