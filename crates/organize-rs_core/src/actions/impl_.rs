@@ -56,6 +56,7 @@ impl ActionKind {
     fn action_no_action<C: ClientState>(&self) -> ActionClosure<C> {
         Box::new(|entry, _preview| {
             Ok(ActionResultKind::Preview {
+                msg: format!("(Preview) No action: {}", entry.path().display()),
                 path: entry.path(),
                 action: self.to_owned(),
             })
@@ -66,6 +67,7 @@ impl ActionKind {
         Box::new(|entry, preview| {
             if preview {
                 Ok(ActionResultKind::Preview {
+                    msg: format!("(Preview) Trash: {}", entry.path().display()),
                     path: entry.path(),
                     action: self.to_owned(),
                 })
@@ -81,6 +83,7 @@ impl ActionKind {
         Box::new(|entry, preview| {
             if preview {
                 Ok(ActionResultKind::Preview {
+                    msg: format!("(Preview) Delete: {}", entry.path().display()),
                     path: entry.path(),
                     action: self.to_owned(),
                 })
@@ -96,6 +99,11 @@ impl ActionKind {
         Box::new(move |entry, preview| {
             if preview {
                 Ok(ActionResultKind::Preview {
+                    msg: format!(
+                        "(Preview) Symlink: {} -> {}",
+                        dst.display(),
+                        entry.path().display()
+                    ),
                     path: entry.path(),
                     action: self.to_owned(),
                 })

@@ -26,6 +26,8 @@ type ActionClosure<'a, C> =
 pub enum ActionResultKind {
     /// A preview of a to be executed action
     Preview {
+        /// message to be printed
+        msg: String,
         /// file or directory path the action should be executed on
         path: PathBuf,
         /// corresponding action
@@ -65,6 +67,16 @@ pub enum ActionApplicationKind {
     /// Wait for user input
     #[serde(rename = "input")]
     UserInput,
+}
+
+impl ActionApplicationKind {
+    /// Returns `true` if the action application kind is [`Preview`].
+    ///
+    /// [`Preview`]: ActionApplicationKind::Preview
+    #[must_use]
+    pub fn is_preview(&self) -> bool {
+        matches!(self, Self::Preview)
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]

@@ -3,9 +3,14 @@ use std::{collections::HashSet, path::Path};
 use itertools::Itertools;
 
 use crate::{
+    actions::{ActionApplicationKind, ActionResultKind},
     actors::{filter_applicator::FilterApplicator, location_walker::LocationWalker},
     config::OrganizeConfig,
-    state::{HandleConflicts, Init, Inspect, ProcessingState, Start},
+    error::OrganizeResult,
+    state::{
+        ActionApplication, ActionPreview, ConflictHandling, Filtering, Initialize, Inspection,
+        ProcessingStage,
+    },
     tags::{Tag, TagCollection},
 };
 
@@ -13,29 +18,29 @@ use std::iter::FromIterator;
 
 pub struct Runner<S>
 where
-    S: ProcessingState,
+    S: ProcessingStage,
 {
     configs: Vec<OrganizeConfig>,
     extra: S,
 }
 
-impl Runner<Init> {
-    pub fn load_configs(paths: &[impl AsRef<Path>]) -> Runner<Start> {
+impl Runner<Initialize> {
+    pub fn load_configs(paths: &[impl AsRef<Path>]) -> Runner<Filtering> {
         let mut configs = vec![];
-        paths.into_iter().for_each(|path| {
+        paths.iter().for_each(|path| {
             let config = OrganizeConfig::load_from_file(path);
             configs.push(config);
         });
 
-        Runner::<Start> {
+        Runner::<Filtering> {
             configs,
-            extra: Start::default(),
+            extra: Filtering::default(),
         }
     }
 }
 
-impl Runner<Start> {
-    pub fn apply_filters(self, tags: Vec<Tag>) -> Runner<Inspect> {
+impl Runner<Filtering> {
+    pub fn apply_filters(self, tags: Vec<Tag>) -> Runner<Inspection> {
         let mut entries = vec![];
         self.configs.iter().for_each(|config| {
             config.rules().iter().for_each(|rule| {
@@ -59,9 +64,9 @@ impl Runner<Start> {
             })
         });
 
-        Runner::<Inspect> {
+        Runner::<Inspection> {
             configs: self.configs,
-            extra: Inspect::with_entries(entries),
+            extra: Inspection::with_entries(entries),
         }
     }
 
@@ -77,20 +82,73 @@ impl Runner<Start> {
     }
 }
 
-impl Runner<Inspect> {
-    pub fn handle_conflicts(self) -> Runner<HandleConflicts> {
-        let entries = self.extra.entries();
-
-        Runner::<HandleConflicts> {
+impl Runner<Inspection> {
+    pub fn finish_inspection(self) -> Runner<ActionPreview> {
+        Runner::<ActionPreview> {
             configs: self.configs,
-            extra: HandleConflicts::with_entries(entries),
+            extra: ActionPreview::with_entries(self.extra.entries()),
         }
     }
 
-    pub fn inspect_entries(self) -> Runner<Inspect> {
+    pub fn inspect_entries(self) -> Runner<Inspection> {
         self.extra.print_entries();
         self
     }
 }
 
-impl Runner<HandleConflicts> {}
+impl Runner<ActionPreview> {
+    pub fn preview_actions(self) -> OrganizeResult<()> {
+        // * if action::mode == `is_preview()` we return Runner<Reporting>
+        // * and only println!() what an action might do
+        // * else we continue to Runner<ActionApplication>
+        self.extra.entries().iter().for_each(|(rule, entry)| {
+            rule.actions().iter().for_each(|action_container| {
+                entry.iter().for_each(|entry| {
+                    match action_container.action.get_action()(
+                        entry,
+                        true, // * is always true, as it's preview
+                             // ! for application we can use:
+                             // ! `action_container.mode.is_preview()`
+                    ) {
+                        Ok(ActionResultKind::Preview {
+                            msg,
+                            path: _,
+                            action: _,
+                        }) => println!("{msg}"),
+                        Err(err) => eprintln!("{err}"),
+                        _ => (),
+                    }
+                })
+            })
+        });
+        Ok(())
+    }
+
+    pub fn ask_confirmation(self) -> OrganizeResult<Runner<ActionApplication>> {
+        todo!()
+    }
+}
+
+impl Runner<ActionApplication> {
+    pub fn apply_actions(self) -> OrganizeResult<Runner<ActionApplication>> {
+        todo!()
+    }
+
+    pub fn check_conflicts(self) -> Runner<ConflictHandling> {
+        todo!()
+    }
+}
+
+// pub fn handle_conflicts(self) -> Runner<HandleConflicts> {
+//     let entries = self.extra.entries();
+
+//     Runner::<HandleConflicts> {
+//         configs: self.configs,
+//         extra: HandleConflicts::with_entries(entries),
+//     }
+// }
+impl Runner<ConflictHandling> {
+    pub fn view_conflicts(self) -> Runner<ActionPreview> {
+        todo!()
+    }
+}

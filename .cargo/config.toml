@@ -2,7 +2,7 @@
 # TODO: Activate `deny warnings`
 # rustflags = "-C target-cpu=native -D warnings"
 rustflags = "-C target-cpu=native"
-incremental = true
+# incremental = true
 
 # TODO: Introduced for `cargo public-api`,
 # remove when it's working on sparse registry

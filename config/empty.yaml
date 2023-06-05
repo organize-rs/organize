@@ -1,0 +1,18 @@
+rules:
+  - name: Recursively trash empty entries
+    enabled: true
+    locations:
+      - !recursive
+        path: C:\Users\dailyuse\dev-src\
+        max_depth: 10
+        target: both
+    filter_groups:
+      - filters:
+          - !empty
+        results: include
+        match: all
+    actions:
+      - mode: preview
+        action: !trash
+    tags:
+      - !custom Test::Filter::EmptyEntries

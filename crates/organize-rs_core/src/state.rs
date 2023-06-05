@@ -4,23 +4,28 @@
 use jwalk::DirEntry;
 
 use crate::{
-    rules::Rule,
-    actors::location_walker::{DirEntryData},
+    actions::conflicts::OnConflictKind, actors::location_walker::DirEntryData, rules::Rule,
 };
 
 // States
 #[derive(Debug, Clone, Copy, Default)]
-pub struct Init;
+pub struct Initialize;
 
 #[derive(Debug, Clone, Copy, Default)]
-pub struct Start;
+pub struct Filtering;
 
 #[derive(Debug, Default)]
-pub struct Inspect {
+pub struct Inspection {
     entries: Vec<(Rule, DirEntryData)>,
 }
 
-impl Inspect {
+#[derive(Debug, Default)]
+pub struct ConflictHandling {
+    entries: Vec<(Rule, DirEntryData)>,
+    conflicts: Vec<DirEntry<((), ())>>,
+}
+
+impl Inspection {
     pub fn with_entries(entries: Vec<(Rule, DirEntryData)>) -> Self {
         Self { entries }
     }
@@ -37,13 +42,7 @@ impl Inspect {
     }
 }
 
-#[derive(Debug, Default)]
-pub struct HandleConflicts {
-    entries: Vec<(Rule, DirEntryData)>,
-    conflicts: Vec<DirEntry<((), ())>>,
-}
-
-impl HandleConflicts {
+impl ConflictHandling {
     pub fn with_entries(entries: Vec<(Rule, DirEntryData)>) -> Self {
         Self {
             entries,
@@ -52,25 +51,40 @@ impl HandleConflicts {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Default)]
 pub struct AskConfirmation;
 
-#[derive(Debug, Clone, Copy, Default)]
-pub struct Preview;
+#[derive(Debug, Default)]
+pub struct ActionPreview {
+    entries: Vec<(Rule, DirEntryData)>,
+    conflicts: Option<Vec<OnConflictKind>>,
+}
 
-#[derive(Debug, Clone, Copy, Default)]
-pub struct ApplyActions;
+impl ActionPreview {
+    pub fn with_entries(entries: Vec<(Rule, DirEntryData)>) -> Self {
+        Self {
+            entries,
+            conflicts: None,
+        }
+    }
+    pub fn entries(self) -> Vec<(Rule, DirEntryData)> {
+        self.entries
+    }
+}
 
-#[derive(Debug, Clone, Copy, Default)]
-pub struct Report;
+#[derive(Debug, Default)]
+pub struct ActionApplication;
 
-pub trait ProcessingState {}
+#[derive(Debug, Clone, Default)]
+pub struct Reporting;
 
-impl ProcessingState for Init {}
-impl ProcessingState for Start {}
-impl ProcessingState for Inspect {}
-impl ProcessingState for HandleConflicts {}
-impl ProcessingState for AskConfirmation {}
-impl ProcessingState for Preview {}
-impl ProcessingState for ApplyActions {}
-impl ProcessingState for Report {}
+pub trait ProcessingStage {}
+
+impl ProcessingStage for Initialize {}
+impl ProcessingStage for Filtering {}
+impl ProcessingStage for Inspection {}
+impl ProcessingStage for ActionPreview {}
+impl ProcessingStage for AskConfirmation {}
+impl ProcessingStage for ActionApplication {}
+impl ProcessingStage for ConflictHandling {}
+impl ProcessingStage for Reporting {}

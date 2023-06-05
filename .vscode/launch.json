@@ -226,19 +226,10 @@
                 }
             },
             "args": [
-                "filter",
-                "empty",
-                "-r",
-                "-m",
-                "4",
-                "-l",
-                "C:\\Users\\dailyuse\\dev-src\\organize\\tests",
-                "--ignore-path",
-                ".git",
-                "--ignore-name",
-                "toml",
-                "--ignore-path",
-                "fixtures"
+                "run",
+                "config",
+                "--paths",
+                "config\\empty.yaml",
             ],
             "cwd": "${workspaceFolder}"
         },

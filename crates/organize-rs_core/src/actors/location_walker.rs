@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use jwalk::{ClientState, DirEntry};
-use std::{fmt::Display, fs::FileType, path::Path, vec::IntoIter};
+use std::{fmt::Display, fs::FileType, path::Path, slice::Iter, vec::IntoIter};
 
 use crate::{
     error::{OrganizeResult, WalkerErrorKind},
@@ -31,6 +31,10 @@ impl DirEntryData {
             println!("{f:?}");
         });
         println!("Total entry count: {count}");
+    }
+
+    pub(crate) fn iter(&self) -> Iter<'_, jwalk::DirEntry<((), ())>> {
+        self.0.iter()
     }
 }
 
