@@ -8,16 +8,17 @@ use organize_rs_core::actions::ActionKind;
 #[derive(Command, Debug, Args, Clone)]
 pub struct ActionCmd {
     #[clap(subcommand)]
-    actions: ActionKind,
-
-    /// Run an action destructively
-    #[arg(short, long, global = true, default_value_t = false)]
-    execute: bool,
+    action: ActionKind,
 }
 
 impl Runnable for ActionCmd {
     fn run(&self) {
-        println!("Action chosen: {}", self.actions);
-        // let _action = self.actions.get_action();
+        // TODO: Support different config file formats
+        // ? implement `ActionKind::to_config_string(format: ConfigFileFormat)`
+        let yaml_string = serde_yaml::to_string(&self.action).unwrap();
+        println!("This is an 'action' snippet for a yaml config:");
+        println!("'''");
+        println!("{yaml_string}");
+        println!("'''");
     }
 }

@@ -18,7 +18,7 @@ use organize_rs_core::{
 #[derive(Command, Debug, Args, Clone)]
 pub struct FilterCmd {
     #[clap(subcommand)]
-    filters: FilterKind,
+    filter: FilterKind,
 
     /// Words in file names to be ignored
     #[arg(long, global = true)]
@@ -56,81 +56,51 @@ impl Runnable for FilterCmd {
         let filter_group0 = FilterGroup::new(
             FilterGroupOperationKind::Include,
             self.filter_mode,
-            vec![self.filters.clone()],
+            vec![self.filter.clone()],
         );
 
         let mut filters = vec![];
 
         if let Some(ignore_names) = self.ignore_name.clone() {
-            filters.push(FilterKind::IgnoreName {
-                in_name: ignore_names,
-            });
+            if !ignore_names.is_empty() {
+                filters.push(FilterKind::IgnoreName {
+                    in_name: ignore_names,
+                });
+            }
         };
 
         if let Some(ignore_paths) = self.ignore_path.clone() {
-            filters.push(FilterKind::IgnorePath {
-                in_path: ignore_paths,
-            });
+            if !ignore_paths.is_empty() {
+                filters.push(FilterKind::IgnorePath {
+                    in_path: ignore_paths,
+                });
+            }
         };
 
-        let filter_group1 = FilterGroup::new(
-            FilterGroupOperationKind::Include,
-            FilterApplicationKind::None,
-            filters,
-        );
+        let mut filter_group = vec![filter_group0];
 
-        let filter_group_collection =
-            FilterGroupCollection::from_vec(vec![filter_group0, filter_group1]);
+        if !filters.is_empty() {
+            filter_group.push(FilterGroup::new(
+                FilterGroupOperationKind::Include,
+                FilterApplicationKind::None,
+                filters,
+            ));
+        };
 
-        self.inner_run(filter_group_collection);
+        let filter_group_collection = FilterGroupCollection::from_vec(filter_group);
+
+        Self::inner_run(&filter_group_collection);
     }
 }
 
 impl FilterCmd {
-    fn inner_run(&self, filters: FilterGroupCollection) {
-        // Convert to OrganizeLocation
-        let locations = self
-            .location_opts
-            .locations
-            .clone()
-            .into_iter()
-            .map(|f| {
-                if self.location_opts.recursive.recursive() {
-                    LocationKind::from((
-                        f,
-                        MaxDepth::new(self.location_opts.recursive.max_depth()),
-                        self.location_opts.targets,
-                    ))
-                } else {
-                    LocationKind::from((f, self.location_opts.targets))
-                }
-            })
-            // .inspect(|f| println!("Got the following locations: {f}"))
-            .collect_vec();
-
-        let location_collection = LocationCollection::from_vec(locations);
-        let entries = LocationWalker::new(location_collection).collect_dir_entry_data();
-
-        let filtered_entries = FilterApplicator::new(filters).get_applicable_items(entries);
-
-        filtered_entries.print_entries();
-
-        // let _test = filter_walker
-        //     .entries()
-        //     .iter()
-        //     .inspect(|dir_entry| {
-        //         println!(
-        //             "{}\t\"{}\"",
-        //             if dir_entry.path().is_dir() {
-        //                 "D"
-        //             } else if dir_entry.path().is_file() {
-        //                 "F"
-        //             } else {
-        //                 "L"
-        //             },
-        //             dir_entry.path().display()
-        //         );
-        //     })
-        //     .collect_vec();
+    fn inner_run(filters: &FilterGroupCollection) {
+        // TODO: Support different config file formats
+        // ? implement `FilterKind::to_config_string(format: ConfigFileFormat)`
+        let yaml_string = serde_yaml::to_string(&filters).unwrap();
+        println!("This is a 'filter' snippet for a yaml config:");
+        println!("'''");
+        println!("{yaml_string}");
+        println!("'''");
     }
 }

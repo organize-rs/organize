@@ -9,7 +9,7 @@ impl Display for ActionKind {
                 write!(
                     f,
                     "
-    Filter: NoAction
+    Action: NoAction
     "
                 )
             }
@@ -17,7 +17,7 @@ impl Display for ActionKind {
                 write!(
                     f,
                     "
-    Filter: Confirm
+    Action: Confirm
     
     Arguments:
     text: {text:?},
@@ -34,7 +34,7 @@ impl Display for ActionKind {
                 write!(
                     f,
                     "
-    Filter: Copy
+    Action: Copy
                 
     Arguments: 
     dst: {},
@@ -49,7 +49,7 @@ impl Display for ActionKind {
                 write!(
                     f,
                     "
-    Filter: Delete 
+    Action: Delete 
                 
     Arguments: 
             "
@@ -59,7 +59,7 @@ impl Display for ActionKind {
                 write!(
                     f,
                     "
-    Filter: Echo 
+    Action: Echo 
                 
     Arguments: 
     msg: {msg}
@@ -75,7 +75,7 @@ impl Display for ActionKind {
                 write!(
                     f,
                     "
-    Filter: Move
+    Action: Move
                 
     Arguments: 
     dst: {},
@@ -94,7 +94,7 @@ impl Display for ActionKind {
                 write!(
                     f,
                     "
-    Filter: Rename 
+    Action: Rename 
                 
     Arguments: 
     name: {name},
@@ -107,7 +107,7 @@ impl Display for ActionKind {
                 write!(
                     f,
                     "
-    Filter: Symlink 
+    Action: Symlink 
                 
     Arguments: 
     dst: {},
@@ -119,7 +119,7 @@ impl Display for ActionKind {
                 write!(
                     f,
                     "
-    Filter: Symlink 
+    Action: Symlink 
             "
                 )
             }
@@ -133,7 +133,7 @@ impl Display for ActionKind {
             } => write!(
                 f,
                 "
-    Filter: Write
+    Action: Write
 
     Arguments:
     txt: {txt},
@@ -154,7 +154,7 @@ impl Display for ActionKind {
             } => write!(
                 f,
                 "
-    Filter: Shell
+    Action: Shell
 
     Arguments:
     command: {command},
