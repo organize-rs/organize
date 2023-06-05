@@ -11,7 +11,7 @@ use crate::{
         FilterCollection, FilterGroup, FilterGroupOperationKind, FilterKind, FilterOperationKind,
         NameFilterArgs, RecursiveFilterArgs,
     },
-    parsers::{PeriodRange, SizeRange},
+    parsers::{period_range::PeriodRange, size_range::SizeRange},
 };
 
 impl FilterKind {

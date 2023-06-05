@@ -4,14 +4,13 @@ use std::path::PathBuf;
 
 use abscissa_core::{Command, Runnable};
 use clap::Args;
-use itertools::Itertools;
+
 use organize_rs_core::{
-    actors::{filter_applicator::FilterApplicator, location_walker::LocationWalker},
     filters::{
         FilterApplicationKind, FilterGroup, FilterGroupCollection, FilterGroupOperationKind,
         FilterKind, RecursiveFilterArgs,
     },
-    locations::{LocationCollection, LocationKind, MaxDepth, TargetKind},
+    locations::{TargetKind},
 };
 
 /// `filter` subcommand

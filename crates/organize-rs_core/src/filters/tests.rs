@@ -19,7 +19,7 @@ use filetime::{self, FileTime};
 
 use crate::{
     filters::{FilterKind, NameFilterArgs},
-    parsers::{PeriodRange, SizeRange},
+    parsers::{period_range::PeriodRange, size_range::SizeRange},
 };
 
 fn get_fixtures_dir() -> PathBuf {
