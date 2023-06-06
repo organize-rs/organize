@@ -14,3 +14,4 @@ pub mod runner;
 pub mod ser_de;
 pub mod state;
 pub mod tags;
+pub mod templating;

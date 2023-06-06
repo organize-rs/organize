@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::conflicts::{ConflictKind, ConflictResolutionKind},
-    error::OrganizeError,
+    error::OrganizeError, templating::TemplateStringKind,
 };
 
 type ActionClosure<'a, C> =
@@ -185,43 +185,6 @@ impl Default for MacOsTagColourKind {
     }
 }
 
-/// Support template strings
-#[cfg_attr(feature = "cli", derive(ValueEnum))]
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
-pub enum TemplateStringKind {
-    /// {{filename}}
-    Filename,
-    /// {{counter}}
-    Counter,
-    /// {{extension}}
-    Extension,
-}
-
-impl TemplateStringKind {
-    /// Returns `true` if [`TemplateStrings`] is [`Filename`].
-    ///
-    /// [`Filename`]: TemplateStrings::Filename
-    #[must_use]
-    pub fn is_filename(&self) -> bool {
-        matches!(self, Self::Filename)
-    }
-
-    /// Returns `true` if [`TemplateStrings`] is [`Counter`].
-    ///
-    /// [`Counter`]: TemplateStrings::Counter
-    #[must_use]
-    pub fn is_counter(&self) -> bool {
-        matches!(self, Self::Counter)
-    }
-
-    /// Returns `true` if [`TemplateStrings`] is [`Extension`].
-    ///
-    /// [`Extension`]: TemplateStrings::Extension
-    #[must_use]
-    pub fn is_extension(&self) -> bool {
-        matches!(self, Self::Extension)
-    }
-}
 
 /// Mode how should be written to a file
 #[cfg_attr(feature = "cli", derive(ValueEnum))]

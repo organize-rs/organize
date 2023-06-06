@@ -217,7 +217,7 @@ pub enum FilterKind {
     ///      actions:
     ///        - mode: preview
     ///          action: !echo
-    ///            msg: "Date added: {date_added.strftime('%Y-%m-%d')}"
+    ///            msg: "Date added: {{date_added.strftime('%Y-%m-%d')}}"
     ///      tags:
     ///        - !custom Test::Filter::DateAdded
     /// # "#;

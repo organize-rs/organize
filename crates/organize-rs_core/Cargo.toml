@@ -30,8 +30,8 @@ harness = true
 edition = "2021"
 
 [[example]]
-name = "yaml_parser"
-path = "examples/yaml_parser.rs"
+name = "templating_parser"
+path = "examples/templating_parser.rs"
 test = true
 bench = true
 doc = true

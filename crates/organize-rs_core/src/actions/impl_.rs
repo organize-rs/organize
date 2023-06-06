@@ -58,8 +58,9 @@ impl ActionKind {
         Box::new(|entry, _preview| {
             Ok(ActionResultKind::Preview {
                 msg: format!(
-                    "{} No action: '{}'",
+                    "{} {}: '{}'",
                     style("(Preview)").green(),
+                    style("No action").blue(),
                     entry.path().display()
                 ),
                 path: entry.path(),
@@ -73,8 +74,9 @@ impl ActionKind {
             if preview {
                 Ok(ActionResultKind::Preview {
                     msg: format!(
-                        "{} Trash: '{}'",
+                        "{} {}: '{}'",
                         style("(Preview)").green(),
+                        style("Trash").blue(),
                         entry.path().display()
                     ),
                     path: entry.path(),
@@ -93,8 +95,9 @@ impl ActionKind {
             if preview {
                 Ok(ActionResultKind::Preview {
                     msg: format!(
-                        "{} Delete: '{}'",
+                        "{} {}: '{}'",
                         style("(Preview)").green(),
+                        style("Delete").red(),
                         entry.path().display()
                     ),
                     path: entry.path(),
@@ -113,8 +116,9 @@ impl ActionKind {
             if preview {
                 Ok(ActionResultKind::Preview {
                     msg: format!(
-                        "{} Symlink: {} -> '{}'",
+                        "{} {}: {} -> '{}'",
                         style("(Preview)").green(),
+                        style("Symlink").blue(),
                         dst.display(),
                         entry.path().display()
                     ),

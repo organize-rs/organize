@@ -21,6 +21,7 @@ pub struct RunScriptCmd {
 
 impl Runnable for RunScriptCmd {
     fn run(&self) {
+        todo!("Scripting is not implemented (yet)");
         match start_scripting_engine(&self.path) {
             Ok(_) => {}
             Err(err) => {

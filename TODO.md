@@ -3,15 +3,34 @@
 ## Next
 
 1. update screenshots and Readme.md
-1. change arguments to some filters to be optional
-    - so they return a broad range of information, that can be used to `echo`
-    - or rather create a new `info`/`inspect` filter for that
-        - which we can pass as an argument, which attribute we want to inspect
+1. feat(templating): change arguments of some filters to be optional
+    - [APPROACH1] FilterKind::Inspect/FilterKind::Template
+        - and give information which template information we want to use (though we would still need to change return of `FilterClosures`)
+    - [APPROACH2] use `FilterKind` to lookup available template strings
+        - these can then be used in `actions` as e.g. `{{entry.size}}`
+        - lookup table: `[key: FilterKind -> available_templates: Vec<TemplateKind>]`
 1. generate example configs for integration test cases
     - check against py-organize documentation for feature parity
 1. implement unit tests for actions and the actions themselves
 1. implement `organize run config` with preview and destructive run
 1. implement `Alias` being just defined via `Vec<Reference>` and used with the templating syntax `{{alias_name}}`
+
+    ```yaml
+    aliases:
+    - !my_music_folders
+       paths:
+         - path1
+         - path2
+         - etc
+    ```
+
+    and then something like
+
+    ```yaml
+    locations:
+    - {{my_music_folders}}
+    ```
+
     - check places where it is applicable
     - theoretically everywhere, where we take a `PathBuf` or `String` as part of a `Path`
       - e.g. extensions, locations, ignore_name, ignore_path
@@ -27,12 +46,13 @@
     - .ini
 
 1. implement file name templating
-    - e.g. with <https://lib.rs/crates/tinytemplate> or <https://lib.rs/crates/handlebars>
     - or bare with `.replace` and own placeholders like `{{file_name}}`, `{{counter}}` etc.
     - support batch renaming (e.g. rename all images in a directory to image_n where n is a number
     - remove some prefix from filenames
       - we want to have filename tags as well e.g. `dnt_` (do not touch) or `wip_` so these things are treated differently
       - also we want to have `{project_name}_` that we can remove after moving to a project folder
+        - do we really want to remove that? maybe give that as an option
+          `remove_keyword: bool`
 
 1. implement Terminal UI
     - generate config interactively `generate config --interactive`

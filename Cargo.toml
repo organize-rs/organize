@@ -174,7 +174,6 @@ dialoguer = { workspace = true }
 ron = { workspace = true }
 open = { workspace = true }
 serde_with = { workspace = true }
-console = { workspace = true }
 
 
 [dev-dependencies]
