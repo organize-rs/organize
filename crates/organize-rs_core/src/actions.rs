@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     actions::conflicts::{ConflictKind, ConflictResolutionKind},
-    error::OrganizeError, templating::TemplateStringKind,
+    error::OrganizeError,
 };
 
 type ActionClosure<'a, C> =
@@ -355,7 +355,7 @@ pub enum ActionKind {
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
         #[serde(default = "Option::default")]
-        rename_template: Option<Vec<TemplateStringKind>>,
+        rename_template: Option<Vec<String>>,
         /// An opener url of the filesystem you want to copy to.
         ///
         /// If this is not given, the local filesystem is used.
@@ -577,7 +577,7 @@ pub enum ActionKind {
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
         #[serde(default = "Option::default")]
-        rename_template: Option<Vec<TemplateStringKind>>,
+        rename_template: Option<Vec<String>>,
         /// An opener url of the filesystem you want to move to.
         ///
         /// If this is not given, the local filesystem is used.
@@ -636,7 +636,7 @@ pub enum ActionKind {
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
         #[serde(default = "Option::default")]
-        rename_template: Option<Vec<TemplateStringKind>>,
+        rename_template: Option<Vec<String>>,
     },
     /// Execute a shell command
     ///

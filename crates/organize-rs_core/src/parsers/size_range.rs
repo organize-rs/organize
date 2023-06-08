@@ -5,20 +5,15 @@ use std::{fmt::Display, ops::Range, str::FromStr};
 use serde::Serialize;
 use serde_with::DeserializeFromStr;
 use winnow::{
-    ascii::alpha0,
-    combinator::alt,
-    error::{Error, ErrorKind},
-    token::take_while,
-    IResult, Parser,
+    error::{Error, ErrorKind}, Parser,
 };
 
 use byte_unit::Byte;
 
 use crate::{
-    filters::DateUnitKind,
     parsers::{
-        parse_left_boundary, parse_right_boundary, parse_whole_condition, BoundarySide, Condition,
-        SingleCondition,
+        parse_left_range_boundary, parse_right_range_boundary, parse_whole_range, Condition,
+        RangeBoundarySide, SingleRangeCondition,
     },
 };
 
@@ -46,36 +41,14 @@ impl FromStr for SizeRange {
         let mut condition = Condition(None, None);
 
         match (
-            parse_left_boundary(input),
-            parse_right_boundary(input),
-            parse_whole_condition(input),
+            parse_whole_range(input),
+            parse_left_range_boundary(input),
+            parse_right_range_boundary(input),
         ) {
-            (Ok(left_boundary), Err(_), Err(_)) => {
-                let (_, (size, unit, _)) = left_boundary;
-
-                condition.set_condition(SingleCondition {
-                    value: Byte::from_str(format!("{size} {unit}")).map_err(|err| Error {
-                        input: format!("Couldn't convert {size} {unit} to bytes: {err}"),
-                        kind: ErrorKind::Fail,
-                    })?,
-                    side: BoundarySide::Left,
-                });
-            }
-            (Err(_), Ok(right_boundary), Err(_)) => {
-                let (_, (_, size, unit)) = right_boundary;
-
-                condition.set_condition(SingleCondition {
-                    value: Byte::from_str(format!("{size} {unit}")).map_err(|err| Error {
-                        input: format!("Couldn't convert {size} {unit} to bytes: {err}"),
-                        kind: ErrorKind::Fail,
-                    })?,
-                    side: BoundarySide::Right,
-                });
-            }
-            (_, _, Ok(whole_condition)) => {
+            (Ok(whole_condition), _, _) => {
                 let (_, (size_left, unit_left, _, size_right, unit_right)) = whole_condition;
 
-                condition.set_condition(SingleCondition {
+                condition.set_condition(SingleRangeCondition {
                     value: Byte::from_str(format!("{size_left} {unit_left}")).map_err(|err| {
                         Error {
                             input: format!(
@@ -84,10 +57,10 @@ impl FromStr for SizeRange {
                             kind: ErrorKind::Fail,
                         }
                     })?,
-                    side: BoundarySide::Left,
+                    side: RangeBoundarySide::Left,
                 });
 
-                condition.set_condition(SingleCondition {
+                condition.set_condition(SingleRangeCondition {
                     value: Byte::from_str(format!("{size_right} {unit_right}")).map_err(|err| {
                         Error {
                             input: format!(
@@ -96,7 +69,29 @@ impl FromStr for SizeRange {
                             kind: ErrorKind::Fail,
                         }
                     })?,
-                    side: BoundarySide::Right,
+                    side: RangeBoundarySide::Right,
+                });
+            }
+            (_, Ok(left_boundary), _) => {
+                let (_, (size, unit, _)) = left_boundary;
+
+                condition.set_condition(SingleRangeCondition {
+                    value: Byte::from_str(format!("{size} {unit}")).map_err(|err| Error {
+                        input: format!("Couldn't convert {size} {unit} to bytes: {err}"),
+                        kind: ErrorKind::Fail,
+                    })?,
+                    side: RangeBoundarySide::Left,
+                });
+            }
+            (_, _, Ok(right_boundary)) => {
+                let (_, (_, size, unit)) = right_boundary;
+
+                condition.set_condition(SingleRangeCondition {
+                    value: Byte::from_str(format!("{size} {unit}")).map_err(|err| Error {
+                        input: format!("Couldn't convert {size} {unit} to bytes: {err}"),
+                        kind: ErrorKind::Fail,
+                    })?,
+                    side: RangeBoundarySide::Right,
                 });
             }
             _ => {
@@ -147,7 +142,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parse_left_size_condition_to_range_passes() {
+    fn test_parse_left_size_condition_to_range_passes() {
         let condition = "5.0GiB..";
         let range = SizeRange::from_str(condition).unwrap();
         insta::assert_debug_snapshot!(range, @r###"
@@ -158,7 +153,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_right_size_condition_to_range_passes() {
+    fn test_parse_right_size_condition_to_range_passes() {
         let condition = "..0.5GiB";
         let range = SizeRange::from_str(condition).unwrap();
         insta::assert_debug_snapshot!(range, @r###"
@@ -169,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_whole_size_condition_to_range_passes() {
+    fn test_parse_whole_size_condition_to_range_passes() {
         let condition = "1.5MiB..100.3MB";
         let range = SizeRange::from_str(condition).unwrap();
         insta::assert_debug_snapshot!(range, @r###"

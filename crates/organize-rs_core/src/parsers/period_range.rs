@@ -5,20 +5,16 @@ use std::{fmt::Display, ops::Range, str::FromStr};
 use serde::Serialize;
 use serde_with::DeserializeFromStr;
 use winnow::{
-    ascii::alpha0,
-    combinator::alt,
-    error::{Error, ErrorKind},
-    token::take_while,
-    IResult, Parser,
+    error::{Error, ErrorKind}, Parser,
 };
 
-use byte_unit::Byte;
+
 
 use crate::{
     filters::DateUnitKind,
     parsers::{
-        parse_left_boundary, parse_right_boundary, parse_whole_condition, BoundarySide, Condition,
-        SingleCondition,
+        parse_left_range_boundary, parse_right_range_boundary, parse_whole_range, Condition,
+        RangeBoundarySide, SingleRangeCondition,
     },
 };
 
@@ -47,27 +43,11 @@ impl FromStr for PeriodRange {
         let mut condition = Condition(None, None);
 
         match (
-            parse_left_boundary(input),
-            parse_right_boundary(input),
-            parse_whole_condition(input),
+            parse_whole_range(input),
+            parse_left_range_boundary(input),
+            parse_right_range_boundary(input),
         ) {
-            (Ok(left_boundary), Err(_), Err(_)) => {
-                let (_, (value, unit, _)) = left_boundary;
-
-                condition.set_condition(SingleCondition {
-                    value: DateUnitKind::from((value, unit)).into_seconds(),
-                    side: BoundarySide::Left,
-                });
-            }
-            (Err(_), Ok(right_boundary), Err(_)) => {
-                let (_, (_, value, unit)) = right_boundary;
-
-                condition.set_condition(SingleCondition {
-                    value: DateUnitKind::from((value, unit)).into_seconds(),
-                    side: BoundarySide::Right,
-                });
-            }
-            (_, _, Ok(whole_condition)) => {
+            (Ok(whole_condition), _, _) => {
                 let (_, (value_left, unit_left, _, value_right, unit_right)) = whole_condition;
 
                 if unit_left != unit_right {
@@ -82,14 +62,30 @@ impl FromStr for PeriodRange {
                     });
                 }
 
-                condition.set_condition(SingleCondition {
+                condition.set_condition(SingleRangeCondition {
                     value: DateUnitKind::from((value_left, unit_left)).into_seconds(),
-                    side: BoundarySide::Left,
+                    side: RangeBoundarySide::Left,
                 });
 
-                condition.set_condition(SingleCondition {
+                condition.set_condition(SingleRangeCondition {
                     value: DateUnitKind::from((value_right, unit_right)).into_seconds(),
-                    side: BoundarySide::Right,
+                    side: RangeBoundarySide::Right,
+                });
+            }
+            (_, Ok(left_boundary), _) => {
+                let (_, (value, unit, _)) = left_boundary;
+
+                condition.set_condition(SingleRangeCondition {
+                    value: DateUnitKind::from((value, unit)).into_seconds(),
+                    side: RangeBoundarySide::Left,
+                });
+            }
+            (_, _, Ok(right_boundary)) => {
+                let (_, (_, value, unit)) = right_boundary;
+
+                condition.set_condition(SingleRangeCondition {
+                    value: DateUnitKind::from((value, unit)).into_seconds(),
+                    side: RangeBoundarySide::Right,
                 });
             }
             _ => {
@@ -124,7 +120,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parse_whole_period_condition_to_range_passes() {
+    fn test_parse_whole_period_condition_to_range_passes() {
         let condition = "1d..7d";
         let range = PeriodRange::from_str(condition).unwrap();
         insta::assert_debug_snapshot!(range, @r###"
@@ -135,7 +131,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_left_period_condition_to_range_passes() {
+    fn test_parse_left_period_condition_to_range_passes() {
         let condition = "1d..";
         let range = PeriodRange::from_str(condition).unwrap();
         insta::assert_debug_snapshot!(range, @r###"
@@ -146,7 +142,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_right_period_condition_to_range_passes() {
+    fn test_parse_right_period_condition_to_range_passes() {
         let condition = "..1d";
         let range = PeriodRange::from_str(condition).unwrap();
         insta::assert_debug_snapshot!(range, @r###"
@@ -158,17 +154,15 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn parse_different_units_on_whole_period_condition_to_range_fails() {
+    fn test_parse_different_units_on_whole_period_condition_to_range_fails() {
         let condition = "1w..7d";
-        let range = PeriodRange::from_str(condition).unwrap();
-        insta::assert_debug_snapshot!(range, @r"");
+        let _range = PeriodRange::from_str(condition).unwrap();
     }
 
     #[test]
     #[should_panic]
-    fn parse_non_standard_units_on_whole_period_condition_to_range_fails() {
+    fn test_parse_non_standard_units_on_whole_period_condition_to_range_fails() {
         let condition = "1f..7f";
-        let range = PeriodRange::from_str(condition).unwrap();
-        insta::assert_debug_snapshot!(range, @r"");
+        let _range = PeriodRange::from_str(condition).unwrap();
     }
 }

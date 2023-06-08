@@ -11,14 +11,14 @@ description = { workspace = true }
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 include = ["src/**/*", "LICENSE", "CHANGELOG.md", "config/config_template.yaml"]
 
-[[example]]
-name = "templating_parser"
-path = "examples/templating_parser.rs"
-test = true
-bench = true
-doc = true
-harness = true
-edition = "2021"
+# [[example]]
+# name = "templating_parser"
+# path = "examples/templating_parser.rs"
+# test = true
+# bench = true
+# doc = true
+# harness = true
+# edition = "2021"
 
 [features]
 default = []
