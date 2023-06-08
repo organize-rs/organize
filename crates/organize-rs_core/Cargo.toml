@@ -12,24 +12,6 @@ description = { workspace = true }
 include = ["src/**/*", "LICENSE", "CHANGELOG.md", "config/config_template.yaml"]
 
 [[example]]
-name = "size_parser"
-path = "examples/size_parser.rs"
-test = true
-bench = true
-doc = true
-harness = true
-edition = "2021"
-
-[[example]]
-name = "period_parser"
-path = "examples/period_parser.rs"
-test = true
-bench = true
-doc = true
-harness = true
-edition = "2021"
-
-[[example]]
 name = "templating_parser"
 path = "examples/templating_parser.rs"
 test = true

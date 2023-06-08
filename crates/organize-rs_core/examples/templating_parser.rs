@@ -65,10 +65,11 @@ fn main() {
     let case2 = "{{uppercase(extension)}}";
     let case3 = "{{lowercase(entry.name)}}";
     let case4 = "{{entry.created.year}}";
-    let case5 = "{{file_content.customer}}";
+    let case5 = "{{entry.content.customer}}";
     let case6 = "{{entry.metadata.last_modified.year}}";
     let case7 = "{{size.traditional}} -- {{relative_path}}";
-    let case8 = "{{date_added.strftime('%Y-%m-%d')}}";
+    let case8 = "{{strftime(entry.metadata.date_added, '%Y-%m-%d')}}"; // ! '%Y-%m-%d' should be parsed as a single value
+                                                                       // ! see https://docs.rs/chrono/0.4.26/chrono/#formatting-and-parsing
 
     let (remainder, result) = (parse_single_template).parse_next(case1).unwrap();
     assert_eq!(result, ("extension"));
@@ -79,9 +80,10 @@ fn main() {
     let (remainder, result) = (parse_dotted_template).parse_next(case4).unwrap();
     assert_eq!(result, (vec!["entry", "created", "year"]));
     let (remainder, result) = (parse_dotted_template).parse_next(case5).unwrap();
-    assert_eq!(result, (vec!["file_content", "customer"]));
+    assert_eq!(result, (vec!["entry", "content", "customer"]));
     let (remainder, result) = (parse_dotted_template).parse_next(case6).unwrap();
     assert_eq!(result, (vec!["entry", "metadata", "last_modified", "year"]));
+    let (remainder, result) = (parse_dotted_template).parse_next(case7).unwrap();
 
     println!("{remainder} - {result:?}");
 }

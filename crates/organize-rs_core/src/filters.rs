@@ -18,7 +18,7 @@ use serde_with::StringWithSeparator;
 
 use serde_with::serde_as;
 
-use crate::parsers::{PeriodRange, SizeRange};
+use crate::parsers::{period_range::PeriodRange, size_range::SizeRange};
 
 pub type FilterClosure<'a, C> = Box<dyn FnMut(&DirEntry<C>) -> bool + 'a>;
 pub type FilterClosureCollection<'a, C> = Vec<FilterClosure<'a, C>>;
