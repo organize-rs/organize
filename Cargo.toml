@@ -101,6 +101,8 @@ insta = { version = "1.29.0", features = ["yaml", "ron", "json", "toml"] }
 # Scripting
 rhai = { version = "1.14.0", features = ["serde"] }
 
+semver = "1.0.17"
+
 # TODO: Needed Dependencies
 # czkawka_core = "4.1.0"
 # + Lazy-regex?
@@ -174,6 +176,7 @@ dialoguer = { workspace = true }
 ron = { workspace = true }
 open = { workspace = true }
 serde_with = { workspace = true }
+semver = { workspace = true, features = ["serde"] }
 
 
 [dev-dependencies]

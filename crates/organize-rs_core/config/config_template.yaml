@@ -1,3 +1,5 @@
+# Version of the config file format, default is `1.0.0`
+version: 1.0.0
 # Rules you can define for organize to execute
 rules:
   # name of a single rule [any string]

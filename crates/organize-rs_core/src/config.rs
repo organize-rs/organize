@@ -12,6 +12,7 @@ use clap::ValueEnum;
 
 use displaydoc::Display;
 use ron::ser::PrettyConfig;
+use semver::{BuildMetadata, Prerelease, Version};
 use serde::{Deserialize, Serialize};
 
 pub static CONFIG_TEMPLATE_YAML: &str = include_str!("../config/config_template.yaml");
@@ -53,17 +54,34 @@ impl Default for ConfigFileFormat {
     }
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct OrganizeConfigVersion(Version);
+
+impl Default for OrganizeConfigVersion {
+    fn default() -> Self {
+        Self(Version {
+            major: 1,
+            minor: 0,
+            patch: 0,
+            pre: Prerelease::EMPTY,
+            build: BuildMetadata::EMPTY,
+        })
+    }
+}
+
 /// Organize Configuration
 #[derive(Clone, Debug, Deserialize, Serialize, Default)]
 // #[serde(deny_unknown_fields)]
 #[serde(default)]
 pub struct OrganizeConfig {
     // aliases: Vec<Reference>,
+    version: OrganizeConfigVersion,
     rules: Rules,
 }
 
 impl Display for OrganizeConfig {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Config-Version: {:?}", self.version)?;
         for rule in self.rules.iter() {
             write!(f, "{rule}")?;
         }

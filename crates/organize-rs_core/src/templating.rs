@@ -142,6 +142,7 @@ pub enum TemplateKind {
         kind: TransformationKind,
         data: TemplateFeatureKind,
     },
+    Uninitialized
 }
 
 impl TemplateKind {
@@ -154,6 +155,7 @@ impl TemplateKind {
                 format: _,
             } => todo!(),
             TemplateKind::Transformation { kind: _, data: _ } => todo!(),
+            TemplateKind::Uninitialized => todo!(),
         }
     }
 }
@@ -199,11 +201,70 @@ impl FromStr for TemplateKind {
 
 #[cfg(test)]
 mod tests {
-    use std::{path::PathBuf, str::FromStr};
+    use std::{
+        borrow::{Borrow},
+        ffi::OsStr,
+        path::{PathBuf},
+        str::FromStr,
+    };
 
     use itertools::Itertools;
 
     use super::*;
+
+    #[test]
+    fn test_extraction_of_template_passes() {
+        let extension = "pdf".to_string();
+        let example =
+            PathBuf::from(r#"C:\Users\dailyuse\Desktop\{{uppercase(metadata.extension)}}\"#);
+
+        let mut item_position = 0;
+        let mut template_kind = TemplateKind::Uninitialized;
+
+        let mut editable = example
+            .iter()
+            .enumerate()
+            .map(|(idx, component)| {
+                let Ok(template) = TemplateKind::from_str(component.to_string_lossy().borrow()) else {
+                        return component
+                    };
+                
+                assert_eq!(
+                    template,
+                    TemplateKind::Transformation {
+                        kind: TransformationKind::UpperCase,
+                        data: TemplateFeatureKind::MetaData(MetaDataKind::Extension),
+                    }
+                );
+
+                template_kind = template;
+                item_position = idx;
+
+                component
+            })
+            .collect_vec();
+
+        let uppercase = extension.to_uppercase();
+        editable[item_position] = OsStr::new(&uppercase);
+        let path = editable.iter().collect::<PathBuf>();
+
+        assert_eq!(path, PathBuf::from(r#"C:\Users\dailyuse\Desktop\PDF"#))
+    }
+
+    // #[test]
+    // fn test_template_on_path_end_passes() {
+    //     let entry = PathBuf::from(r#"C:\Users\dailyuse\Desktop\test.pdf"#);
+    //     let example = PathBuf::from(r#"C:\Users\dailyuse\Desktop\{{uppercase(entry.extension)}}\"#);
+
+    //     let extension = entry.extension().unwrap();
+    //     let extension = extension.to_ascii_uppercase();
+
+    //     let mut out_path = example;
+    //     out_path.pop();
+    //     out_path.push(extension);
+
+    //     assert_eq!(out_path, PathBuf::from(r#"C:\Users\dailyuse\Desktop\PDF\"#))
+    // }
 
     #[test]
     fn test_parsing_uppercase_extension_templatekind_passes() {
@@ -280,23 +341,5 @@ mod tests {
                 format: FormatString::from("%Y-%m-%d")
             }
         );
-    }
-
-    #[test]
-    fn test_unpacking_multiple_template_strings_passes() {
-        let entry = PathBuf::from(r#"C:\Users\dailyuse\Desktop\test.pdf"#);
-        let example = PathBuf::from(r#"C:\Users\dailyuse\Desktop\{{uppercase(entry.extension)}}\"#);
-
-        // let components = example.components();
-        // let new_path = components.into_iter().map(|component| {
-        //     component.as_os_str().to_str().map(|string| {
-        //         let Ok(template) = TemplateKind::from_str(string) else {
-        //             return string
-        //         };
-
-        //         string
-
-        //     })
-        // }).collect_vec();
     }
 }
