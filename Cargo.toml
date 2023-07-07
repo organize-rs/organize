@@ -55,6 +55,7 @@ chrono = { version = "0.4.26", default-features = false, features = [
 
 jwalk = "0.8.1"
 regex = "1.8.4"
+aho-corasick = "1.0.2"
 
 abscissa_core = "0.7.0"
 itertools = "0.10.5"
@@ -91,7 +92,6 @@ serde_json = "1.0.96"
 
 # dev dependencies
 tempfile = "3.5.0"
-aho-corasick = "1.0"
 rstest = "0.17"
 quickcheck = "1"
 quickcheck_macros = "1"
@@ -177,6 +177,7 @@ ron = { workspace = true }
 open = { workspace = true }
 serde_with = { workspace = true }
 semver = { workspace = true, features = ["serde"] }
+aho-corasick = { workspace = true }
 
 
 [dev-dependencies]

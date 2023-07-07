@@ -1,6 +1,7 @@
 //! organize-rs config
 
 use crate::{
+    aliases::Aliases,
     error::{ConfigErrorKind, OrganizeResult},
     rules::{Rule, Rules},
 };
@@ -74,7 +75,7 @@ impl Default for OrganizeConfigVersion {
 // #[serde(deny_unknown_fields)]
 #[serde(default)]
 pub struct OrganizeConfig {
-    // aliases: Vec<Reference>,
+    aliases: Aliases,
     version: OrganizeConfigVersion,
     rules: Rules,
 }
@@ -214,6 +215,8 @@ mod tests {
         config.add_rule(rule);
         insta::assert_yaml_snapshot!(config, @r###"
         ---
+        aliases: []
+        version: 1.0.0
         rules:
           - name: ""
             tags: []
@@ -223,6 +226,9 @@ mod tests {
             actions: []
         "###);
         insta::assert_toml_snapshot!(config, @r###"
+        aliases = []
+        version = '1.0.0'
+
         [[rules]]
         name = ''
         tags = []
@@ -233,6 +239,8 @@ mod tests {
         "###);
         insta::assert_json_snapshot!(config, @r###"
         {
+          "aliases": [],
+          "version": "1.0.0",
           "rules": [
             {
               "name": "",
@@ -247,6 +255,8 @@ mod tests {
         "###);
         insta::assert_ron_snapshot!(config, @r###"
         OrganizeConfig(
+          aliases: [],
+          version: OrganizeConfigVersion("1.0.0"),
           rules: [
             rule(
               name: "",

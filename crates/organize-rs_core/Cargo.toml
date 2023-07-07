@@ -53,6 +53,8 @@ ron = { workspace = true }
 serde_with = { workspace = true }
 console = { workspace = true }
 semver = { workspace = true }
+aho-corasick = { workspace = true }
+
 
 [dev-dependencies]
 rustup-toolchain = "0.1.5"

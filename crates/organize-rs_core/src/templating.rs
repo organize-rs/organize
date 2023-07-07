@@ -1,13 +1,27 @@
-use std::str::FromStr;
+use std::{str::FromStr, collections::HashMap};
 
 use winnow::error::Error;
 
 use crate::parsers::template::{
     parse_dotted_template, parse_strftime_template, parse_transform_template,
 };
+use aho_corasick::{AhoCorasick, PatternID};
 
 type FunctionClosure = Box<dyn FnOnce(String) -> String>;
 type FormatString = String;
+
+type Transformation = fn(String) -> String;
+
+use once_cell::sync::Lazy;
+
+// static TEMPLATE_PATTERNS: Lazy<HashMap<&str, String>> = Lazy::new(|| {
+//     println!("initializing");
+//     let mut m = HashMap::new();
+//     m.insert("metadata.extension", "Spica".to_string());
+//     m.insert(74, "Hoyten".to_string());
+//     m
+// });
+
 
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -37,7 +51,7 @@ impl FromStr for TransformationKind {
             "snakecase" => Self::SnakeCase,
             "kebabcase" => Self::KebabCase,
             "strftime" => Self::DateTime,
-            _ => return Err("FunctionKind not recognized.".to_string()),
+            _ => return Err("TransformationKind not recognized.".to_string()),
         })
     }
 }
@@ -94,6 +108,7 @@ pub enum TemplateFeatureKind {
     Utility(UtilityKind),
     MetaData(MetaDataKind),
     Content(String),
+    // TODO: Aliases
     NotRecognized,
 }
 
@@ -213,10 +228,26 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_aho_corasick_template_passes() {
+        let example = PathBuf::from(r#"C:\Users\dailyuse\Desktop\{{uppercase(metadata.extension)}}\"#);
+        let patterns = &["metadata.extension"];
+
+        let ac = AhoCorasick::new(patterns).unwrap();
+
+        let replace_with = &["toml"];
+
+        let path = ac.replace_all(example.to_str().unwrap(), replace_with);
+
+        dbg!(&path);
+        assert_eq!(path, r#"C:\Users\dailyuse\Desktop\{ uppercase(toml) }\"# )
+
+    }
+
+    #[test]
     fn test_extraction_of_template_passes() {
         let extension = "pdf".to_string();
         let example =
-            PathBuf::from(r#"C:\Users\dailyuse\Desktop\{{uppercase(metadata.extension)}}\"#);
+            PathBuf::from(r#"C:\Users\dailyuse\Desktop\{ uppercase(metadata.extension) }\"#);
 
         let mut item_position = 0;
         let mut template_kind = TemplateKind::Uninitialized;
@@ -268,7 +299,7 @@ mod tests {
 
     #[test]
     fn test_parsing_uppercase_extension_templatekind_passes() {
-        let template = "{{uppercase(metadata.extension)}}";
+        let template = "{uppercase(metadata.extension)}";
 
         let template_kind = TemplateKind::from_str(template).unwrap();
 
@@ -283,7 +314,7 @@ mod tests {
 
     #[test]
     fn test_parsing_counter_templatekind_passes() {
-        let template = "{{utility.counter}}";
+        let template = "{utility.counter}";
 
         let template_kind = TemplateKind::from_str(template).unwrap();
 
@@ -297,7 +328,7 @@ mod tests {
 
     #[test]
     fn test_parsing_content_templatekind_passes() {
-        let template = "{{content.customer}}";
+        let template = "{content.customer}";
 
         let template_kind = TemplateKind::from_str(template).unwrap();
 
@@ -311,7 +342,7 @@ mod tests {
 
     #[test]
     fn test_parsing_metadata_templatekind_passes() {
-        let template = "{{metadata.last_modified.year}}";
+        let template = "{metadata.last_modified.year}";
 
         let template_kind = TemplateKind::from_str(template).unwrap();
 
@@ -327,7 +358,7 @@ mod tests {
 
     #[test]
     fn test_parsing_strftime_templatekind_passes() {
-        let template = "{{strftime(metadata.date_added, '%Y-%m-%d')}}";
+        let template = "{strftime(metadata.date_added, '%Y-%m-%d')}";
 
         let template_kind = TemplateKind::from_str(template).unwrap();
 

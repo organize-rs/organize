@@ -1,5 +1,46 @@
 # TODO
 
+## Notes
+
+- Enums: <https://github.com/Peternator7/strum>
+- FS actions impl: <https://github.com/qarmin/czkawka/blob/master/czkawka_core/src/common_dir_traversal.rs>
+- Template impl
+  - <https://github.com/AmrDeveloper/GQL/blob/master/src/transformation.rs>
+  - <https://github.com/AmrDeveloper/GQL/blob/master/src/expression.rs>
+- Duplicates
+  - <https://github.com/pkolaczk/fclones>
+  - <https://github.com/qarmin/czkawka/blob/master/czkawka_core/src/>
+
+## Templating
+
+```rust
+    fn call_command(tpe: FileType, id: &Id, filename: &Path, command: &str) -> RusticResult<()> {
+        let id = id.to_hex();
+        let patterns = &["%file", "%type", "%id"];
+        let ac = AhoCorasick::new(patterns).map_err(LocalErrorKind::FromAhoCorasick)?;
+        let replace_with = &[filename.to_str().unwrap(), tpe.into(), id.as_str()];
+        let actual_command = ac.replace_all(command, replace_with);
+        debug!("calling {actual_command}...");
+        let commands = parse_command::<()>(&actual_command)
+            .map_err(LocalErrorKind::FromNomError)?
+            .1;
+        let status = Command::new(commands[0])
+            .args(&commands[1..])
+            .status()
+            .map_err(LocalErrorKind::CommandExecutionFailed)?;
+        if !status.success() {
+            return Err(LocalErrorKind::CommandNotSuccessful {
+                file_name: replace_with[0].to_owned(),
+                file_type: replace_with[1].to_owned(),
+                id: replace_with[2].to_owned(),
+                status,
+            }
+            .into());
+        }
+        Ok(())
+    }
+```
+
 ## Next
 
 1. update screenshots and Readme.md
@@ -17,8 +58,9 @@
 
     ```yaml
     aliases:
-    - !my_music_folders
-       paths:
+    - !alias
+        name: my_music_folders
+        paths:
          - path1
          - path2
          - etc
@@ -28,7 +70,7 @@
 
     ```yaml
     locations:
-    - {{my_music_folders}}
+    - {{alias.my_music_folders}}
     ```
 
     - check places where it is applicable

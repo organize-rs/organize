@@ -1205,6 +1205,7 @@ name = "organize-rs"
 version = "0.4.1"
 dependencies = [
  "abscissa_core",
+ "aho-corasick",
  "anyhow",
  "chrono",
  "clap",
@@ -1236,6 +1237,7 @@ dependencies = [
 name = "organize-rs_core"
 version = "0.2.3"
 dependencies = [
+ "aho-corasick",
  "byte-unit",
  "chrono",
  "clap",
