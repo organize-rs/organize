@@ -1,5 +1,10 @@
 # TODO
 
+## Refactoring
+
+- refactor filters to `Filter` trait
+- refactor actions to `Action` trait
+
 ## Notes
 
 - Enums: <https://github.com/Peternator7/strum>

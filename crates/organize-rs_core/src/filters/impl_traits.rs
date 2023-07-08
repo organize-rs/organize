@@ -10,12 +10,6 @@ use crate::filters::{
     FilterGroupCollection, FilterGroupOperationKind, FilterKind, FilterOperationKind,
 };
 
-impl Default for FilterKind {
-    fn default() -> Self {
-        Self::NoFilter
-    }
-}
-
 impl From<(f64, &str)> for DateUnitKind {
     fn from(value: (f64, &str)) -> Self {
         let (value, unit) = value;
@@ -244,11 +238,6 @@ impl Display for FilterKind {
     }
 }
 
-impl Default for DuplicateKind {
-    fn default() -> Self {
-        Self::Name
-    }
-}
 
 impl Default for FilterApplicationKind {
     fn default() -> Self {

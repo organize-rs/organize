@@ -7,9 +7,9 @@ use jwalk::{ClientState, DirEntry};
 use crate::{
     error::FilterErrorKind,
     filters::{
-        CullKind, DateUnitKind, DuplicateKind, FilterApplicationKind, FilterClosure,
+        name::NameFilterArgs, CullKind, DateUnitKind, FilterApplicationKind, FilterClosure,
         FilterCollection, FilterGroup, FilterGroupOperationKind, FilterKind, FilterOperationKind,
-        NameFilterArgs, RecursiveFilterArgs,
+        RecursiveFilterArgs,
     },
     parsers::{period_range::PeriodRange, size_range::SizeRange},
 };

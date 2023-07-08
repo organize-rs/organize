@@ -24,6 +24,11 @@ use crate::{
 type ActionClosure<'a, C> =
     Box<dyn FnMut(&DirEntry<C>, bool) -> Result<ActionResultKind, OrganizeError> + 'a>;
 
+pub trait Action {
+    fn execute(&self);
+    fn preview(&self);
+}
+
 /// A preview for an action to be executed
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub enum ActionResultKind {
@@ -184,7 +189,6 @@ impl Default for MacOsTagColourKind {
         Self::None
     }
 }
-
 
 /// Mode how should be written to a file
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
