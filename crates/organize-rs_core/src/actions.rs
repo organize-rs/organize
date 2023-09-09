@@ -185,7 +185,6 @@ impl Default for MacOsTagColourKind {
     }
 }
 
-
 /// Mode how should be written to a file
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Deserialize, Serialize)]

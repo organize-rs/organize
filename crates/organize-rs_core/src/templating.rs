@@ -1,4 +1,4 @@
-use std::{str::FromStr, collections::HashMap};
+use std::{collections::HashMap, str::FromStr};
 
 use winnow::error::Error;
 
@@ -21,7 +21,6 @@ use once_cell::sync::Lazy;
 //     m.insert(74, "Hoyten".to_string());
 //     m
 // });
-
 
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -157,7 +156,7 @@ pub enum TemplateKind {
         kind: TransformationKind,
         data: TemplateFeatureKind,
     },
-    Uninitialized
+    Uninitialized,
 }
 
 impl TemplateKind {
@@ -216,12 +215,7 @@ impl FromStr for TemplateKind {
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        borrow::{Borrow},
-        ffi::OsStr,
-        path::{PathBuf},
-        str::FromStr,
-    };
+    use std::{borrow::Borrow, ffi::OsStr, path::PathBuf, str::FromStr};
 
     use itertools::Itertools;
 
@@ -229,7 +223,8 @@ mod tests {
 
     #[test]
     fn test_aho_corasick_template_passes() {
-        let example = PathBuf::from(r#"C:\Users\dailyuse\Desktop\{{uppercase(metadata.extension)}}\"#);
+        let example =
+            PathBuf::from(r#"C:\Users\dailyuse\Desktop\{{uppercase(metadata.extension)}}\"#);
         let patterns = &["metadata.extension"];
 
         let ac = AhoCorasick::new(patterns).unwrap();
@@ -239,8 +234,7 @@ mod tests {
         let path = ac.replace_all(example.to_str().unwrap(), replace_with);
 
         dbg!(&path);
-        assert_eq!(path, r#"C:\Users\dailyuse\Desktop\{ uppercase(toml) }\"# )
-
+        assert_eq!(path, r#"C:\Users\dailyuse\Desktop\{ uppercase(toml) }\"#)
     }
 
     #[test]
@@ -256,10 +250,11 @@ mod tests {
             .iter()
             .enumerate()
             .map(|(idx, component)| {
-                let Ok(template) = TemplateKind::from_str(component.to_string_lossy().borrow()) else {
-                        return component
-                    };
-                
+                let Ok(template) = TemplateKind::from_str(component.to_string_lossy().borrow())
+                else {
+                    return component;
+                };
+
                 assert_eq!(
                     template,
                     TemplateKind::Transformation {

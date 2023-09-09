@@ -99,10 +99,10 @@ impl FilterKind {
             let Some(Some(file_stem)) = entry
                 .path()
                 .file_stem()
-                .map(|f|{
-                    f.to_str().map(|f| f.to_owned())}) else {
-                        return false
-                    };
+                .map(|f| f.to_str().map(|f| f.to_owned()))
+            else {
+                return false;
+            };
 
             let file_stem = make_lowercase_if(file_stem);
 
@@ -245,9 +245,7 @@ impl FilterKind {
     }
 
     pub(crate) fn matches_date(item_date_secs: i64, range: &Option<PeriodRange>) -> bool {
-        let Some(range) = range else {
-            return false
-        };
+        let Some(range) = range else { return false };
 
         let now = FileTime::now();
         let seconds_since_created = match u64::try_from(now.seconds() - item_date_secs) {
@@ -269,7 +267,9 @@ impl FilterKind {
         mimetype: &'args [String],
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
-            let Ok(Some(file_kind)) = infer::get_from_path(entry.path()) else { return false };
+            let Ok(Some(file_kind)) = infer::get_from_path(entry.path()) else {
+                return false;
+            };
 
             let file_mime_type = match file_kind.mime_type().parse::<mime::Mime>() {
                 Ok(it) => it,
@@ -296,7 +296,7 @@ impl FilterKind {
     ) -> Box<dyn FnMut(&DirEntry<C>) -> bool + 'args> {
         Box::new(|entry| {
             let Some(range) = range.clone() else {
-                return false
+                return false;
             };
             entry
                 .metadata()

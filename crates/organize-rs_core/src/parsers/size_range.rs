@@ -5,16 +5,15 @@ use std::{fmt::Display, ops::Range, str::FromStr};
 use serde::Serialize;
 use serde_with::DeserializeFromStr;
 use winnow::{
-    error::{Error, ErrorKind}, Parser,
+    error::{Error, ErrorKind},
+    Parser,
 };
 
 use byte_unit::Byte;
 
-use crate::{
-    parsers::{
-        parse_left_range_boundary, parse_right_range_boundary, parse_whole_range, Condition,
-        RangeBoundarySide, SingleRangeCondition,
-    },
+use crate::parsers::{
+    parse_left_range_boundary, parse_right_range_boundary, parse_whole_range, Condition,
+    RangeBoundarySide, SingleRangeCondition,
 };
 
 #[derive(Debug, Clone, PartialEq, DeserializeFromStr, Serialize)]

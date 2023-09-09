@@ -5,10 +5,9 @@ use std::{fmt::Display, ops::Range, str::FromStr};
 use serde::Serialize;
 use serde_with::DeserializeFromStr;
 use winnow::{
-    error::{Error, ErrorKind}, Parser,
+    error::{Error, ErrorKind},
+    Parser,
 };
-
-
 
 use crate::{
     filters::DateUnitKind,

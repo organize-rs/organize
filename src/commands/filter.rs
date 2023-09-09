@@ -10,7 +10,7 @@ use organize_rs_core::{
         FilterApplicationKind, FilterGroup, FilterGroupCollection, FilterGroupOperationKind,
         FilterKind, RecursiveFilterArgs,
     },
-    locations::{TargetKind},
+    locations::TargetKind,
 };
 
 /// `filter` subcommand
