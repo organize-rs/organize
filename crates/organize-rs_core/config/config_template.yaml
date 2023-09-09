@@ -1,3 +1,17 @@
+# Version of the config file format, default is `1.0.0`
+version: 1.0.0
+# Custom-defined aliases to be used within this config file
+aliases:
+  - name: downloads_folder
+    kind: folder
+    items:
+      - ~/Downloads/
+  - name: images
+    kind: extension
+    items:
+      - png
+      - jpg
+      - jpeg
 # Rules you can define for organize to execute
 rules:
   # name of a single rule [any string]
@@ -12,7 +26,7 @@ rules:
       # `locations` is a list where each item is either
       # [!recursive, !non_recursive, !default_settings]
       - !recursive
-        path: crates\organize-rs_core\tests\fixtures\filters\empty_file
+        path: "{alias.downloads_folder}"
         # depth for this location, seen from `path`
         # how deep organize should traverse the file system
         max_depth: 1

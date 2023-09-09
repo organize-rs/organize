@@ -131,3 +131,6 @@ pa:
 # Run a sample script
 run:
 	cargo run -- run-script --path C:\Users\dailyuse\dev-src\organize\scripts\test.rhai
+
+fmt: format
+    dprint fmt

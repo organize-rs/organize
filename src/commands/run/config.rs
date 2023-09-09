@@ -27,11 +27,14 @@ impl RunConfigCmd {
     fn inner_run(&self) -> Result<()> {
         let runner = Runner::<Initialize>::load_configs(&self.paths)
             .apply_filters(self.tags.clone())
-            // .inspect_entries()
+            .inspect_entries()
             .finish_inspection()
             .preview_actions()?;
 
-        if Confirm::new().with_prompt("Are you sure, that you want to execute the previewed actions? This is irreversible.").default(false).interact()? {
+        if Confirm::new()
+        .with_prompt("Are you sure, that you want to execute the previewed actions? This is irreversible.")
+        .default(false)
+        .interact()? {
 
             runner.apply_actions()?;
             // ? Conflict handling

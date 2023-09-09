@@ -1,4 +1,4 @@
-//! Rustic_Core Integration Test for the Public API of the library
+//! organize_core Integration Test for the Public API of the library
 //!
 //! Installs the nightly toolchain, produces documentation and derives
 //! the public API from the rustdoc JSON. Then compares it with our

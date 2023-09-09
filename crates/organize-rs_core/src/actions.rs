@@ -185,44 +185,6 @@ impl Default for MacOsTagColourKind {
     }
 }
 
-/// Support template strings
-#[cfg_attr(feature = "cli", derive(ValueEnum))]
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, Display)]
-pub enum TemplateStringKind {
-    /// {{filename}}
-    Filename,
-    /// {{counter}}
-    Counter,
-    /// {{extension}}
-    Extension,
-}
-
-impl TemplateStringKind {
-    /// Returns `true` if [`TemplateStrings`] is [`Filename`].
-    ///
-    /// [`Filename`]: TemplateStrings::Filename
-    #[must_use]
-    pub fn is_filename(&self) -> bool {
-        matches!(self, Self::Filename)
-    }
-
-    /// Returns `true` if [`TemplateStrings`] is [`Counter`].
-    ///
-    /// [`Counter`]: TemplateStrings::Counter
-    #[must_use]
-    pub fn is_counter(&self) -> bool {
-        matches!(self, Self::Counter)
-    }
-
-    /// Returns `true` if [`TemplateStrings`] is [`Extension`].
-    ///
-    /// [`Extension`]: TemplateStrings::Extension
-    #[must_use]
-    pub fn is_extension(&self) -> bool {
-        matches!(self, Self::Extension)
-    }
-}
-
 /// Mode how should be written to a file
 #[cfg_attr(feature = "cli", derive(ValueEnum))]
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -392,7 +354,7 @@ pub enum ActionKind {
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
         #[serde(default = "Option::default")]
-        rename_template: Option<Vec<TemplateStringKind>>,
+        rename_template: Option<Vec<String>>,
         /// An opener url of the filesystem you want to copy to.
         ///
         /// If this is not given, the local filesystem is used.
@@ -614,7 +576,7 @@ pub enum ActionKind {
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
         #[serde(default = "Option::default")]
-        rename_template: Option<Vec<TemplateStringKind>>,
+        rename_template: Option<Vec<String>>,
         /// An opener url of the filesystem you want to move to.
         ///
         /// If this is not given, the local filesystem is used.
@@ -673,7 +635,7 @@ pub enum ActionKind {
         /// Defaults to `{name}_{counter}{extension}`
         #[cfg_attr(feature = "cli", arg(long))]
         #[serde(default = "Option::default")]
-        rename_template: Option<Vec<TemplateStringKind>>,
+        rename_template: Option<Vec<String>>,
     },
     /// Execute a shell command
     ///

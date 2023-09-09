@@ -1,13 +1,9 @@
 use crate::{actors::location_walker::DirEntryData, filters::FilterGroupCollection};
 use itertools::{Either, Itertools};
 
-
-
-use crate::{
-    filters::{
-        FilterApplicationKind, FilterFilterClosureSliceMut, FilterGroup, FilterGroupOperationKind,
-        FilterKind,
-    },
+use crate::filters::{
+    FilterApplicationKind, FilterFilterClosureSliceMut, FilterGroup, FilterGroupOperationKind,
+    FilterKind,
 };
 
 #[derive(Debug, Default)]

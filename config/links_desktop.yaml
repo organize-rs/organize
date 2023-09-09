@@ -1,0 +1,22 @@
+rules:
+  - name: Move links on Desktop to Folder
+    enabled: true
+    locations:
+      - !recursive
+        path: C:\Users\dailyuse\Desktop\
+        max_depth: 2
+        target: files
+    filter_groups:
+      - filters:
+          - !extension
+            exts:
+              - lnk
+        results: include
+        match: all
+    actions:
+      - mode: preview
+        action: !move
+          dst: C:\Users\dailyuse\Desktop\{{uppercase(extension)}}\
+          on_conflict: skip
+    tags:
+      - !custom Test::LinksOnDesktop

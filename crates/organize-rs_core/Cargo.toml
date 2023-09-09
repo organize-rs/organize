@@ -1,42 +1,24 @@
 [package]
 name = "organize-rs_core"
 version = "0.2.3"
-edition = { workspace = true }
 authors = { workspace = true }
-repository = { workspace = true }
-license = { workspace = true }
 categories = { workspace = true }
-keywords = { workspace = true }
-description = { workspace = true }
+edition = { workspace = true }
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 include = ["src/**/*", "LICENSE", "CHANGELOG.md", "config/config_template.yaml"]
+keywords = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+description = { workspace = true }
 
-[[example]]
-name = "size_parser"
-path = "examples/size_parser.rs"
-test = true
-bench = true
-doc = true
-harness = true
-edition = "2021"
-
-[[example]]
-name = "period_parser"
-path = "examples/period_parser.rs"
-test = true
-bench = true
-doc = true
-harness = true
-edition = "2021"
-
-[[example]]
-name = "yaml_parser"
-path = "examples/yaml_parser.rs"
-test = true
-bench = true
-doc = true
-harness = true
-edition = "2021"
+# [[example]]
+# name = "templating_parser"
+# path = "examples/templating_parser.rs"
+# test = true
+# bench = true
+# doc = true
+# harness = true
+# edition = "2021"
 
 [features]
 default = []
@@ -44,41 +26,43 @@ cli = ["dep:clap", "dep:indicatif"]
 
 [dependencies]
 # czkawka_core = { workspace = true }
-infer = { workspace = true }
-mime = { workspace = true }
+aho-corasick = { workspace = true }
+byte-unit = { workspace = true }
+chrono = { workspace = true }
 clap = { workspace = true, optional = true }
+console = { workspace = true }
+crossbeam = { workspace = true }
 directories = { workspace = true }
+displaydoc = { workspace = true }
+duct = { workspace = true }
+filetime = { workspace = true }
+indicatif = { workspace = true, optional = true }
+infer = { workspace = true }
+itertools = { workspace = true }
+jwalk = { workspace = true }
+mime = { workspace = true }
+once_cell = { workspace = true }
+rayon = { workspace = true }
+regex = { workspace = true }
+ron = { workspace = true }
+semver = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-thiserror = { workspace = true }
-once_cell = { workspace = true }
-duct = { workspace = true }
-chrono = { workspace = true }
-regex = { workspace = true }
-indicatif = { workspace = true, optional = true }
-jwalk = { workspace = true }
-serde_yaml = { workspace = true }
-toml = { workspace = true }
-itertools = { workspace = true }
-displaydoc = { workspace = true }
-winnow = { workspace = true }
-byte-unit = { workspace = true }
-trash = { workspace = true }
-rayon = { workspace = true }
-filetime = { workspace = true }
-crossbeam = { workspace = true }
-ron = { workspace = true }
 serde_with = { workspace = true }
-console = { workspace = true }
+serde_yaml = { workspace = true }
+thiserror = { workspace = true }
+toml = { workspace = true }
+trash = { workspace = true }
+winnow = { workspace = true }
 
 [dev-dependencies]
-rustup-toolchain = "0.1.4"
-rustdoc-json = "0.8.5"
-public-api = "0.31.0"
 expect-test = "1.4.1"
-rstest = { workspace = true }
-quickcheck = { workspace = true }
-quickcheck_macros = { workspace = true }
-pretty_assertions = { workspace = true }
 insta = { workspace = true }
 organize-rs_testing = { workspace = true }
+pretty_assertions = { workspace = true }
+public-api = "0.31.0"
+quickcheck = { workspace = true }
+quickcheck_macros = { workspace = true }
+rstest = { workspace = true }
+rustdoc-json = "0.8.6"
+rustup-toolchain = "0.1.5"

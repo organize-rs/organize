@@ -4,7 +4,7 @@ use displaydoc::Display;
 use std::{error::Error as StdError, path::PathBuf};
 use thiserror::Error as ThisError;
 
-/// Result type often returned from methods that can have rustic `Error`s.
+/// Result type often returned from methods that can have organize `Error`s.
 pub type OrganizeResult<T> = std::result::Result<T, OrganizeError>;
 
 // [`Error`] is public, but opaque and easy to keep compatible.
