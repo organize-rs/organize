@@ -64,5 +64,5 @@ public-api = "0.31.0"
 quickcheck = { workspace = true }
 quickcheck_macros = { workspace = true }
 rstest = { workspace = true }
-rustdoc-json = "0.8.6"
+rustdoc-json = "0.8.9"
 rustup-toolchain = "0.1.5"
