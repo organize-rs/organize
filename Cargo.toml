@@ -73,7 +73,7 @@ infer = "0.13"
 mime = "0.3"
 
 # de-/serialisation
-serde = { version = "1.0.163", features = ["serde_derive"] }
+serde = { version = "1.0.197", features = ["serde_derive"] }
 serde_with = "3.0.0"
 serde_yaml = "0.9.21"
 # config
