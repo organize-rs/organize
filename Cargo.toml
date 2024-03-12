@@ -41,7 +41,7 @@ directories = "5.0.1"
 console = { version = "0.15.7", features = ["windows-console-colors"] }
 
 thiserror = "1.0.40"
-anyhow = "1.0.71"
+anyhow = "1.0.81"
 once_cell = "1.18.0"
 duct = "0.13.6"
 chrono = { version = "0.4.26", default-features = false, features = ["serde", "clock", "std", "time"] }
