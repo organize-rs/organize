@@ -9,6 +9,6 @@ jobs:
   style:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3
 
-      - uses: dprint/check@v2.2
+      - uses: dprint/check@2f1cf31537886c3bfb05591c031f7744e48ba8a1 # v2.2
